@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Labstak — Samples Pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+[data-theme="light"] .kanban-col { background: rgba(0,0,0,0.02); border-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .sample-card { background: #fff; border-color: rgba(0,0,0,0.10); box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+[data-theme="light"] .sample-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.10); }
+[data-theme="light"] .summary-strip { background: #fff; border-color: rgba(0,0,0,0.10); }
+[data-theme="light"] .list-table-card { border-color: rgba(0,0,0,0.10); background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+[data-theme="light"] .list-table tr { border-bottom-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .list-table tbody tr:hover { background: rgba(0,0,0,0.02); }
+[data-theme="light"] .col-header { background: rgba(0,0,0,0.03); }
+[data-theme="light"] .theme-toggle .icon-sun { display: block; }
+[data-theme="light"] .theme-toggle .icon-moon { display: none; }
+   SUMMARY STRIP
+   ══════════════════════════════════════════════════════════════ */
+.summary-strip {
+  display: flex; align-items: center; gap: 24px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-lg);
+  padding: 14px 24px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.summary-item {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--text-secondary);
+}
+.summary-value {
+  font-weight: 700; font-family: var(--font-mono);
+  font-size: 16px; color: var(--text-primary);
+}
+.summary-divider {
+  width: 1px; height: 28px; background: var(--border-default);
+}
+.summary-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  display: inline-block; flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   KANBAN VIEW
+   ══════════════════════════════════════════════════════════════ */
+.kanban-container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+}
+.kanban-col {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-lg);
+  display: flex; flex-direction: column;
+  min-height: 400px;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+.col-header {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex; align-items: center; justify-content: space-between;
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  flex-shrink: 0;
+}
+.col-title {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; font-weight: 600;
+}
+.col-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+}
+.col-count {
+  font-size: 11px; font-weight: 700;
+  padding: 2px 8px; border-radius: var(--r-full);
+  background: rgba(255,255,255,0.06);
+  color: var(--text-secondary);
+}
+.col-body {
+  flex: 1; padding: 12px;
+  display: flex; flex-direction: column; gap: 10px;
+  overflow-y: auto;
+}
+.col-body::-webkit-scrollbar { width: 4px; }
+.col-body::-webkit-scrollbar-track { background: transparent; }
+.col-body::-webkit-scrollbar-thumb { background: var(--bg-float); border-radius: 2px; }
+
+/* ── Sample Cards ── */
+.sample-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+  padding: 14px;
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease);
+  position: relative;
+}
+.sample-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+}
+.sample-card.stage-pickup:hover { border-color: var(--text-tertiary); }
+.sample-card.stage-transit:hover { border-color: var(--info); box-shadow: 0 6px 20px rgba(96,165,250,0.12); }
+.sample-card.stage-lab:hover { border-color: var(--warn); box-shadow: 0 6px 20px rgba(251,191,36,0.12); }
+.sample-card.stage-testing:hover { border-color: var(--terps); box-shadow: 0 6px 20px rgba(167,139,250,0.12); }
+.sample-card.stage-results-pass:hover { border-color: var(--pass); box-shadow: 0 6px 20px rgba(16,185,129,0.12); }
+.sample-card.stage-results-fail:hover { border-color: var(--fail); box-shadow: 0 6px 20px rgba(248,113,113,0.12); }
+
+.card-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 8px;
+}
+.card-strain {
+  font-size: 14px; font-weight: 600; color: var(--text-primary);
+  line-height: 1.3;
+}
+.card-sla-dot {
+  width: 10px; height: 10px; min-width: 10px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+.card-sla-dot.ok { display: none; }
+.card-sla-dot.warn { background: var(--warn); box-shadow: 0 0 6px rgba(251,191,36,0.5); }
+.card-sla-dot.danger { background: var(--fail); box-shadow: 0 0 6px rgba(248,113,113,0.5); animation: pulse-danger 2s ease-in-out infinite; }
+@keyframes pulse-danger {
+  0%, 100% { box-shadow: 0 0 6px rgba(248,113,113,0.5); }
+  50% { box-shadow: 0 0 12px rgba(248,113,113,0.8); }
+}
+
+.card-metrc {
+  font-size: 10px; font-family: var(--font-mono);
+  color: var(--text-tertiary);
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+
+.card-meta {
+  display: flex; align-items: center; gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.category-pill {
+  font-size: 10px; font-weight: 600;
+  padding: 2px 8px; border-radius: var(--r-full);
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.cat-flower { background: rgba(16,185,129,0.10); color: var(--accent); border: 1px solid rgba(16,185,129,0.20); }
+.cat-concentrate { background: rgba(245,158,11,0.10); color: var(--thc); border: 1px solid rgba(245,158,11,0.20); }
+.cat-edible { background: rgba(167,139,250,0.10); color: var(--terps); border: 1px solid rgba(167,139,250,0.20); }
+.cat-preroll { background: rgba(96,165,250,0.10); color: var(--info); border: 1px solid rgba(96,165,250,0.20); }
+
+.card-lab {
+  font-size: 11px; color: var(--text-secondary);
+}
+
+.card-bottom {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-subtle);
+}
+.card-submitted {
+  font-size: 11px; color: var(--text-tertiary);
+}
+.card-time {
+  font-size: 11px; font-weight: 600; font-family: var(--font-mono);
+  color: var(--text-secondary);
+  display: flex; align-items: center; gap: 4px;
+}
+.card-time svg { width: 12px; height: 12px; opacity: 0.5; }
+
+/* Results-specific */
+.card-result {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 10px; padding-top: 10px;
+  border-top: 1px solid var(--border-subtle);
+}
+.result-badge {
+  font-size: 11px; font-weight: 700;
+  padding: 3px 10px; border-radius: var(--r-full);
+}
+.result-pass { background: var(--pass-bg); color: var(--pass); border: 1px solid var(--pass-border); }
+.result-fail { background: var(--fail-bg); color: var(--fail); border: 1px solid var(--fail-border); }
+.result-thc {
+  font-size: 12px; font-weight: 700; font-family: var(--font-mono);
+  color: var(--thc);
+}
+.result-total {
+  font-size: 11px; color: var(--text-tertiary);
+  margin-left: auto;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LIST VIEW
+   ══════════════════════════════════════════════════════════════ */
+.list-view { display: none; flex: 1; }
+.list-view.active { display: block; }
+.kanban-view.active { display: grid; }
+.kanban-view { display: none; }
+
+.list-table-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+.list-table {
+  width: 100%; border-collapse: collapse;
+}
+.list-table th {
+  text-align: left; padding: 14px 20px;
+  font-size: 11px; font-weight: 600; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.07em;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-surface); position: sticky; top: 0;
+}
+.list-table th.r { text-align: right; }
+.list-table th.c { text-align: center; }
+.list-table td {
+  padding: 14px 20px; font-size: 13px;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+}
+.list-table td.r { text-align: right; }
+.list-table td.c { text-align: center; }
+.list-table tr:last-child td { border-bottom: none; }
+.list-table tbody tr {
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease);
+}
+.list-table tbody tr:hover { background: rgba(255,255,255,0.025); }
+
+.stage-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 12px; border-radius: var(--r-full);
+  font-size: 11px; font-weight: 600; white-space: nowrap;
+}
+.stage-pickup { background: var(--pending-bg); color: var(--text-secondary); border: 1px solid var(--border-default); }
+.stage-transit { background: var(--info-bg); color: var(--info); border: 1px solid var(--info-border); }
+.stage-at-lab { background: var(--warn-bg); color: var(--warn); border: 1px solid var(--warn-border); }
+.stage-testing { background: var(--terps-subtle); color: var(--terps); border: 1px solid rgba(167,139,250,0.25); }
+.stage-passed { background: var(--pass-bg); color: var(--pass); border: 1px solid var(--pass-border); }
+.stage-failed { background: var(--fail-bg); color: var(--fail); border: 1px solid var(--fail-border); }
+
+.list-strain-cell { display: flex; flex-direction: column; gap: 2px; }
+.list-strain-name { font-weight: 600; font-size: 14px; color: var(--text-primary); }
+.list-strain-metrc { font-size: 10px; color: var(--text-tertiary); font-family: var(--font-mono); }
+.list-sla-indicator { display: inline-flex; align-items: center; gap: 4px; }
+.list-sla-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DETAIL PANEL
+   ══════════════════════════════════════════════════════════════ */
+.detail-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--dur-base) var(--ease);
+}
+.detail-overlay.open { opacity: 1; pointer-events: auto; }
+.detail-panel {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 201;
+  width: min(520px, 90vw);
+  background: var(--bg-surface); border-left: 1px solid var(--border-default);
+  box-shadow: -8px 0 30px rgba(0,0,0,0.3);
+  transform: translateX(100%);
+  transition: transform var(--dur-slow) var(--ease-out);
+  display: flex; flex-direction: column; overflow-y: auto;
+}
+.detail-panel.open { transform: translateX(0); }
+.detail-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px; border-bottom: 1px solid var(--border-subtle);
+  position: sticky; top: 0; z-index: 1; background: var(--bg-surface);
+}
+.detail-header-left { display: flex; flex-direction: column; gap: 4px; }
+.detail-title { font-size: 18px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em; }
+.detail-subtitle { font-size: 13px; color: var(--text-secondary); }
+.detail-close {
+  width: 36px; height: 36px; border-radius: var(--r-md);
+  border: 1px solid var(--border-default); background: var(--bg-elevated);
+  color: var(--text-secondary); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--dur-fast) var(--ease); flex-shrink: 0;
+}
+.detail-close:hover { border-color: var(--border-strong); color: var(--text-primary); background: var(--bg-overlay); }
+.detail-close svg { width: 16px; height: 16px; }
+.detail-body { padding: 24px; flex: 1; }
+.detail-section { margin-bottom: 24px; }
+.detail-section-title { font-size: 11px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.detail-field { display: flex; flex-direction: column; gap: 2px; }
+.detail-field.full { grid-column: 1 / -1; }
+.detail-label { font-size: 11px; color: var(--text-tertiary); font-weight: 500; }
+.detail-value { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+.detail-value.mono { font-family: var(--font-mono); font-size: 13px; }
+
+/* Pipeline progress in detail */
+.pipeline-progress {
+  display: flex; align-items: center; gap: 0;
+  margin-bottom: 24px;
+  padding: 16px;
+  background: var(--bg-elevated);
+  border-radius: var(--r-md);
+  border: 1px solid var(--border-subtle);
+}
+.pipeline-step {
+  display: flex; flex-direction: column; align-items: center;
+  flex: 1;
+  position: relative;
+}
+.pipeline-step-dot {
+  width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700;
+  margin-bottom: 6px;
+  transition: all var(--dur-base) var(--ease);
+}
+.pipeline-step-dot.completed { background: var(--accent); color: #022C22; }
+.pipeline-step-dot.active { background: var(--accent); color: #022C22; box-shadow: 0 0 0 4px var(--accent-subtle); }
+.pipeline-step-dot.pending { background: var(--bg-overlay); color: var(--text-disabled); border: 1px solid var(--border-default); }
+.pipeline-step-label { font-size: 10px; color: var(--text-tertiary); text-align: center; white-space: nowrap; }
+.pipeline-step-label.active { color: var(--accent); font-weight: 600; }
+.pipeline-connector {
+  flex: 1; height: 2px; background: var(--border-default);
+  margin: 0 -8px;
+  align-self: flex-start;
+  margin-top: 12px;
+}
+.pipeline-connector.completed { background: var(--accent); }
+
+/* ══════════════════════════════════════════════════════════════
+   ANIMATIONS
+   ══════════════════════════════════════════════════════════════ */
+@keyframes fade-up { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.anim-in { animation: fade-up var(--dur-slow) var(--ease-out) forwards; }
+@keyframes card-enter {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.card-anim { animation: card-enter var(--dur-base) var(--ease-out) forwards; }
+
+/* View transition */
+.view-transitioning { opacity: 0; transform: translateY(6px); }
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 1400px) {
+  .kanban-container { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 1100px) {
+  .kanban-container { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 900px) {
+  .page { padding: 20px; }
+  .header { padding: 12px 20px; }
+  .search-bar { min-width: 140px; }
+  .kanban-container { grid-template-columns: 1fr; }
+  .summary-strip { gap: 12px; padding: 12px 16px; }
+  .summary-divider { display: none; }
+}
+@media (max-width: 768px) {
+  .header-filters { display: none; }
+}
+</style>
+</head>
+<body>
+<!-- ═══ MAIN ═══ -->
+<main class="main" id="main">
+  <div class="header">
+    <div class="header-left">
+      <span class="header-title">Samples Pipeline</span>
+      <div class="sync-indicator">
+        <span class="sync-dot"></span>
+        <span>Synced 2m ago</span>
+      </div>
+    </div>
+
+    <div class="header-filters">
+      <div class="view-toggle" id="viewToggle">
+        <button class="view-toggle-btn active" data-view="kanban" onclick="setView('kanban')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="13" rx="1"/><rect x="14" y="3" width="7" height="9" rx="1"/></svg>
+          <span>Kanban</span>
+        </button>
+        <button class="view-toggle-btn" data-view="list" onclick="setView('list')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          <span>List</span>
+        </button>
+      </div>
+      <div class="dropdown"><span>All Labs</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+      <div class="dropdown"><span>All Categories</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+      <div class="dropdown"><span>Last 30 Days</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+
+    <div id="header-actions"></div>
+  </div>
+
+  <div class="page">
+    <!-- Summary Strip -->
+    <div class="summary-strip anim-in">
+      <div class="summary-item">
+        <span style="font-size:12px;color:var(--text-tertiary)">Total in Pipeline</span>
+        <span class="summary-value">12</span>
+      </div>
+      <div class="summary-divider"></div>
+      <div class="summary-item">
+        <span style="font-size:12px;color:var(--text-tertiary)">Avg Turnaround</span>
+        <span class="summary-value">4.2<span style="font-size:12px;font-weight:500;color:var(--text-tertiary)">d</span></span>
+      </div>
+      <div class="summary-divider"></div>
+      <div class="summary-item">
+        <span class="summary-dot" style="background:var(--pass);box-shadow:0 0 4px var(--pass)"></span>
+        <span style="font-size:12px;color:var(--text-secondary)">On Track</span>
+        <span class="summary-value" style="color:var(--pass);font-size:14px">9</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-dot" style="background:var(--warn);box-shadow:0 0 4px var(--warn)"></span>
+        <span style="font-size:12px;color:var(--text-secondary)">At Risk</span>
+        <span class="summary-value" style="color:var(--warn);font-size:14px">2</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-dot" style="background:var(--fail);box-shadow:0 0 4px var(--fail)"></span>
+        <span style="font-size:12px;color:var(--text-secondary)">Overdue</span>
+        <span class="summary-value" style="color:var(--fail);font-size:14px">1</span>
+      </div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:12px;">
+        <div class="summary-item" style="gap:4px;">
+          <span class="summary-dot" style="background:var(--text-tertiary)"></span>
+          <span style="font-size:11px">2</span>
+        </div>
+        <div class="summary-item" style="gap:4px;">
+          <span class="summary-dot" style="background:var(--info)"></span>
+          <span style="font-size:11px">2</span>
+        </div>
+        <div class="summary-item" style="gap:4px;">
+          <span class="summary-dot" style="background:var(--warn)"></span>
+          <span style="font-size:11px">3</span>
+        </div>
+        <div class="summary-item" style="gap:4px;">
+          <span class="summary-dot" style="background:var(--terps)"></span>
+          <span style="font-size:11px">3</span>
+        </div>
+        <div class="summary-item" style="gap:4px;">
+          <span class="summary-dot" style="background:var(--pass)"></span>
+          <span style="font-size:11px">2</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kanban View -->
+    <div class="kanban-container kanban-view active" id="kanbanView"></div>
+
+    <!-- List View -->
+    <div class="list-view" id="listView">
+      <div class="list-table-card">
+        <table class="list-table">
+          <thead>
+            <tr>
+              <th>Sample</th>
+              <th>Stage</th>
+              <th>Category</th>
+              <th>Lab</th>
+              <th class="r">Submitted</th>
+              <th class="r">Time in Stage</th>
+              <th class="r">Result</th>
+            </tr>
+          </thead>
+          <tbody id="listTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ═══ DETAIL PANEL ═══ -->
+<div class="detail-overlay" id="detailOverlay" onclick="closeDetail()"></div>
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-header">
+    <div class="detail-header-left">
+      <div class="detail-title" id="detailTitle">—</div>
+      <div class="detail-subtitle" id="detailSubtitle">—</div>
+    </div>
+    <button class="detail-close" onclick="closeDetail()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="detail-body" id="detailBody"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// SAMPLE DATA
+// ══════════════════════════════════════════════════════════════
+const samples = [
+  {
+    id: 1, name: "Runtz Flower", metrc: "1A4230100002685900", category: "Flower",
+    lab: "Delta Testing Co", submitted: "Today", timeInStage: "< 1h",
+    timeHours: 0.5, stage: "pickup", sla: "ok"
+  },
+  {
+    id: 2, name: "Sunset Sherbet Distillate", metrc: "1A4230100002686000", category: "Concentrate",
+    lab: "Southern Analytical", submitted: "Today", timeInStage: "3h",
+    timeHours: 3, stage: "pickup", sla: "ok"
+  },
+  {
+    id: 3, name: "Mimosa Flower", metrc: "1A4230100002686100", category: "Flower",
+    lab: "Delta Testing Co", submitted: "Yesterday", timeInStage: "18h",
+    timeHours: 18, stage: "transit", sla: "ok"
+  },
+  {
+    id: 4, name: "Grape Ape Pre-Roll 5pk", metrc: "1A4230100002686200", category: "Pre-Roll",
+    lab: "Delta Testing Co", submitted: "Yesterday", timeInStage: "22h",
+    timeHours: 22, stage: "transit", sla: "warn"
+  },
+  {
+    id: 5, name: "Tangie Haze", metrc: "1A4230100002686300", category: "Flower",
+    lab: "Southern Analytical", submitted: "2 days ago", timeInStage: "1d 6h",
+    timeHours: 30, stage: "lab", sla: "ok"
+  },
+  {
+    id: 6, name: "MAC #1 Shatter", metrc: "1A4230100002686400", category: "Concentrate",
+    lab: "Delta Testing Co", submitted: "2 days ago", timeInStage: "1d 2h",
+    timeHours: 26, stage: "lab", sla: "ok"
+  },
+  {
+    id: 7, name: "Banana Kush", metrc: "1A4230100002686500", category: "Flower",
+    lab: "Southern Analytical", submitted: "3 days ago", timeInStage: "2d 1h",
+    timeHours: 49, stage: "lab", sla: "warn"
+  },
+  {
+    id: 8, name: "White Widow", metrc: "1A4230100002686600", category: "Flower",
+    lab: "Delta Testing Co", submitted: "4 days ago", timeInStage: "1d 8h",
+    timeHours: 32, stage: "testing", sla: "ok"
+  },
+  {
+    id: 9, name: "Durban Poison Gummies", metrc: "1A4230100002686700", category: "Edible",
+    lab: "Southern Analytical", submitted: "5 days ago", timeInStage: "2d 4h",
+    timeHours: 52, stage: "testing", sla: "ok"
+  },
+  {
+    id: 10, name: "Cherry Pie Live Resin", metrc: "1A4230100002686800", category: "Concentrate",
+    lab: "Delta Testing Co", submitted: "3 days ago", timeInStage: "12h",
+    timeHours: 12, stage: "testing", sla: "ok"
+  },
+  {
+    id: 11, name: "Lemon Haze Flower", metrc: "1A4230100002686900", category: "Flower",
+    lab: "Delta Testing Co", submitted: "5 days ago", timeInStage: "5d total",
+    timeHours: 120, stage: "results", sla: "ok",
+    result: "pass", thc: 26.1, failReason: null
+  },
+  {
+    id: 12, name: "Skywalker OG", metrc: "1A4230100002687000", category: "Flower",
+    lab: "Southern Analytical", submitted: "6 days ago", timeInStage: "6d total",
+    timeHours: 144, stage: "results", sla: "ok",
+    result: "fail", thc: 23.4, failReason: "Pesticide"
+  }
+];
+
+const stages = [
+  { key: "pickup", label: "Awaiting Pickup", color: "var(--text-tertiary)", dotClass: "" },
+  { key: "transit", label: "In Transit", color: "var(--info)", dotClass: "" },
+  { key: "lab", label: "At Lab", color: "var(--warn)", dotClass: "" },
+  { key: "testing", label: "Testing", color: "var(--terps)", dotClass: "" },
+  { key: "results", label: "Results Ready", color: "var(--pass)", dotClass: "" }
+];
+
+const stageIndex = { pickup: 0, transit: 1, lab: 2, testing: 3, results: 4 };
+
+const categoryClass = {
+  "Flower": "cat-flower",
+  "Concentrate": "cat-concentrate",
+  "Edible": "cat-edible",
+  "Pre-Roll": "cat-preroll"
+};
+
+// ══════════════════════════════════════════════════════════════
+// SLA CALCULATION
+// ══════════════════════════════════════════════════════════════
+function getSlaStatus(sample) {
+  const thresholds = {
+    pickup: { warn: 24, danger: 48 },
+    transit: { warn: 24, danger: 48 },
+    lab: { warn: 48, danger: 96 },
+    testing: { warn: 72, danger: 144 },
+    results: { warn: Infinity, danger: Infinity }
+  };
+  const t = thresholds[sample.stage];
+  if (sample.timeHours >= t.danger) return 'danger';
+  if (sample.timeHours >= t.warn) return 'warn';
+  return 'ok';
+}
+
+// ══════════════════════════════════════════════════════════════
+// KANBAN RENDERING
+// ══════════════════════════════════════════════════════════════
+function renderKanban() {
+  const container = document.getElementById('kanbanView');
+  container.innerHTML = '';
+
+  stages.forEach((stage, stageIdx) => {
+    const stageSamples = samples.filter(s => s.stage === stage.key);
+
+    const col = document.createElement('div');
+    col.className = 'kanban-col';
+
+    col.innerHTML = `
+      <div class="col-header">
+        <div class="col-title">
+          <span class="col-dot" style="background:${stage.color};box-shadow:0 0 6px ${stage.color}"></span>
+          <span>${stage.label}</span>
+        </div>
+        <span class="col-count">${stageSamples.length}</span>
+      </div>
+      <div class="col-body">
+        ${stageSamples.map((s, i) => renderSampleCard(s, i)).join('')}
+      </div>
+    `;
+
+    container.appendChild(col);
+  });
+}
+
+function renderSampleCard(sample, index) {
+  const sla = getSlaStatus(sample);
+  let stageClass = 'stage-' + sample.stage;
+  if (sample.stage === 'results') {
+    stageClass = sample.result === 'pass' ? 'stage-results-pass' : 'stage-results-fail';
+  }
+
+  let resultHtml = '';
+  if (sample.stage === 'results') {
+    const isPassed = sample.result === 'pass';
+    resultHtml = `
+      <div class="card-result">
+        <span class="result-badge ${isPassed ? 'result-pass' : 'result-fail'}">
+          ${isPassed ? '✓ PASSED' : '✗ FAILED'}
+        </span>
+        <span class="result-thc">THC ${sample.thc}%</span>
+        ${!isPassed && sample.failReason ? `<span style="font-size:10px;color:var(--fail);margin-left:auto">${sample.failReason}</span>` : ''}
+      </div>
+    `;
+  }
+
+  return `
+    <div class="sample-card ${stageClass} card-anim" style="animation-delay:${index * 60}ms" onclick="openDetail(${sample.id})">
+      <div class="card-top">
+        <span class="card-strain">${sample.name}</span>
+        <span class="card-sla-dot ${sla}"></span>
+      </div>
+      <div class="card-metrc">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:10px;height:10px;opacity:0.4"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        ${sample.metrc.substring(0, 10)}...${sample.metrc.slice(-3)}
+      </div>
+      <div class="card-meta">
+        <span class="category-pill ${categoryClass[sample.category]}">${sample.category}</span>
+        <span class="card-lab">${sample.lab}</span>
+      </div>
+      <div class="card-bottom">
+        <span class="card-submitted">${sample.submitted}</span>
+        <span class="card-time">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          ${sample.timeInStage}
+        </span>
+      </div>
+      ${resultHtml}
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════════════════════════════
+// LIST RENDERING
+// ══════════════════════════════════════════════════════════════
+function renderList() {
+  const tbody = document.getElementById('listTableBody');
+
+  const stageLabels = {
+    pickup: { class: 'stage-pickup', text: 'Awaiting Pickup', icon: '◷' },
+    transit: { class: 'stage-transit', text: 'In Transit', icon: '→' },
+    lab: { class: 'stage-at-lab', text: 'At Lab', icon: '◉' },
+    testing: { class: 'stage-testing', text: 'Testing', icon: '⚗' },
+    results: null // handled by pass/fail
+  };
+
+  tbody.innerHTML = samples.map(s => {
+    let stageBadge;
+    if (s.stage === 'results') {
+      if (s.result === 'pass') {
+        stageBadge = `<span class="stage-badge stage-passed">✓ Passed</span>`;
+      } else {
+        stageBadge = `<span class="stage-badge stage-failed">✗ Failed</span>`;
+      }
+    } else {
+      const sl = stageLabels[s.stage];
+      stageBadge = `<span class="stage-badge ${sl.class}">${sl.icon} ${sl.text}</span>`;
+    }
+
+    const sla = getSlaStatus(s);
+    let slaHtml = '';
+    if (sla === 'warn') {
+      slaHtml = `<span class="list-sla-dot" style="background:var(--warn);box-shadow:0 0 4px var(--warn);display:inline-block;margin-left:6px"></span>`;
+    } else if (sla === 'danger') {
+      slaHtml = `<span class="list-sla-dot" style="background:var(--fail);box-shadow:0 0 4px var(--fail);display:inline-block;margin-left:6px"></span>`;
+    }
+
+    const resultHtml = s.stage === 'results'
+      ? `<span style="font-family:var(--font-mono);font-weight:600;color:var(--thc)">THC ${s.thc}%</span>`
+      : '<span style="color:var(--text-disabled)">—</span>';
+
+    return `
+      <tr onclick="openDetail(${s.id})">
+        <td>
+          <div class="list-strain-cell">
+            <span class="list-strain-name">${s.name}</span>
+            <span class="list-strain-metrc">${s.metrc.substring(0, 10)}...${s.metrc.slice(-3)}</span>
+          </div>
+        </td>
+        <td>${stageBadge}</td>
+        <td><span class="category-pill ${categoryClass[s.category]}">${s.category}</span></td>
+        <td style="color:var(--text-secondary)">${s.lab}</td>
+        <td class="r" style="color:var(--text-secondary);font-size:12px">${s.submitted}</td>
+        <td class="r">
+          <span style="font-family:var(--font-mono);font-size:12px;color:var(--text-secondary)">${s.timeInStage}</span>
+          ${slaHtml}
+        </td>
+        <td class="r">${resultHtml}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════
+// DETAIL PANEL
+// ══════════════════════════════════════════════════════════════
+function openDetail(id) {
+  const sample = samples.find(s => s.id === id);
+  if (!sample) return;
+
+  document.getElementById('detailTitle').textContent = sample.name;
+  document.getElementById('detailSubtitle').textContent = `${sample.category} · ${sample.lab}`;
+
+  const si = stageIndex[sample.stage];
+
+  // Build pipeline progress
+  let pipelineHtml = '<div class="pipeline-progress">';
+  stages.forEach((stage, idx) => {
+    if (idx > 0) {
+      pipelineHtml += `<div class="pipeline-connector ${idx <= si ? 'completed' : ''}"></div>`;
+    }
+    let dotClass = 'pending';
+    let labelClass = '';
+    let dotContent = idx + 1;
+    if (idx < si) { dotClass = 'completed'; dotContent = '✓'; }
+    else if (idx === si) { dotClass = 'active'; labelClass = ' active'; }
+    pipelineHtml += `
+      <div class="pipeline-step">
+        <div class="pipeline-step-dot ${dotClass}">${dotContent}</div>
+        <div class="pipeline-step-label${labelClass}">${stage.label}</div>
+      </div>
+    `;
+  });
+  pipelineHtml += '</div>';
+
+  const sla = getSlaStatus(sample);
+  let slaHtml = '<span style="color:var(--pass);font-weight:600">✓ On Track</span>';
+  if (sla === 'warn') slaHtml = '<span style="color:var(--warn);font-weight:600">⚠ At Risk</span>';
+  if (sla === 'danger') slaHtml = '<span style="color:var(--fail);font-weight:600">⚠ Overdue</span>';
+
+  let resultSection = '';
+  if (sample.stage === 'results') {
+    const isPassed = sample.result === 'pass';
+    resultSection = `
+      <div class="detail-section">
+        <div class="detail-section-title">Test Results</div>
+        <div style="display:flex;align-items:center;gap:12px;padding:16px;background:${isPassed ? 'var(--pass-bg)' : 'var(--fail-bg)'};border:1px solid ${isPassed ? 'var(--pass-border)' : 'var(--fail-border)'};border-radius:var(--r-md);">
+          <span style="font-size:24px">${isPassed ? '✓' : '✗'}</span>
+          <div>
+            <div style="font-size:16px;font-weight:700;color:${isPassed ? 'var(--pass)' : 'var(--fail)'}">${isPassed ? 'ALL TESTS PASSED' : 'FAILED'}</div>
+            <div style="font-size:12px;color:var(--text-secondary)">${isPassed ? 'Sample cleared all compliance tests' : 'Failed: ' + sample.failReason}</div>
+          </div>
+          <div style="margin-left:auto;text-align:right">
+            <div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em">THC</div>
+            <div style="font-size:24px;font-weight:700;font-family:var(--font-mono);color:var(--thc)">${sample.thc}%</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  const body = document.getElementById('detailBody');
+  body.innerHTML = `
+    <div class="detail-section">
+      <div class="detail-section-title">Pipeline Progress</div>
+      ${pipelineHtml}
+    </div>
+    ${resultSection}
+    <div class="detail-section">
+      <div class="detail-section-title">Sample Info</div>
+      <div class="detail-grid">
+        <div class="detail-field">
+          <div class="detail-label">Metrc Tag</div>
+          <div class="detail-value mono">${sample.metrc}</div>
+        </div>
+        <div class="detail-field">
+          <div class="detail-label">Category</div>
+          <div class="detail-value">${sample.category}</div>
+        </div>
+        <div class="detail-field">
+          <div class="detail-label">Testing Lab</div>
+          <div class="detail-value">${sample.lab}</div>
+        </div>
+        <div class="detail-field">
+          <div class="detail-label">SLA Status</div>
+          <div class="detail-value">${slaHtml}</div>
+        </div>
+        <div class="detail-field">
+          <div class="detail-label">Submitted</div>
+          <div class="detail-value">${sample.submitted}</div>
+        </div>
+        <div class="detail-field">
+          <div class="detail-label">Time in Stage</div>
+          <div class="detail-value mono">${sample.timeInStage}</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('detailOverlay').classList.add('open');
+  document.getElementById('detailPanel').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDetail() {
+  document.getElementById('detailOverlay').classList.remove('open');
+  document.getElementById('detailPanel').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ══════════════════════════════════════════════════════════════
+// VIEW TOGGLE
+// ══════════════════════════════════════════════════════════════
+let currentView = 'kanban';
+
+function setView(view) {
+  if (view === currentView) return;
+  currentView = view;
+
+  document.querySelectorAll('.view-toggle-btn').forEach(b =>
+    b.classList.toggle('active', b.getAttribute('data-view') === view)
+  );
+
+  const kanban = document.getElementById('kanbanView');
+  const list = document.getElementById('listView');
+
+  if (view === 'kanban') {
+    list.classList.remove('active');
+    kanban.classList.add('active');
+    // Re-trigger card animations
+    kanban.querySelectorAll('.sample-card').forEach((card, i) => {
+      card.style.animation = 'none';
+      card.offsetHeight; // reflow
+      card.style.animation = `card-enter var(--dur-base) var(--ease-out) forwards`;
+      card.style.animationDelay = `${i * 40}ms`;
+    });
+  } else {
+    kanban.classList.remove('active');
+    list.classList.add('active');
+    renderList();
+  }
+
+  localStorage.setItem('ls-samples-view', view);
+}
+
+// ══════════════════════════════════════════════════════════════
+// THEME + SIDEBAR
+// ══════════════════════════════════════════════════════════════
+
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+
+  // Render
+  renderKanban();
+  renderList();
+
+  // Escape to close detail
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeDetail(); });
+
+  // Saved view preference
+  const savedView = localStorage.getItem('ls-samples-view');
+  if (savedView === 'list') setView('list');
+});
+</script>
+
+
+<script src="shared.js"></script>
+<script>LabstakShared.init({ page: 'samples', title: 'Samples Pipeline' });</script>
+</body>
+</html>

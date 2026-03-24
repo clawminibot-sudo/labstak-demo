@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Labstak — Lab Profile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+[data-theme="light"] .kpi-card { border: 1px solid rgba(0,0,0,0.10); background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+[data-theme="light"] .section-card { border: 1px solid rgba(0,0,0,0.10); background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+[data-theme="light"] .results-table tr { border-bottom-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .results-table tbody tr:hover { background: rgba(0,0,0,0.02); }
+[data-theme="light"] .lab-info-card { border: 1px solid rgba(0,0,0,0.10); background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+[data-theme="light"] .samples-table tr { border-bottom-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .samples-table tbody tr:hover { background: rgba(0,0,0,0.02); }
+.page { padding: 24px 32px 48px; max-width: 1280px; }
+
+/* Back link */
+.back-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--text-tertiary);
+  text-decoration: none; cursor: pointer;
+  margin-bottom: 16px;
+  transition: color var(--dur-fast) var(--ease);
+}
+.back-link:hover { color: var(--text-secondary); }
+
+/* Lab header */
+.lab-header { margin-bottom: 28px; }
+.lab-header-row {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 8px;
+}
+.lab-header h1 { font-size: 26px; font-weight: 800; }
+.status-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px; border-radius: var(--r-full);
+  font-size: 12px; font-weight: 600;
+  background: var(--pass-bg); color: var(--pass);
+  border: 1px solid var(--pass-border);
+}
+.status-badge .dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: currentColor;
+}
+.lab-meta {
+  display: flex; flex-wrap: wrap; gap: 20px;
+  font-size: 13px; color: var(--text-secondary);
+}
+.lab-meta-item { display: flex; align-items: center; gap: 6px; }
+.lab-meta-item svg { width: 14px; height: 14px; opacity: 0.5; }
+
+/* KPI Cards */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.kpi-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+.kpi-card:hover { border-color: var(--border-default); }
+.kpi-label {
+  font-size: 12px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--text-tertiary);
+  margin-bottom: 6px;
+}
+.kpi-value {
+  font-size: 28px; font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+.kpi-change {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 12px; font-weight: 600;
+  margin-top: 6px;
+}
+.kpi-change.up-good { color: var(--pass); }
+.kpi-change.down-good { color: var(--pass); }
+.kpi-change.up-bad { color: var(--fail); }
+.kpi-change.down-bad { color: var(--fail); }
+.kpi-change.neutral { color: var(--text-tertiary); }
+
+/* Section card */
+.section-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.section-title {
+  font-size: 15px; font-weight: 700;
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-title .count {
+  font-size: 12px; font-weight: 600;
+  padding: 2px 8px; border-radius: var(--r-full);
+  background: var(--accent-subtle); color: var(--accent);
+}
+
+/* Active samples table */
+.samples-table { width: 100%; border-collapse: collapse; }
+.samples-table th {
+  text-align: left; font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--text-tertiary); padding: 8px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.samples-table td {
+  padding: 12px; font-size: 13px;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+}
+.samples-table tbody tr { transition: background var(--dur-fast) var(--ease); }
+.samples-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+.samples-table tbody tr:last-child td { border-bottom: none; }
+
+/* Stage badges */
+.stage-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: var(--r-full);
+  font-size: 11px; font-weight: 600;
+}
+.stage-badge.testing { background: var(--info-bg); color: var(--info); border: 1px solid var(--info-border); }
+.stage-badge.at-lab { background: var(--warn-bg); color: var(--warn); border: 1px solid var(--warn-border); }
+.stage-badge.in-transit { background: var(--pending-bg); color: var(--text-secondary); border: 1px solid var(--border-default); }
+.stage-badge.passed { background: var(--pass-bg); color: var(--pass); border: 1px solid var(--pass-border); }
+.stage-badge.failed { background: var(--fail-bg); color: var(--fail); border: 1px solid var(--fail-border); }
+
+/* SLA dots */
+.sla-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  display: inline-block;
+}
+.sla-dot.on-track { background: var(--pass); box-shadow: 0 0 4px rgba(16,185,129,0.4); }
+.sla-dot.at-risk { background: var(--warn); box-shadow: 0 0 4px rgba(251,191,36,0.4); }
+.sla-dot.overdue { background: var(--fail); box-shadow: 0 0 4px rgba(248,113,113,0.4); }
+
+/* Chart */
+.chart-container { position: relative; width: 100%; height: 200px; }
+.chart-container svg { width: 100%; height: 100%; }
+
+/* Results table */
+.results-table { width: 100%; border-collapse: collapse; }
+.results-table th {
+  text-align: left; font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.5px;
+  color: var(--text-tertiary); padding: 8px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.results-table td {
+  padding: 10px 12px; font-size: 13px;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+}
+.results-table tbody tr { transition: background var(--dur-fast) var(--ease); }
+.results-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+.results-table tbody tr:last-child td { border-bottom: none; }
+.results-table .mono { font-family: var(--font-mono); font-size: 12px; }
+
+.badge-pass {
+  display: inline-flex; padding: 2px 10px; border-radius: var(--r-full);
+  font-size: 11px; font-weight: 600;
+  background: var(--pass-bg); color: var(--pass); border: 1px solid var(--pass-border);
+}
+.badge-fail {
+  display: inline-flex; padding: 2px 10px; border-radius: var(--r-full);
+  font-size: 11px; font-weight: 600;
+  background: var(--fail-bg); color: var(--fail); border: 1px solid var(--fail-border);
+}
+.btn-view {
+  padding: 4px 12px; border-radius: var(--r-md);
+  font-size: 12px; font-weight: 600;
+  background: var(--accent-subtle); color: var(--accent);
+  border: 1px solid var(--pass-border);
+  cursor: pointer; transition: all var(--dur-fast) var(--ease);
+  text-decoration: none;
+}
+.btn-view:hover { background: var(--accent); color: #fff; }
+
+/* Lab info card */
+.lab-info-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+.info-item { display: flex; flex-direction: column; gap: 3px; }
+.info-label {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--text-tertiary);
+}
+.info-value { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+.info-value a { color: var(--accent); text-decoration: none; }
+.info-value a:hover { text-decoration: underline; }
+.integration-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 2px 10px; border-radius: var(--r-full);
+  font-size: 12px; font-weight: 600;
+  background: var(--pass-bg); color: var(--pass);
+  border: 1px solid var(--pass-border);
+}
+
+/* Two column layout at bottom */
+.bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* Animations */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.anim-in { animation: fade-up var(--dur-base) var(--ease-out) forwards; }
+.anim-delay-1 { animation-delay: 60ms; }
+.anim-delay-2 { animation-delay: 120ms; }
+.anim-delay-3 { animation-delay: 180ms; }
+.anim-delay-4 { animation-delay: 240ms; }
+.anim-delay-5 { animation-delay: 300ms; }
+.anim-delay-6 { animation-delay: 360ms; }
+
+/* Responsive */
+@media (max-width: 1100px) {
+  .bottom-grid { grid-template-columns: 1fr; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .kpi-grid { grid-template-columns: 1fr; }
+  .page { padding: 16px; }
+}
+
+</style>
+</head>
+<body>
+<!-- ═══ MAIN ═══ -->
+<main class="main" id="main">
+  <div class="header">
+    <div class="header-left">
+      <span class="header-title" id="headerTitle">Lab Profile</span>
+      <div class="sync-indicator">
+        <span class="sync-dot"></span>
+        <span>Synced 2m ago</span>
+      </div>
+    </div>
+    <div class="header-right">
+    <div id="header-actions"></div>
+    </div>
+  </div>
+
+  <div class="page">
+    <!-- Back link -->
+    <a class="back-link anim-in" href="#">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+      ← All Labs
+    </a>
+
+    <!-- Lab Header -->
+    <div class="lab-header anim-in anim-delay-1">
+      <div class="lab-header-row">
+        <h1 id="labName">Delta Testing Co</h1>
+        <span class="status-badge"><span class="dot"></span> Active</span>
+      </div>
+      <div class="lab-meta" id="labMeta">
+        <div class="lab-meta-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span id="metaLicense">License: LAB-MS-2024-0041</span>
+        </div>
+        <div class="lab-meta-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span id="metaLocation">Jackson, MS</span>
+        </div>
+        <div class="lab-meta-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span id="metaPhone">(601) 555-0147</span>
+        </div>
+        <div class="lab-meta-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span id="metaSync">Last sync: 2 min ago</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid" id="kpiGrid">
+      <div class="kpi-card anim-in anim-delay-2">
+        <div class="kpi-label">Packages Tested</div>
+        <div class="kpi-value" id="kpiPackages">89</div>
+        <div class="kpi-change up-good" id="kpiPackagesChange">↑ 12 this month</div>
+      </div>
+      <div class="kpi-card anim-in anim-delay-2">
+        <div class="kpi-label">Pass Rate</div>
+        <div class="kpi-value" id="kpiPassRate">97.8%</div>
+        <div class="kpi-change up-good" id="kpiPassRateChange">↑ 0.5%</div>
+      </div>
+      <div class="kpi-card anim-in anim-delay-3">
+        <div class="kpi-label">Avg Turnaround</div>
+        <div class="kpi-value" id="kpiTurnaround">3.1<span style="font-size:16px;font-weight:600;opacity:0.6"> days</span></div>
+        <div class="kpi-change down-good" id="kpiTurnaroundChange">↓ 0.3d improvement</div>
+      </div>
+      <div class="kpi-card anim-in anim-delay-3">
+        <div class="kpi-label">Avg THC%</div>
+        <div class="kpi-value" id="kpiThc" style="color:var(--thc)">25.8%</div>
+        <div class="kpi-change neutral" id="kpiThcChange">Across all tests</div>
+      </div>
+    </div>
+
+    <!-- Active Samples -->
+    <div class="section-card anim-in anim-delay-4">
+      <div class="section-title">
+        Active Samples
+        <span class="count" id="activeSamplesCount">4</span>
+      </div>
+      <table class="samples-table">
+        <thead>
+          <tr>
+            <th>Sample</th>
+            <th>Metrc Tag</th>
+            <th>Stage</th>
+            <th>Time in Stage</th>
+            <th>SLA</th>
+          </tr>
+        </thead>
+        <tbody id="activeSamplesBody">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Testing History Chart -->
+    <div class="section-card anim-in anim-delay-5">
+      <div class="section-title">Testing History — 6 Months</div>
+      <div class="chart-container" id="chartContainer">
+        <!-- SVG chart rendered by JS -->
+      </div>
+    </div>
+
+    <!-- Bottom grid: Results + Lab Info -->
+    <div class="bottom-grid">
+      <!-- Recent Results -->
+      <div class="section-card anim-in anim-delay-5">
+        <div class="section-title">
+          Recent Results
+          <span class="count" id="resultsCount">10</span>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>Package</th>
+                <th>Strain</th>
+                <th>THC%</th>
+                <th>CBD%</th>
+                <th>Terps%</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="resultsBody">
+              <!-- Populated by JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Lab Info Card -->
+      <div class="lab-info-card anim-in anim-delay-6" id="labInfoCard">
+        <div class="section-title" style="margin-bottom:20px">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          Lab Information
+        </div>
+        <div class="info-grid" id="labInfoGrid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════════
+const labData = {
+  delta: {
+    name: 'Delta Testing Co',
+    license: 'LAB-MS-2024-0041',
+    location: 'Jackson, MS',
+    address: '1247 Industrial Blvd, Jackson, MS 39201',
+    phone: '(601) 555-0147',
+    email: 'results@deltatesting.com',
+    lastSync: '2 min ago',
+    connectedSince: 'Feb 12, 2026',
+    totalSyncs: 847,
+    integration: 'Metrc API',
+    kpi: {
+      packages: 89, packagesChange: '↑ 12 this month', packagesClass: 'up-good',
+      passRate: '97.8%', passRateChange: '↑ 0.5%', passRateClass: 'up-good',
+      turnaround: '3.1', turnaroundChange: '↓ 0.3d improvement', turnaroundClass: 'down-good',
+      thc: '25.8%', thcChange: 'Across all tests', thcClass: 'neutral'
+    },
+    activeSamples: [
+      { name: 'White Widow Flower', tag: '1A4230100002…6891', stage: 'testing', stageLabel: 'Testing', time: '18h', sla: 'on-track' },
+      { name: 'Cherry Pie Live Resin', tag: '1A4230100002…6893', stage: 'testing', stageLabel: 'Testing', time: '12h', sla: 'on-track' },
+      { name: 'MAC #1 Shatter', tag: '1A4230100002…6895', stage: 'at-lab', stageLabel: 'At Lab', time: '6h', sla: 'on-track' },
+      { name: 'Mimosa Flower', tag: '1A4230100002…6897', stage: 'in-transit', stageLabel: 'In Transit', time: '2h', sla: 'on-track' }
+    ],
+    chartData: [12, 14, 11, 16, 18, 18],
+    chartLabels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
+    results: [
+      { pkg: 'Purple Haze Live Rosin', strain: 'Purple Haze', thc: 78.4, cbd: 2.1, terps: 4.82, status: 'pass', date: 'Mar 4, 2026', enriched: true },
+      { pkg: 'Blue Dream Flower', strain: 'Blue Dream', thc: 24.3, cbd: 0.8, terps: 3.14, status: 'pass', date: 'Mar 2, 2026', enriched: false },
+      { pkg: 'Gorilla Glue #4', strain: 'Gorilla Glue #4', thc: 28.7, cbd: 1.2, terps: 3.41, status: 'pass', date: 'Feb 28, 2026', enriched: false },
+      { pkg: 'Sour Diesel Pre-Roll 5pk', strain: 'Sour Diesel', thc: 21.5, cbd: 0.5, terps: 2.67, status: 'pass', date: 'Feb 25, 2026', enriched: false },
+      { pkg: 'Gelato #41 Shatter', strain: 'Gelato #41', thc: 82.1, cbd: 0.9, terps: 5.21, status: 'pass', date: 'Feb 22, 2026', enriched: false },
+      { pkg: 'Northern Lights Gummies', strain: 'Northern Lights', thc: 98.2, cbd: 5.1, terps: 1.4, status: 'pass', date: 'Feb 18, 2026', enriched: false },
+      { pkg: 'Pineapple Express', strain: 'Pineapple Express', thc: 25.1, cbd: 0.6, terps: 3.28, status: 'pass', date: 'Feb 15, 2026', enriched: true },
+      { pkg: 'Girl Scout Cookies', strain: 'GSC', thc: 26.4, cbd: 0.7, terps: 2.91, status: 'pass', date: 'Feb 12, 2026', enriched: false },
+      { pkg: 'Runtz Flower', strain: 'Runtz', thc: 23.8, cbd: 0.4, terps: 3.55, status: 'pass', date: 'Feb 10, 2026', enriched: false },
+      { pkg: 'Lemon Haze Cartridge', strain: 'Lemon Haze', thc: 89.3, cbd: 1.8, terps: 6.12, status: 'pass', date: 'Feb 8, 2026', enriched: false }
+    ]
+  },
+  southern: {
+    name: 'Southern Analytical',
+    license: 'LAB-MS-2024-0078',
+    location: 'Hattiesburg, MS',
+    address: '892 Commerce Dr, Suite 200, Hattiesburg, MS 39401',
+    phone: '(601) 555-0293',
+    email: 'lab@southernanalytical.com',
+    lastSync: '48 min ago',
+    connectedSince: 'Mar 1, 2026',
+    totalSyncs: 312,
+    integration: 'Metrc API',
+    kpi: {
+      packages: 58, packagesChange: '↑ 6 this month', packagesClass: 'up-good',
+      passRate: '93.1%', passRateChange: '↓ 1.2%', passRateClass: 'down-bad',
+      turnaround: '4.6', turnaroundChange: '↑ 0.4d slower', turnaroundClass: 'up-bad',
+      thc: '24.2%', thcChange: 'Across all tests', thcClass: 'neutral'
+    },
+    activeSamples: [
+      { name: 'Durban Poison Gummies', tag: '1A4230100002…7102', stage: 'testing', stageLabel: 'Testing', time: '1d 6h', sla: 'at-risk' },
+      { name: 'Tangie Haze Flower', tag: '1A4230100002…7104', stage: 'at-lab', stageLabel: 'At Lab', time: '8h', sla: 'on-track' },
+      { name: 'Banana Kush Flower', tag: '1A4230100002…7106', stage: 'at-lab', stageLabel: 'At Lab', time: '4h', sla: 'on-track' }
+    ],
+    chartData: [8, 9, 7, 10, 12, 12],
+    chartLabels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
+    results: [
+      { pkg: 'Wedding Cake Distillate', strain: 'Wedding Cake', thc: 45.2, cbd: 0.3, terps: 1.87, status: 'fail', date: 'Feb 27, 2026', enriched: false },
+      { pkg: 'Jack Herer Flower', strain: 'Jack Herer', thc: 22.8, cbd: 1.4, terps: 2.71, status: 'pass', date: 'Feb 20, 2026', enriched: true },
+      { pkg: 'Granddaddy Purple', strain: 'GDP', thc: 20.4, cbd: 0.9, terps: 2.34, status: 'pass', date: 'Feb 16, 2026', enriched: false },
+      { pkg: 'Strawberry Cough Cart', strain: 'Strawberry Cough', thc: 85.7, cbd: 1.1, terps: 4.63, status: 'pass', date: 'Feb 13, 2026', enriched: false },
+      { pkg: 'Skywalker OG Shatter', strain: 'Skywalker OG', thc: 79.8, cbd: 0.6, terps: 3.92, status: 'fail', date: 'Feb 10, 2026', enriched: false },
+      { pkg: 'Maui Wowie Flower', strain: 'Maui Wowie', thc: 19.6, cbd: 0.8, terps: 2.18, status: 'pass', date: 'Feb 7, 2026', enriched: false },
+      { pkg: 'Green Crack Pre-Roll', strain: 'Green Crack', thc: 22.1, cbd: 0.5, terps: 2.45, status: 'pass', date: 'Feb 4, 2026', enriched: false },
+      { pkg: 'Trainwreck Flower', strain: 'Trainwreck', thc: 24.9, cbd: 0.7, terps: 3.08, status: 'pass', date: 'Feb 1, 2026', enriched: false }
+    ]
+  }
+};
+
+// ══════════════════════════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════════════════════════
+function getLabParam() {
+  const params = new URLSearchParams(window.location.search);
+  const lab = params.get('lab');
+  return (lab === 'southern') ? 'southern' : 'delta';
+}
+
+function renderPage() {
+  const labKey = getLabParam();
+  const lab = labData[labKey];
+
+  // Page title
+  document.title = lab.name + ' — Labstak';
+  document.getElementById('headerTitle').textContent = lab.name;
+
+  // Sidebar active lab
+  document.getElementById('lab-delta').classList.toggle('active', labKey === 'delta');
+  document.getElementById('lab-southern').classList.toggle('active', labKey === 'southern');
+
+  // Header
+  document.getElementById('labName').textContent = lab.name;
+  document.getElementById('metaLicense').textContent = 'License: ' + lab.license;
+  document.getElementById('metaLocation').textContent = lab.location;
+  document.getElementById('metaPhone').textContent = lab.phone;
+  document.getElementById('metaSync').textContent = 'Last sync: ' + lab.lastSync;
+
+  // KPIs
+  document.getElementById('kpiPackages').textContent = lab.kpi.packages;
+  document.getElementById('kpiPackagesChange').textContent = lab.kpi.packagesChange;
+  document.getElementById('kpiPackagesChange').className = 'kpi-change ' + lab.kpi.packagesClass;
+  document.getElementById('kpiPassRate').textContent = lab.kpi.passRate;
+  document.getElementById('kpiPassRateChange').textContent = lab.kpi.passRateChange;
+  document.getElementById('kpiPassRateChange').className = 'kpi-change ' + lab.kpi.passRateClass;
+  document.getElementById('kpiTurnaround').innerHTML = lab.kpi.turnaround + '<span style="font-size:16px;font-weight:600;opacity:0.6"> days</span>';
+  document.getElementById('kpiTurnaroundChange').textContent = lab.kpi.turnaroundChange;
+  document.getElementById('kpiTurnaroundChange').className = 'kpi-change ' + lab.kpi.turnaroundClass;
+  document.getElementById('kpiThc').textContent = lab.kpi.thc;
+  document.getElementById('kpiThcChange').textContent = lab.kpi.thcChange;
+  document.getElementById('kpiThcChange').className = 'kpi-change ' + lab.kpi.thcClass;
+
+  // Active Samples
+  document.getElementById('activeSamplesCount').textContent = lab.activeSamples.length;
+  const samplesBody = document.getElementById('activeSamplesBody');
+  samplesBody.innerHTML = lab.activeSamples.map(s => `
+    <tr>
+      <td style="font-weight:600">${s.name}</td>
+      <td><span style="font-family:var(--font-mono);font-size:12px;color:var(--text-secondary)">${s.tag}</span></td>
+      <td><span class="stage-badge ${s.stage}">${s.stageLabel}</span></td>
+      <td style="font-family:var(--font-mono);font-size:12px">${s.time}</td>
+      <td><span class="sla-dot ${s.sla}" title="${s.sla.replace('-',' ')}"></span></td>
+    </tr>
+  `).join('');
+
+  // Chart
+  renderChart(lab.chartData, lab.chartLabels);
+
+  // Results
+  document.getElementById('resultsCount').textContent = lab.results.length;
+  const resultsBody = document.getElementById('resultsBody');
+  resultsBody.innerHTML = lab.results.map(r => `
+    <tr>
+      <td style="font-weight:600">${r.pkg}${r.enriched ? ' <span title="Enriched with COA data" style="cursor:help">🔬</span>' : ''}</td>
+      <td style="color:var(--text-secondary)">${r.strain}</td>
+      <td class="mono" style="color:var(--thc)">${r.thc}%</td>
+      <td class="mono" style="color:var(--cbd)">${r.cbd}%</td>
+      <td class="mono" style="color:var(--terps)">${r.terps}%</td>
+      <td><span class="badge-${r.status}">${r.status === 'pass' ? 'Pass' : 'Fail'}</span></td>
+      <td style="color:var(--text-secondary);font-size:12px">${r.date}</td>
+      <td><a class="btn-view" href="#">View</a></td>
+    </tr>
+  `).join('');
+
+  // Lab Info Card
+  const infoGrid = document.getElementById('labInfoGrid');
+  infoGrid.innerHTML = `
+    <div class="info-item">
+      <span class="info-label">Full Name</span>
+      <span class="info-value">${lab.name}</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">License Number</span>
+      <span class="info-value" style="font-family:var(--font-mono)">${lab.license}</span>
+    </div>
+    <div class="info-item" style="grid-column: span 2">
+      <span class="info-label">Address</span>
+      <span class="info-value">${lab.address}</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Phone</span>
+      <span class="info-value"><a href="tel:${lab.phone}">${lab.phone}</a></span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Email</span>
+      <span class="info-value"><a href="mailto:${lab.email}">${lab.email}</a></span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Integration</span>
+      <span class="info-value"><span class="integration-badge">${lab.integration}</span></span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Connected Since</span>
+      <span class="info-value">${lab.connectedSince}</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Total Syncs</span>
+      <span class="info-value" style="font-family:var(--font-mono)">${lab.totalSyncs.toLocaleString()}</span>
+    </div>
+  `;
+}
+
+function renderChart(data, labels) {
+  const container = document.getElementById('chartContainer');
+  const maxVal = Math.max(...data) + 4;
+  const w = 700, h = 180, padL = 40, padR = 20, padT = 16, padB = 32;
+  const plotW = w - padL - padR;
+  const plotH = h - padT - padB;
+
+  const points = data.map((v, i) => {
+    const x = padL + (i / (data.length - 1)) * plotW;
+    const y = padT + plotH - (v / maxVal) * plotH;
+    return { x, y, v };
+  });
+
+  const polyline = points.map(p => `${p.x},${p.y}`).join(' ');
+  const gradientPoints = `${points[0].x},${padT + plotH} ${polyline} ${points[points.length-1].x},${padT + plotH}`;
+
+  // Grid lines
+  const gridLines = [0, 0.25, 0.5, 0.75, 1].map(frac => {
+    const y = padT + plotH - frac * plotH;
+    const val = Math.round(frac * maxVal);
+    return `<line x1="${padL}" y1="${y}" x2="${w - padR}" y2="${y}" stroke="var(--border-subtle)" stroke-dasharray="4,4"/>
+            <text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="var(--text-tertiary)" font-size="11" font-family="var(--font-mono)">${val}</text>`;
+  }).join('');
+
+  // X labels
+  const xLabels = labels.map((label, i) => {
+    const x = padL + (i / (labels.length - 1)) * plotW;
+    return `<text x="${x}" y="${h - 4}" text-anchor="middle" fill="var(--text-tertiary)" font-size="11" font-family="var(--font-sans)">${label}</text>`;
+  }).join('');
+
+  // Data point circles
+  const dots = points.map(p =>
+    `<circle cx="${p.x}" cy="${p.y}" r="4" fill="var(--accent)" stroke="var(--bg-surface)" stroke-width="2"/>
+     <text x="${p.x}" y="${p.y - 10}" text-anchor="middle" fill="var(--text-secondary)" font-size="11" font-weight="600" font-family="var(--font-mono)">${p.v}</text>`
+  ).join('');
+
+  container.innerHTML = `
+    <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.25"/>
+          <stop offset="100%" stop-color="var(--accent)" stop-opacity="0.02"/>
+        </linearGradient>
+      </defs>
+      ${gridLines}
+      ${xLabels}
+      <polygon points="${gradientPoints}" fill="url(#chartGrad)"/>
+      <polyline points="${polyline}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      ${dots}
+    </svg>
+  `;
+}
+
+// ══════════════════════════════════════════════════════════════
+// THEME + SIDEBAR
+// ══════════════════════════════════════════════════════════════
+
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+
+  // Render page
+  renderPage();
+});
+</script>
+
+
+<script src="shared.js"></script>
+<script>LabstakShared.init({ page: 'lab-delta', title: 'Lab Profile' });</script>
+</body>
+</html>

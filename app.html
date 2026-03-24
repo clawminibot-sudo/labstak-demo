@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Labstak</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+[data-theme="light"] .hero, [data-theme="light"] .card,
+[data-theme="light"] .kpi, [data-theme="light"] .kpi-strip,
+[data-theme="light"] .packages-table-card {
+  border: 1px solid rgba(0,0,0,0.15);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+[data-theme="light"] .orders-table tr,
+[data-theme="light"] .packages-table tr { border-bottom: 1px solid rgba(0,0,0,0.10); }
+[data-theme="light"] .feed-item { border: 1px solid rgba(0,0,0,0.12); }
+[data-theme="light"] .hero-divider { background: rgba(0,0,0,0.10); }
+[data-theme="light"] .hero::before {
+  background: linear-gradient(180deg, rgba(16,185,129,0.05) 0%, rgba(16,185,129,0.01) 40%, transparent 100%);
+}
+/* Page sections — SPA routing */
+.page-section { display: none; }
+.page-section.active { display: block; }
+
+/* Page transition */
+.page-section.active {
+  animation: page-enter var(--dur-base) var(--ease-out);
+}
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header context (page-specific controls) */
+.header-context { display: none; }
+.header-context.active { display: flex; gap: 8px; align-items: center; }
+
+/* ══════════════════════════════════════════════════════════════
+   DASHBOARD PAGE STYLES
+   ══════════════════════════════════════════════════════════════ */
+.hero {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-xl);
+  overflow: hidden; position: relative;
+  margin-bottom: 24px;
+}
+.hero::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 140px;
+  background: linear-gradient(180deg, rgba(16,185,129,0.07) 0%, rgba(16,185,129,0.02) 40%, transparent 100%);
+  pointer-events: none;
+}
+.hero-top {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 12px;
+  padding: 18px 28px;
+  border-bottom: 1px solid var(--border-subtle);
+  position: relative;
+}
+.hero-title-group { display: flex; align-items: center; gap: 12px; }
+.hero-strain { font-size: 20px; font-weight: 700; letter-spacing: -0.015em; }
+.hero-meta {
+  font-size: 12px; color: var(--text-tertiary);
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono);
+}
+.hero-meta-sep { opacity: 0.4; }
+.hero-meta .meta-plain { font-family: var(--font-sans); }
+.hero-actions { margin-left: auto; display: flex; gap: 8px; position: relative; }
+.hero-body {
+  display: grid;
+  grid-template-columns: auto auto auto 1px 1fr;
+  align-items: center;
+  padding: 28px 0; position: relative;
+}
+.hero-metric { text-align: center; padding: 0 36px; }
+.hero-metric-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 6px; }
+.hero-metric-value { font-size: 42px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; }
+.hero-metric-value .pct { font-size: 24px; font-weight: 600; opacity: 0.7; }
+.hero-metric-sub { font-size: 12px; margin-top: 6px; display: flex; align-items: center; justify-content: center; gap: 4px; }
+.hero-trend { font-weight: 600; display: inline-flex; align-items: center; gap: 3px; }
+.hero-trend.up { color: var(--pass); }
+.hero-trend-ctx { color: var(--text-tertiary); }
+.hero-safety { text-align: center; padding: 0 36px; }
+.hero-safety-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 6px; }
+.hero-safety-value { font-size: 28px; font-weight: 800; letter-spacing: 0.02em; }
+.hero-safety-sub { font-size: 12px; margin-top: 6px; }
+.hero-divider { width: 1px; background: var(--border-default); align-self: stretch; }
+.hero-terps { padding: 4px 32px; }
+.hero-terps-title { font-size: 10px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+.terp-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.terp-row:last-child { margin-bottom: 0; }
+.terp-name { width: 90px; font-size: 12px; font-weight: 500; color: var(--text-secondary); white-space: nowrap; }
+.terp-bar-track { flex: 1; height: 18px; background: rgba(255,255,255,0.03); border-radius: 5px; overflow: hidden; }
+.terp-bar-fill { height: 100%; border-radius: 5px; transform-origin: left; }
+.terp-bar-fill.animated { animation: bar-grow 900ms var(--ease-out) forwards; }
+@keyframes bar-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.terp-val { width: 48px; text-align: right; font-size: 12px; font-weight: 600; font-family: var(--font-mono); color: var(--text-primary); }
+
+/* KPI Strip */
+.kpi-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.kpi {
+  background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: var(--r-lg);
+  padding: 20px 22px; transition: border-color var(--dur-fast) var(--ease); cursor: pointer;
+}
+.kpi:hover { border-color: var(--border-strong); }
+.kpi-label { font-size: 11px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.kpi-value { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; }
+.kpi-value .unit { font-size: 16px; font-weight: 600; opacity: 0.6; }
+.kpi-foot { display: flex; align-items: center; gap: 5px; margin-top: 4px; font-size: 11px; }
+.kpi-change { font-weight: 600; }
+.kpi-change.up { color: var(--pass); }
+.kpi-change.down { color: var(--fail); }
+.kpi-period { color: var(--text-tertiary); }
+
+/* Split layout */
+.split { display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start; }
+.card {
+  background: var(--bg-surface); border: 1px solid var(--border-default);
+  border-radius: var(--r-lg); overflow: hidden;
+}
+.split .card { display: flex; flex-direction: column; max-height: 440px; }
+.table-scroll { flex: 1; overflow-y: auto; }
+.table-scroll::-webkit-scrollbar { width: 6px; }
+.table-scroll::-webkit-scrollbar-track { background: transparent; }
+.table-scroll::-webkit-scrollbar-thumb { background: var(--bg-float); border-radius: 3px; }
+.card-hdr { display: flex; justify-content: space-between; align-items: center; padding: 14px 22px; border-bottom: 1px solid var(--border-subtle); }
+.card-title { font-size: 14px; font-weight: 600; }
+.card-link { font-size: 12px; color: var(--accent); font-weight: 500; cursor: pointer; transition: color var(--dur-fast); }
+.card-link:hover { color: var(--accent-hover); }
+
+/* Orders table (dashboard) */
+.orders-table { width: 100%; border-collapse: collapse; }
+.orders-table th {
+  text-align: left; padding: 10px 22px;
+  font-size: 10px; font-weight: 600; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.07em;
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky; top: 0; background: var(--bg-surface); z-index: 1;
+}
+.orders-table th.r { text-align: right; }
+.orders-table th.c { text-align: center; }
+.orders-table td { padding: 13px 22px; font-size: 13px; border-bottom: 1px solid var(--border-subtle); vertical-align: middle; }
+.orders-table td.r { text-align: right; }
+.orders-table td.c { text-align: center; }
+.orders-table tr:last-child td { border-bottom: none; }
+.orders-table tbody tr { cursor: pointer; transition: background var(--dur-fast) var(--ease); }
+.orders-table tbody tr:hover { background: rgba(255,255,255,0.025); }
+.strain-cell { display: flex; flex-direction: column; gap: 1px; }
+.strain-name { font-weight: 600; font-size: 13px; }
+.strain-id { font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono); }
+.coa-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: var(--r-md);
+  border: 1px solid var(--border-default); background: transparent;
+  color: var(--text-tertiary); cursor: pointer;
+  transition: all var(--dur-fast) var(--ease);
+}
+.coa-btn:hover { background: var(--accent-subtle); color: var(--accent); border-color: rgba(16,185,129,0.25); }
+.coa-btn svg { width: 14px; height: 14px; }
+.coa-btn.disabled { opacity: 0.3; cursor: default; pointer-events: none; }
+.date-cell { color: var(--text-secondary); font-size: 12px; }
+
+/* Activity Feed */
+.feed { display: flex; flex-direction: column; flex: 1; overflow-y: auto; }
+.feed::-webkit-scrollbar { width: 6px; }
+.feed::-webkit-scrollbar-track { background: transparent; }
+.feed::-webkit-scrollbar-thumb { background: var(--bg-float); border-radius: 3px; }
+.feed-item {
+  padding: 14px 22px; border-bottom: 1px solid var(--border-subtle);
+  display: flex; gap: 10px; align-items: flex-start;
+  cursor: pointer; transition: background var(--dur-fast) var(--ease);
+}
+.feed-item:hover { background: rgba(255,255,255,0.02); }
+.feed-dot { width: 8px; height: 8px; min-width: 8px; border-radius: 50%; margin-top: 5px; }
+.feed-body { flex: 1; }
+.feed-text { font-size: 13px; line-height: 1.45; color: var(--text-secondary); }
+.feed-text strong { color: var(--text-primary); font-weight: 600; }
+.feed-text .hl-pass { color: var(--pass); font-weight: 600; }
+.feed-text .hl-fail { color: var(--fail); font-weight: 600; }
+.feed-text .hl-thc { color: var(--thc); font-weight: 600; font-family: var(--font-mono); }
+.feed-text .hl-terps { color: var(--terps); font-weight: 600; font-family: var(--font-mono); }
+.feed-time { font-size: 11px; color: var(--text-tertiary); margin-top: 3px; }
+.feed-hidden { display: none; }
+.feed-hidden.visible { display: flex; }
+.feed-expand {
+  flex-shrink: 0; border-top: 1px solid var(--border-subtle);
+  padding: 10px 22px; display: flex; align-items: center; justify-content: center; gap: 6px;
+  font-size: 12px; font-weight: 500; color: var(--text-tertiary);
+  cursor: pointer; border: none; background: transparent; width: 100%;
+  font-family: var(--font-sans); transition: color var(--dur-fast) var(--ease);
+}
+.feed-expand:hover { color: var(--text-secondary); }
+.feed-expand svg { width: 14px; height: 14px; transition: transform var(--dur-base) var(--ease); }
+.feed-expand.open svg { transform: rotate(180deg); }
+
+/* ══════════════════════════════════════════════════════════════
+   PACKAGES PAGE STYLES
+   ══════════════════════════════════════════════════════════════ */
+.filter-bar { display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px; }
+.filter-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.status-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.status-tab {
+  padding: 8px 16px; border-radius: var(--r-full);
+  border: 1px solid var(--border-default);
+  background: var(--bg-elevated); color: var(--text-secondary);
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  transition: all var(--dur-fast) var(--ease); white-space: nowrap;
+}
+.status-tab:hover { border-color: var(--border-strong); color: var(--text-primary); }
+.status-tab.active { background: var(--accent); color: #022C22; border-color: var(--accent); }
+.status-tab .count { font-weight: 700; padding: 2px 6px; border-radius: var(--r-sm); background: rgba(255,255,255,0.15); font-size: 11px; }
+.status-tab.active .count { background: rgba(255,255,255,0.25); }
+.search-filters { display: flex; align-items: center; gap: 12px; flex: 1; flex-wrap: wrap; }
+.packages-search {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px; border-radius: var(--r-md);
+  background: var(--bg-elevated); border: 1px solid var(--border-default);
+  font-size: 13px; color: var(--text-primary);
+  min-width: 280px; max-width: 400px;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+.packages-search:focus-within { border-color: var(--accent); }
+.packages-search svg { width: 16px; height: 16px; opacity: 0.4; flex-shrink: 0; }
+.packages-search input {
+  flex: 1; border: none; background: transparent;
+  color: var(--text-primary); font-size: 13px;
+  outline: none; font-family: var(--font-sans);
+}
+.packages-search input::placeholder { color: var(--text-tertiary); }
+.dropdown {
+  position: relative; font-family: var(--font-sans);
+  padding: 8px 14px; border-radius: var(--r-md);
+  border: 1px solid var(--border-default);
+  background: var(--bg-elevated); color: var(--text-primary);
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  transition: all var(--dur-fast) var(--ease); white-space: nowrap;
+}
+.dropdown:hover { border-color: var(--border-strong); }
+.dropdown svg { width: 14px; height: 14px; opacity: 0.5; }
+
+/* Packages Table */
+.packages-table-card {
+  background: var(--bg-surface); border: 1px solid var(--border-default);
+  border-radius: var(--r-lg); overflow: hidden; margin-bottom: 20px;
+}
+.packages-table { width: 100%; border-collapse: collapse; }
+.packages-table th {
+  text-align: left; padding: 14px 20px;
+  font-size: 11px; font-weight: 600; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.07em;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-surface); position: sticky; top: 0;
+}
+.packages-table th.r { text-align: right; }
+.packages-table th.c { text-align: center; }
+.packages-table td { padding: 16px 20px; font-size: 13px; border-bottom: 1px solid var(--border-subtle); vertical-align: middle; }
+.packages-table td.r { text-align: right; }
+.packages-table td.c { text-align: center; }
+.packages-table tr:last-child td { border-bottom: none; }
+.packages-table tbody tr { cursor: pointer; transition: background var(--dur-fast) var(--ease); }
+.packages-table tbody tr:hover { background: rgba(255,255,255,0.025); }
+.package-cell { display: flex; flex-direction: column; gap: 2px; }
+.package-name { font-weight: 600; font-size: 14px; color: var(--text-primary); }
+.package-strain { font-size: 12px; color: var(--text-secondary); }
+.package-metrc {
+  font-size: 10px; color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  background: rgba(255,255,255,0.03);
+  padding: 2px 6px; border-radius: 3px;
+  width: fit-content; cursor: pointer;
+  transition: background var(--dur-fast) var(--ease);
+}
+.package-metrc:hover { background: rgba(255,255,255,0.06); }
+.enriched-indicator { font-size: 12px; margin-left: 4px; }
+.lab-cell { color: var(--text-secondary); font-size: 13px; }
+.action-cell { display: flex; align-items: center; gap: 6px; }
+
+/* View Toggle */
+.view-toggle { display: flex; border-radius: var(--r-md); overflow: hidden; border: 1px solid var(--border-default); background: var(--bg-elevated); }
+.view-toggle-btn {
+  padding: 7px 12px; border: none; background: transparent;
+  color: var(--text-tertiary); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--dur-fast) var(--ease); font-family: var(--font-sans);
+}
+.view-toggle-btn:hover { color: var(--text-secondary); }
+.view-toggle-btn.active { background: var(--accent); color: #022C22; }
+.view-toggle-btn svg { width: 16px; height: 16px; }
+.view-toggle-btn + .view-toggle-btn { border-left: 1px solid var(--border-default); }
+
+/* Refresh button */
+.btn-refresh {
+  font-family: var(--font-sans);
+  padding: 7px 14px; border-radius: var(--r-md);
+  border: 1px solid var(--border-default);
+  background: var(--bg-elevated); color: var(--text-secondary);
+  font-size: 12px; font-weight: 500; cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  transition: all var(--dur-fast) var(--ease); white-space: nowrap;
+}
+.btn-refresh:hover { border-color: var(--border-strong); color: var(--text-primary); }
+.btn-refresh svg { width: 14px; height: 14px; transition: transform 0.6s var(--ease); }
+.btn-refresh.syncing svg { animation: spin 0.8s linear infinite; }
+.btn-refresh.syncing { color: var(--accent); border-color: var(--accent); pointer-events: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.packages-cards.force-show { display: flex !important; }
+.packages-table-card.force-hide { display: none !important; }
+
+/* Mobile Cards */
+.packages-cards { display: none; flex-direction: column; gap: 12px; }
+.packages-card {
+  background: var(--bg-surface); border: 1px solid var(--border-default);
+  border-radius: var(--r-lg); padding: 16px;
+  cursor: pointer; transition: all var(--dur-fast) var(--ease);
+}
+.packages-card:hover { border-color: var(--border-strong); }
+.pkg-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.pkg-card-title-section { flex: 1; }
+.pkg-card-package-name { font-weight: 600; font-size: 14px; color: var(--text-primary); margin-bottom: 2px; }
+.pkg-card-strain { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
+.pkg-card-metrc { font-size: 10px; color: var(--text-tertiary); font-family: var(--font-mono); }
+.pkg-card-status { margin-left: 12px; }
+.pkg-card-metrics { display: flex; gap: 16px; margin-bottom: 12px; }
+.pkg-card-metric { display: flex; flex-direction: column; }
+.pkg-card-metric-label { font-size: 10px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px; }
+.pkg-card-metric-value { font-size: 13px; font-weight: 600; font-family: var(--font-mono); }
+.pkg-card-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--border-subtle); }
+.pkg-card-lab-date { display: flex; flex-direction: column; gap: 2px; }
+.pkg-card-lab { font-size: 12px; color: var(--text-secondary); }
+.pkg-card-date { font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono); }
+.pkg-card-actions { display: flex; gap: 6px; }
+
+/* Pagination */
+.pagination {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 20px; border-top: 1px solid var(--border-subtle);
+  background: var(--bg-surface); border-radius: 0 0 var(--r-lg) var(--r-lg);
+}
+.pagination-info { font-size: 13px; color: var(--text-secondary); }
+.pagination-controls { display: flex; gap: 8px; align-items: center; }
+.page-btn {
+  padding: 6px 10px; border-radius: var(--r-md);
+  border: 1px solid var(--border-default);
+  background: var(--bg-elevated); color: var(--text-secondary);
+  font-size: 12px; font-weight: 500; cursor: pointer;
+  transition: all var(--dur-fast) var(--ease); min-width: 32px; text-align: center;
+}
+.page-btn:hover { border-color: var(--border-strong); color: var(--text-primary); }
+.page-btn.active { background: var(--accent); color: #022C22; border-color: var(--accent); }
+.page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.empty-state {
+  background: var(--bg-surface); border: 1px solid var(--border-default);
+  border-radius: var(--r-lg); padding: 48px 24px; text-align: center; display: none;
+}
+.empty-state.show { display: block; }
+.empty-icon { width: 48px; height: 48px; margin: 0 auto 16px; opacity: 0.3; }
+.empty-title { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+.empty-description { font-size: 13px; color: var(--text-secondary); max-width: 300px; margin: 0 auto; }
+
+/* ══════════════════════════════════════════════════════════════
+   DETAIL PANEL
+   ══════════════════════════════════════════════════════════════ */
+.detail-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--dur-base) var(--ease);
+}
+.detail-overlay.open { opacity: 1; pointer-events: auto; }
+.detail-panel {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 201;
+  width: min(520px, 90vw);
+  background: var(--bg-surface); border-left: 1px solid var(--border-default);
+  box-shadow: -8px 0 30px rgba(0,0,0,0.3);
+  transform: translateX(100%);
+  transition: transform var(--dur-slow) var(--ease-out);
+  display: flex; flex-direction: column; overflow-y: auto;
+}
+.detail-panel.open { transform: translateX(0); }
+.detail-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px; border-bottom: 1px solid var(--border-subtle);
+  position: sticky; top: 0; z-index: 1; background: var(--bg-surface);
+}
+.detail-header-left { display: flex; flex-direction: column; gap: 4px; }
+.detail-title { font-size: 18px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em; }
+.detail-subtitle { font-size: 13px; color: var(--text-secondary); }
+.detail-close {
+  width: 36px; height: 36px; border-radius: var(--r-md);
+  border: 1px solid var(--border-default); background: var(--bg-elevated);
+  color: var(--text-secondary); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--dur-fast) var(--ease); flex-shrink: 0;
+}
+.detail-close:hover { border-color: var(--border-strong); color: var(--text-primary); background: var(--bg-overlay); }
+.detail-close svg { width: 16px; height: 16px; }
+.detail-body { padding: 24px; flex: 1; }
+.detail-section { margin-bottom: 24px; }
+.detail-section-title { font-size: 11px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.detail-field { display: flex; flex-direction: column; gap: 2px; }
+.detail-field.full { grid-column: 1 / -1; }
+.detail-label { font-size: 11px; color: var(--text-tertiary); font-weight: 500; }
+.detail-value { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+.detail-value.mono { font-family: var(--font-mono); font-size: 13px; }
+.potency-block {
+  display: flex; gap: 24px; padding: 16px;
+  background: var(--bg-elevated); border-radius: var(--r-md);
+  border: 1px solid var(--border-subtle);
+}
+.potency-item { display: flex; flex-direction: column; gap: 2px; }
+.potency-label { font-size: 10px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.08em; }
+.potency-value { font-size: 24px; font-weight: 700; font-family: var(--font-mono); }
+.potency-value.thc { color: var(--thc); }
+.potency-value.cbd { color: var(--cbd); }
+.potency-value.na { color: var(--text-disabled); font-size: 18px; }
+.detail-actions {
+  display: flex; gap: 8px; padding: 20px 24px;
+  border-top: 1px solid var(--border-subtle);
+  position: sticky; bottom: 0; background: var(--bg-surface);
+}
+.detail-actions .btn { flex: 1; justify-content: center; padding: 10px; font-size: 13px; }
+
+/* ══════════════════════════════════════════════════════════════
+   ANIMATIONS
+   ══════════════════════════════════════════════════════════════ */
+@keyframes fade-up { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.anim-in { animation: fade-up var(--dur-slow) var(--ease-out) forwards; }
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 1200px) {
+  .hero-body { grid-template-columns: 1fr; gap: 20px; padding: 24px 28px; }
+  .hero-metric, .hero-safety { text-align: left; padding: 0; }
+  .hero-metric-sub, .hero-safety-sub { justify-content: flex-start; }
+  .hero-divider { width: 100%; height: 1px; align-self: auto; }
+  .hero-terps { padding: 0; }
+  .split { grid-template-columns: 1fr; }
+  .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 900px) {
+  .page { padding: 20px; }
+  .header { padding: 12px 20px; }
+  .search-bar { min-width: 140px; }
+  .filter-bar { gap: 12px; }
+  .filter-row { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .search-filters { flex-direction: column; align-items: stretch; width: 100%; }
+  .packages-search { min-width: auto; max-width: none; }
+}
+@media (max-width: 768px) {
+  .packages-table-card:not(.force-hide) { display: none; }
+  .packages-cards:not(.force-show) { display: flex; }
+  .status-tabs { flex-wrap: wrap; gap: 6px; }
+  .status-tab { padding: 6px 12px; font-size: 12px; }
+  .pagination { flex-direction: column; gap: 12px; text-align: center; }
+}
+</style>
+</head>
+<body>
+<!-- ═══ MAIN ═══ -->
+<main class="main" id="main">
+  <div class="header">
+    <div class="header-left">
+      <span class="header-title" id="headerTitle">Dashboard</span>
+      <div class="sync-indicator" id="syncIndicator">
+        <span class="sync-dot"></span>
+        <span id="syncText">Synced 2m ago</span>
+      </div>
+    </div>
+
+    <!-- Per-page header controls -->
+    <div class="header-context active" id="headerCtx-dashboard">
+      <button class="filter-btn">All Labs <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <button class="filter-btn">Last 30 Days <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+    </div>
+
+    <div class="header-context" id="headerCtx-packages">
+      <button class="btn-refresh" id="refreshBtn" onclick="triggerSync()" title="Sync with Metrc">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        <span>Sync</span>
+      </button>
+      <div class="view-toggle" id="viewToggle">
+        <button class="view-toggle-btn active" data-view="table" onclick="setView('table')" title="Table view">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </button>
+        <button class="view-toggle-btn" data-view="cards" onclick="setView('cards')" title="Card view">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </button>
+      </div>
+      <button class="filter-btn">All Labs <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <button class="filter-btn">Last 30 Days <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+    </div>
+
+    <div id="header-actions"></div>
+  </div>
+
+  <!-- ╔══════════════════════════════════════════════════════════╗
+       ║  PAGE: DASHBOARD                                        ║
+       ╚══════════════════════════════════════════════════════════╝ -->
+  <section class="page page-section active" id="page-dashboard">
+
+    <!-- Hero Card -->
+    <div class="hero">
+      <div class="hero-top">
+        <div class="hero-title-group">
+          <span class="hero-strain">Gelato #41</span>
+          <span class="badge-highlight">🔥 Best This Quarter</span>
+        </div>
+        <div class="hero-meta">
+          <span>MS-2026-4235-01</span>
+          <span class="hero-meta-sep">·</span>
+          <span class="meta-plain">Order #4235</span>
+          <span class="hero-meta-sep">·</span>
+          <span class="meta-plain">Flower</span>
+          <span class="hero-meta-sep">·</span>
+          <span class="meta-plain">Feb 12, 2026</span>
+        </div>
+        <div class="hero-actions">
+          <button class="btn btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download COA
+          </button>
+          <button class="btn btn-secondary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            Share
+          </button>
+        </div>
+      </div>
+      <div class="hero-body">
+        <div class="hero-metric">
+          <div class="hero-metric-label" style="color:var(--thc)">Total THC</div>
+          <div class="hero-metric-value mono anim-in" style="color:var(--thc)"><span class="counter" data-to="28.34" data-decimals="2">0.00</span><span class="pct">%</span></div>
+          <div class="hero-metric-sub">
+            <span class="hero-trend up">▲ 2.1%</span>
+            <span class="hero-trend-ctx">vs last batch</span>
+          </div>
+        </div>
+        <div class="hero-metric">
+          <div class="hero-metric-label" style="color:var(--terps)">Total Terpenes</div>
+          <div class="hero-metric-value mono anim-in" style="color:var(--terps);animation-delay:80ms"><span class="counter" data-to="3.75" data-decimals="2">0.00</span><span class="pct">%</span></div>
+          <div class="hero-metric-sub">
+            <span class="hero-trend-ctx">Dominant: Myrcene</span>
+          </div>
+        </div>
+        <div class="hero-safety">
+          <div class="hero-safety-label" style="color:var(--pass)">Safety</div>
+          <div class="hero-safety-value anim-in" style="color:var(--pass);animation-delay:160ms">✓ ALL PASS</div>
+          <div class="hero-safety-sub" style="color:var(--text-tertiary)">144/144 tests clear</div>
+        </div>
+        <div class="hero-divider"></div>
+        <div class="hero-terps">
+          <div class="hero-terps-title">Terpene Profile</div>
+          <div class="terp-row"><span class="terp-name">Myrcene</span><div class="terp-bar-track"><div class="terp-bar-fill animated" style="width:85%;background:var(--terp-myrcene)"></div></div><span class="terp-val">1.24%</span></div>
+          <div class="terp-row"><span class="terp-name">Limonene</span><div class="terp-bar-track"><div class="terp-bar-fill animated" style="width:62%;background:var(--terp-limonene);animation-delay:50ms"></div></div><span class="terp-val">0.91%</span></div>
+          <div class="terp-row"><span class="terp-name">Caryophyllene</span><div class="terp-bar-track"><div class="terp-bar-fill animated" style="width:46%;background:var(--terp-caryophyllene);animation-delay:100ms"></div></div><span class="terp-val">0.68%</span></div>
+          <div class="terp-row"><span class="terp-name">α-Pinene</span><div class="terp-bar-track"><div class="terp-bar-fill animated" style="width:29%;background:var(--terp-pinene);animation-delay:150ms"></div></div><span class="terp-val">0.42%</span></div>
+          <div class="terp-row"><span class="terp-name">Linalool</span><div class="terp-bar-track"><div class="terp-bar-fill animated" style="width:21%;background:var(--terp-linalool);animation-delay:200ms"></div></div><span class="terp-val">0.31%</span></div>
+          <div class="terp-row"><span class="terp-name">Terpinolene</span><div class="terp-bar-track"><div class="terp-bar-fill animated" style="width:13%;background:var(--terp-terpinolene);animation-delay:250ms"></div></div><span class="terp-val">0.19%</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Strip -->
+    <div class="kpi-strip">
+      <div class="kpi">
+        <div class="kpi-label">Active Packages</div>
+        <div class="kpi-value anim-in" style="animation-delay:50ms"><span class="counter" data-to="23" data-decimals="0">0</span></div>
+        <div class="kpi-foot"><span class="kpi-change up">↑ 3</span><span class="kpi-period">this week</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Avg Total THC</div>
+        <div class="kpi-value mono anim-in" style="color:var(--thc);animation-delay:110ms"><span class="counter" data-to="24.8" data-decimals="1">0.0</span><span class="unit">%</span></div>
+        <div class="kpi-foot"><span class="kpi-change up">↑ 1.2%</span><span class="kpi-period">vs last month</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Pass Rate</div>
+        <div class="kpi-value mono anim-in" style="color:var(--pass);animation-delay:170ms"><span class="counter" data-to="96" data-decimals="0">0</span><span class="unit">%</span></div>
+        <div class="kpi-foot"><span class="kpi-period">Last 30 days</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Turnaround</div>
+        <div class="kpi-value mono anim-in" style="animation-delay:230ms"><span class="counter" data-to="3.2" data-decimals="1">0.0</span><span class="unit">d</span></div>
+        <div class="kpi-foot"><span class="kpi-change down">↑ 0.4d</span><span class="kpi-period">avg</span></div>
+      </div>
+    </div>
+
+    <!-- Split: Table + Feed -->
+    <div class="split">
+      <div class="card">
+        <div class="card-hdr">
+          <span class="card-title">Recent Packages</span>
+          <span class="card-link" onclick="navigate('packages')">View all →</span>
+        </div>
+        <div class="table-scroll">
+        <table class="orders-table">
+          <thead><tr><th>Strain</th><th class="r">THC</th><th class="r">Terps</th><th>Status</th><th class="c">COA</th><th class="r">Date</th></tr></thead>
+          <tbody>
+            <tr onclick="navigate('packages')"><td><div class="strain-cell"><span class="strain-name">Gelato #41</span><span class="strain-id">MS-2026-4235-01</span></div></td><td class="r"><span class="val-thc">28.34%</span></td><td class="r"><span class="val-terps">3.75%</span></td><td><span class="badge badge-new">● New</span></td><td class="c"><button class="coa-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></button></td><td class="r"><span class="date-cell">Feb 12</span></td></tr>
+            <tr onclick="navigate('packages')"><td><div class="strain-cell"><span class="strain-name">Wedding Cake</span><span class="strain-id">MS-2026-4234-03</span></div></td><td class="r"><span class="val-thc">26.71%</span></td><td class="r"><span class="val-terps">2.89%</span></td><td><span class="badge badge-fail">✗ Action Req.</span></td><td class="c"><button class="coa-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></button></td><td class="r"><span class="date-cell">Feb 11</span></td></tr>
+            <tr onclick="navigate('packages')"><td><div class="strain-cell"><span class="strain-name">Blue Dream</span><span class="strain-id">MS-2026-4233-02</span></div></td><td class="r"><span class="val-thc">22.15%</span></td><td class="r"><span class="val-terps">2.41%</span></td><td><span class="badge badge-pass">✓ Complete</span></td><td class="c"><button class="coa-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></button></td><td class="r"><span class="date-cell">Feb 10</span></td></tr>
+            <tr onclick="navigate('packages')"><td><div class="strain-cell"><span class="strain-name">OG Kush</span><span class="strain-id">MS-2026-4232-01</span></div></td><td class="r"><span class="val-na">—</span></td><td class="r"><span class="val-na">—</span></td><td><span class="badge badge-pending">◷ In Testing</span></td><td class="c"><button class="coa-btn disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></button></td><td class="r"><span class="date-cell">Feb 14</span></td></tr>
+            <tr onclick="navigate('packages')"><td><div class="strain-cell"><span class="strain-name">Purple Punch</span><span class="strain-id">MS-2026-4231-05</span></div></td><td class="r"><span class="val-thc">24.92%</span></td><td class="r"><span class="val-terps">3.12%</span></td><td><span class="badge badge-pass">✓ Complete</span></td><td class="c"><button class="coa-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></button></td><td class="r"><span class="date-cell">Feb 9</span></td></tr>
+            <tr onclick="navigate('packages')"><td><div class="strain-cell"><span class="strain-name">Zkittlez</span><span class="strain-id">MS-2026-4230-02</span></div></td><td class="r"><span class="val-thc">21.88%</span></td><td class="r"><span class="val-terps">2.67%</span></td><td><span class="badge badge-pass">✓ Complete</span></td><td class="c"><button class="coa-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></button></td><td class="r"><span class="date-cell">Feb 8</span></td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hdr"><span class="card-title">Activity</span></div>
+        <div class="feed">
+          <div class="feed-item"><div class="feed-dot" style="background:var(--pass)"></div><div class="feed-body"><div class="feed-text"><strong>Gelato #41</strong> — <span class="hl-pass">all 144 tests passed</span></div><div class="feed-time">2 hours ago</div></div></div>
+          <div class="feed-item"><div class="feed-dot" style="background:var(--fail)"></div><div class="feed-body"><div class="feed-text"><strong>Wedding Cake</strong> <span class="hl-fail">failed pesticide</span> — Myclobutanil 0.21 µg/g</div><div class="feed-time">5 hours ago</div></div></div>
+          <div class="feed-item"><div class="feed-dot" style="background:var(--thc)"></div><div class="feed-body"><div class="feed-text"><strong>Gelato #41</strong> hit <span class="hl-thc">28.34% THC</span> — highest this quarter 🔥</div><div class="feed-time">2 hours ago</div></div></div>
+          <div class="feed-item feed-hidden" id="feed4"><div class="feed-dot" style="background:var(--info)"></div><div class="feed-body"><div class="feed-text"><strong>Package #4232</strong> received — OG Kush testing begins</div><div class="feed-time">Yesterday</div></div></div>
+          <div class="feed-item feed-hidden" id="feed5"><div class="feed-dot" style="background:var(--pass)"></div><div class="feed-body"><div class="feed-text"><strong>Blue Dream</strong> COA ready — <span style="color:var(--accent)">download PDF</span></div><div class="feed-time">2 days ago</div></div></div>
+          <div class="feed-item feed-hidden" id="feed6"><div class="feed-dot" style="background:var(--terps)"></div><div class="feed-body"><div class="feed-text"><strong>Purple Punch</strong> terpenes at <span class="hl-terps">3.12%</span> — above your 90-day avg</div><div class="feed-time">3 days ago</div></div></div>
+        </div>
+        <button class="feed-expand" id="feedExpand" onclick="toggleFeed()">
+          <span id="feedExpandText">Show more</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════════════════════════════════╗
+       ║  PAGE: PACKAGES                                         ║
+       ╚══════════════════════════════════════════════════════════╝ -->
+  <section class="page page-section" id="page-packages">
+    <div class="filter-bar">
+      <div class="filter-row">
+        <div class="status-tabs">
+          <button class="status-tab active" data-status="all">All <span class="count">147</span></button>
+          <button class="status-tab" data-status="active">Active <span class="count">23</span></button>
+          <button class="status-tab" data-status="testing">Testing <span class="count">8</span></button>
+          <button class="status-tab" data-status="passed">Passed <span class="count">94</span></button>
+          <button class="status-tab" data-status="failed">Failed <span class="count">6</span></button>
+          <button class="status-tab" data-status="inactive">Inactive <span class="count">16</span></button>
+        </div>
+      </div>
+      <div class="filter-row">
+        <div class="search-filters">
+          <div class="packages-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Search by name, strain, tag..." id="packageSearch">
+          </div>
+          <div class="dropdown"><span>All Categories</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+          <div class="dropdown"><span>All Time</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+          <div class="dropdown"><span>Most Recent</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="packages-table-card" id="packagesTable">
+      <table class="packages-table">
+        <thead><tr><th>Package</th><th class="c">Status</th><th class="r">THC%</th><th class="r">CBD%</th><th>Lab</th><th class="r">Date</th><th class="c">Actions</th></tr></thead>
+        <tbody id="packagesTableBody"></tbody>
+      </table>
+      <div class="pagination">
+        <div class="pagination-info">Showing <span id="showingStart">1</span>-<span id="showingEnd">12</span> of <span id="totalCount">147</span> packages</div>
+        <div class="pagination-controls">
+          <button class="page-btn" disabled>Previous</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <span style="color:var(--text-tertiary);padding:0 8px">...</span>
+          <button class="page-btn">13</button>
+          <button class="page-btn">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="packages-cards" id="packagesCards"></div>
+    <div class="empty-state" id="emptyState">
+      <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <div class="empty-title">No packages found</div>
+      <div class="empty-description">No packages match your current filters. Try adjusting your search or filter criteria.</div>
+    </div>
+  </section>
+
+  <!-- ╔══════════════════════════════════════════════════════════╗
+       ║  PLACEHOLDER PAGES                                      ║
+       ╚══════════════════════════════════════════════════════════╝ -->
+  <section class="page page-section" id="page-connections">
+
+    <!-- Credentials Expired Banner -->
+    <div style="display:flex;align-items:center;gap:14px;padding:14px 20px;background:var(--warn-bg);border:1px solid var(--warn-border);border-radius:var(--r-lg);margin-bottom:24px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2" stroke-linecap="round" style="flex-shrink:0"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:600;color:var(--text-primary);margin-bottom:2px">Credentials Expired</div>
+        <div style="font-size:13px;color:var(--text-secondary)"><strong>Southern Analytical</strong> API key expired on Mar 8, 2026. Re-authenticate to resume syncing.</div>
+      </div>
+      <a href="onboarding-wizard.html" class="btn btn-primary" style="flex-shrink:0">Re-authenticate</a>
+    </div>
+
+    <!-- Page Header -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+      <div>
+        <div style="font-size:18px;font-weight:700;letter-spacing:-0.02em">Data Sources</div>
+        <div style="font-size:13px;color:var(--text-secondary);margin-top:4px">Manage your Metrc integrations and lab connections</div>
+      </div>
+      <a href="onboarding-wizard.html" class="btn btn-primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M12 5v14M5 12h14"/></svg>
+        Connect New Source
+      </a>
+    </div>
+
+    <!-- Connection Cards -->
+    <div style="display:flex;flex-direction:column;gap:16px">
+
+      <!-- Connection: Metrc — Green Valley Farms (Active) -->
+      <div style="background:var(--bg-surface);border:1px solid var(--border-default);border-radius:var(--r-lg);padding:20px 24px;display:flex;align-items:center;gap:20px">
+        <div style="width:44px;height:44px;border-radius:var(--r-md);background:var(--accent-subtle);border:1px solid rgba(16,185,129,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <span style="font-size:15px;font-weight:700;color:var(--text-primary)">Metrc — Green Valley Farms</span>
+            <span class="badge badge-pass" style="font-size:9px;padding:2px 8px">Active</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;font-size:12px;color:var(--text-secondary);flex-wrap:wrap">
+            <span>License: <span style="font-family:var(--font-mono);color:var(--text-primary)">CULV001582</span></span>
+            <span>State: <span style="color:var(--text-primary)">Mississippi</span></span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:var(--pass);display:inline-block"></span> Synced 2m ago</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:24px;flex-shrink:0">
+          <div style="text-align:center"><div style="font-size:18px;font-weight:700;font-family:var(--font-mono);color:var(--accent)">147</div><div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em">Packages</div></div>
+          <div style="text-align:center"><div style="font-size:18px;font-weight:700;font-family:var(--font-mono);color:var(--thc)">38</div><div style="font-size:10px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em">Results</div></div>
+        </div>
+        <div style="display:flex;gap:8px;flex-shrink:0">
+          <button class="btn btn-ghost" style="padding:6px" title="Settings" onclick="alert('Connection settings')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.08a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z"/></svg></button>
+          <button class="btn btn-ghost" style="padding:6px" title="Sync now" onclick="alert('Triggering manual sync...')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></button>
+        </div>
+      </div>
+
+      <!-- Connection: QBench — Southern Analytical (Expired) -->
+      <div style="background:var(--bg-surface);border:1px solid var(--warn-border);border-radius:var(--r-lg);padding:20px 24px;display:flex;align-items:center;gap:20px">
+        <div style="width:44px;height:44px;border-radius:var(--r-md);background:var(--warn-bg);border:1px solid var(--warn-border);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <span style="font-size:15px;font-weight:700;color:var(--text-primary)">QBench — Southern Analytical</span>
+            <span class="badge" style="font-size:9px;padding:2px 8px;background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn-border)">Expired</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;font-size:12px;color:var(--text-secondary);flex-wrap:wrap">
+            <span>Lab LIMS: <span style="color:var(--text-primary)">QBench</span></span>
+            <span style="display:flex;align-items:center;gap:4px;color:var(--warn)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> API key expired Mar 8, 2026</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-shrink:0">
+          <a href="onboarding-wizard.html" class="btn btn-primary" style="font-size:12px;padding:8px 14px">Re-authenticate</a>
+          <button class="btn btn-ghost" style="padding:6px" title="Remove" onclick="alert('Would remove this connection')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══ DETAIL PANEL ═══ -->
+<div class="detail-overlay" id="detailOverlay" onclick="closeDetail()"></div>
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-header">
+    <div class="detail-header-left">
+      <div class="detail-title" id="detailTitle">—</div>
+      <div class="detail-subtitle" id="detailSubtitle">—</div>
+    </div>
+    <button class="detail-close" onclick="closeDetail()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="detail-body">
+    <div class="detail-section"><div class="detail-section-title">Status</div><div id="detailStatus"></div></div>
+    <div class="detail-section"><div class="detail-section-title">Potency</div><div class="potency-block" id="detailPotency"></div></div>
+    <div class="detail-section"><div class="detail-section-title">Package Info</div><div class="detail-grid" id="detailInfo"></div></div>
+    <div class="detail-section"><div class="detail-section-title">Lab &amp; Testing</div><div class="detail-grid" id="detailLab"></div></div>
+  </div>
+  <div class="detail-actions">
+    <button class="btn btn-primary" onclick="window.location.href='package-detail.html?id='+window.currentDetailPkgId">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Full Details
+    </button>
+    <button class="btn btn-secondary" onclick="window.open('shared-result-view.html','_blank')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      Share
+    </button>
+    <button class="btn btn-secondary" onclick="alert('Would download COA PDF')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      COA
+    </button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// SPA ROUTER
+// ══════════════════════════════════════════════════════════════
+const pageTitles = {
+  dashboard: 'Dashboard',
+  packages: 'Packages',
+  connections: 'Connections'
+};
+
+let currentPage = 'dashboard';
+
+function navigate(page) {
+  if (!document.getElementById('page-' + page)) return;
+  currentPage = page;
+
+  // Update nav active state (shared sidebar)
+  if (window.LabstakShared) LabstakShared.setActive(page);
+
+  // Update page sections
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+
+  // Update header title
+  document.getElementById('headerTitle').textContent = pageTitles[page] || page;
+
+  // Update header context (per-page controls)
+  document.querySelectorAll('.header-context').forEach(c => c.classList.remove('active'));
+  const ctx = document.getElementById('headerCtx-' + page);
+  if (ctx) ctx.classList.add('active');
+
+  // Update document title
+  document.title = 'Labstak — ' + (pageTitles[page] || page);
+
+  // Update URL hash
+  history.replaceState(null, '', '#' + page);
+
+  // Re-trigger dashboard animations when navigating to dashboard
+  if (page === 'dashboard') initDashboardAnimations();
+}
+
+// Handle initial hash
+document.addEventListener('DOMContentLoaded', function() {
+  const hash = location.hash.replace('#', '');
+  if (hash && pageTitles[hash]) navigate(hash);
+});
+
+// ══════════════════════════════════════════════════════════════
+// THEME + SIDEBAR
+// ══════════════════════════════════════════════════════════════
+
+
+// ══════════════════════════════════════════════════════════════
+// DASHBOARD: Activity feed
+// ══════════════════════════════════════════════════════════════
+let feedOpen = false;
+function toggleFeed() {
+  feedOpen = !feedOpen;
+  document.querySelectorAll('.feed-hidden').forEach(el => el.classList.toggle('visible', feedOpen));
+  document.getElementById('feedExpand').classList.toggle('open', feedOpen);
+  document.getElementById('feedExpandText').textContent = feedOpen ? 'Show less' : 'Show more';
+  if (feedOpen) {
+    const feed = document.querySelector('.feed');
+    setTimeout(() => feed.scrollTo({ top: feed.scrollHeight, behavior: 'smooth' }), 50);
+  }
+}
+
+// DASHBOARD: Count-up animations
+function countUp(el, target, duration, decimals, delay) {
+  setTimeout(() => {
+    let startTime = null;
+    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+    function step(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      el.textContent = (target * easeOutCubic(progress)).toFixed(decimals);
+      if (progress < 1) requestAnimationFrame(step);
+      else el.textContent = target.toFixed(decimals);
+    }
+    requestAnimationFrame(step);
+  }, delay);
+}
+
+function initDashboardAnimations() {
+  document.querySelectorAll('#page-dashboard .counter').forEach((el, i) => {
+    const target = parseFloat(el.dataset.to);
+    const decimals = parseInt(el.dataset.decimals) || 0;
+    el.textContent = (0).toFixed(decimals);
+    countUp(el, target, 1200, decimals, i * 80);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+// PACKAGES: Data + rendering
+// ══════════════════════════════════════════════════════════════
+const packagesData = [
+  { id:1, name:"Purple Haze Live Rosin", strain:"Purple Haze", category:"Concentrate", metrc:"1A42301000026847", status:"TestPassed", thc:78.4, cbd:2.1, lab:"Delta Testing Co", date:"Mar 4, 2026", enriched:true },
+  { id:2, name:"Blue Dream Flower", strain:"Blue Dream — B2026-0301", category:"Flower", metrc:"1A42301000026848", status:"TestPassed", thc:24.3, cbd:0.8, lab:"Delta Testing Co", date:"Mar 2, 2026", enriched:true },
+  { id:3, name:"OG Kush Premium", strain:"OG Kush", category:"Flower", metrc:"1A42301000026849", status:"SubmittedForTesting", thc:null, cbd:null, lab:"Southern Analytical", date:"Mar 5, 2026", enriched:false },
+  { id:4, name:"Gorilla Glue #4", strain:"Gorilla Glue #4", category:"Flower", metrc:"1A42301000026850", status:"TestPassed", thc:28.7, cbd:1.2, lab:"Delta Testing Co", date:"Feb 28, 2026", enriched:true },
+  { id:5, name:"Wedding Cake Distillate", strain:"Wedding Cake", category:"Concentrate", metrc:"1A42301000026851", status:"TestFailed", thc:45.2, cbd:0.3, lab:"Southern Analytical", date:"Feb 27, 2026", enriched:false },
+  { id:6, name:"Sour Diesel Pre-Roll 5pk", strain:"Sour Diesel", category:"Pre-Roll", metrc:"1A42301000026852", status:"TestPassed", thc:21.5, cbd:0.5, lab:"Delta Testing Co", date:"Feb 25, 2026", enriched:true },
+  { id:7, name:"Girl Scout Cookies", strain:"Girl Scout Cookies", category:"Flower", metrc:"1A42301000026853", status:"NotSubmitted", thc:null, cbd:null, lab:null, date:"Feb 24, 2026", enriched:false },
+  { id:8, name:"Gelato #41 Shatter", strain:"Gelato #41", category:"Concentrate", metrc:"1A42301000026854", status:"TestPassed", thc:82.1, cbd:0.9, lab:"Delta Testing Co", date:"Feb 22, 2026", enriched:false },
+  { id:9, name:"Jack Herer Flower", strain:"Jack Herer — B2026-0220", category:"Flower", metrc:"1A42301000026855", status:"TestPassed", thc:22.8, cbd:1.4, lab:"Southern Analytical", date:"Feb 20, 2026", enriched:true },
+  { id:10, name:"Northern Lights Gummies 100mg", strain:"Northern Lights", category:"Edible", metrc:"1A42301000026856", status:"TestPassed", thc:98.2, cbd:5.1, lab:"Delta Testing Co", date:"Feb 18, 2026", enriched:false, isEdible:true },
+  { id:11, name:"Pineapple Express", strain:"Pineapple Express", category:"Flower", metrc:"1A42301000026857", status:"TestPassed", thc:25.1, cbd:0.6, lab:"Delta Testing Co", date:"Feb 15, 2026", enriched:true },
+  { id:12, name:"Zkittlez Live Resin", strain:"Zkittlez", category:"Concentrate", metrc:"1A42301000026858", status:"SubmittedForTesting", thc:null, cbd:null, lab:"Delta Testing Co", date:"Mar 6, 2026", enriched:false }
+];
+
+let currentFilter = 'all';
+let searchTerm = '';
+let filteredData = [...packagesData];
+
+const statusBadges = {
+  'TestPassed': { class: 'badge-pass', text: '✓ Passed' },
+  'TestFailed': { class: 'badge-fail', text: '✗ Failed' },
+  'SubmittedForTesting': { class: 'badge-testing', text: '◷ Testing' },
+  'NotSubmitted': { class: 'badge-pending', text: '— Not Submitted' }
+};
+const statusLabels = {
+  'TestPassed': 'Test Passed', 'TestFailed': 'Test Failed',
+  'SubmittedForTesting': 'Submitted for Testing', 'NotSubmitted': 'Not Submitted'
+};
+
+function renderTableRow(pkg) {
+  const badge = statusBadges[pkg.status];
+  const u = pkg.isEdible ? 'mg' : '%';
+  const thcV = pkg.thc ? `<span class="val-thc">${pkg.thc}${u}</span>` : '<span class="val-na">—</span>';
+  const cbdV = pkg.cbd ? `<span class="val-cbd">${pkg.cbd}${u}</span>` : '<span class="val-na">—</span>';
+  return `<tr onclick="openDetail(${pkg.id})"><td><div class="package-cell"><span class="package-name">${pkg.name}</span><span class="package-strain">${pkg.strain}</span><span class="package-metrc" title="${pkg.metrc}">${pkg.metrc.substring(0,12)}...</span></div></td><td class="c"><span class="badge ${badge.class}">${badge.text}</span></td><td class="r">${thcV}${pkg.enriched?'<span class="enriched-indicator">🔬</span>':''}</td><td class="r">${cbdV}</td><td><span class="lab-cell">${pkg.lab||'—'}</span></td><td class="r"><span class="date-cell">${pkg.date}</span></td><td class="c"><div class="action-cell"><a href="#" class="btn btn-primary" style="padding:6px 12px;font-size:11px" onclick="event.stopPropagation();openDetail(${pkg.id})">View</a><button class="btn btn-ghost" style="padding:6px" title="Share" onclick="event.stopPropagation()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button></div></td></tr>`;
+}
+
+function renderCard(pkg) {
+  const badge = statusBadges[pkg.status];
+  const u = pkg.isEdible ? 'mg' : '%';
+  const thcV = pkg.thc ? `${pkg.thc}${u}` : '—';
+  const cbdV = pkg.cbd ? `${pkg.cbd}${u}` : '—';
+  return `<div class="packages-card" onclick="openDetail(${pkg.id})"><div class="pkg-card-header"><div class="pkg-card-title-section"><div class="pkg-card-package-name">${pkg.name}</div><div class="pkg-card-strain">${pkg.strain}</div><div class="pkg-card-metrc">${pkg.metrc.substring(0,12)}...</div></div><div class="pkg-card-status"><span class="badge ${badge.class}">${badge.text}</span></div></div><div class="pkg-card-metrics"><div class="pkg-card-metric"><div class="pkg-card-metric-label">THC</div><div class="pkg-card-metric-value val-thc">${thcV}</div></div><div class="pkg-card-metric"><div class="pkg-card-metric-label">CBD</div><div class="pkg-card-metric-value val-cbd">${cbdV}</div></div>${pkg.enriched?'<div class="enriched-indicator" style="align-self:center">🔬</div>':''}</div><div class="pkg-card-footer"><div class="pkg-card-lab-date"><div class="pkg-card-lab">${pkg.lab||'—'}</div><div class="pkg-card-date">${pkg.date}</div></div><div class="pkg-card-actions"><a href="#" class="btn btn-primary" style="padding:6px 12px;font-size:11px" onclick="event.stopPropagation();openDetail(${pkg.id})">View</a></div></div></div>`;
+}
+
+function filterData() {
+  filteredData = packagesData.filter(pkg => {
+    if (currentFilter !== 'all') {
+      const map = { active:['TestPassed','SubmittedForTesting'], testing:['SubmittedForTesting'], passed:['TestPassed'], failed:['TestFailed'], inactive:['NotSubmitted'] };
+      if (!map[currentFilter]?.includes(pkg.status)) return false;
+    }
+    if (searchTerm) {
+      const s = searchTerm.toLowerCase();
+      return pkg.name.toLowerCase().includes(s) || pkg.strain.toLowerCase().includes(s) || pkg.metrc.toLowerCase().includes(s);
+    }
+    return true;
+  });
+  renderData();
+}
+
+function renderData() {
+  const tbody = document.getElementById('packagesTableBody');
+  const cards = document.getElementById('packagesCards');
+  const empty = document.getElementById('emptyState');
+  const table = document.getElementById('packagesTable');
+  if (filteredData.length === 0) {
+    table.style.display = 'none'; cards.style.display = 'none'; empty.classList.add('show');
+  } else {
+    empty.classList.remove('show'); table.style.display = 'block';
+    tbody.innerHTML = filteredData.map(renderTableRow).join('');
+    cards.innerHTML = filteredData.map(renderCard).join('');
+    document.getElementById('showingStart').textContent = '1';
+    document.getElementById('showingEnd').textContent = Math.min(12, filteredData.length);
+    document.getElementById('totalCount').textContent = filteredData.length;
+  }
+}
+
+// PACKAGES: Detail panel
+function openDetail(id) {
+  window.currentDetailPkgId = id;
+  const pkg = packagesData.find(p => p.id === id);
+  if (!pkg) return;
+  const badge = statusBadges[pkg.status];
+  const u = pkg.isEdible ? 'mg' : '%';
+  document.getElementById('detailTitle').textContent = pkg.name;
+  document.getElementById('detailSubtitle').textContent = pkg.strain;
+  document.getElementById('detailStatus').innerHTML = `<span class="badge ${badge.class}" style="font-size:13px;padding:6px 16px">${badge.text}</span>`;
+  document.getElementById('detailPotency').innerHTML = `<div class="potency-item"><div class="potency-label">THC</div><div class="potency-value ${pkg.thc?'thc':'na'}">${pkg.thc?pkg.thc+u:'—'}</div></div><div class="potency-item"><div class="potency-label">CBD</div><div class="potency-value ${pkg.cbd?'cbd':'na'}">${pkg.cbd?pkg.cbd+u:'—'}</div></div>${pkg.enriched?'<div class="potency-item"><div class="potency-label">Data</div><div class="potency-value" style="font-size:14px;color:var(--accent)">🔬 Enriched</div></div>':''}`;
+  document.getElementById('detailInfo').innerHTML = `<div class="detail-field"><div class="detail-label">Metrc Tag</div><div class="detail-value mono">${pkg.metrc}</div></div><div class="detail-field"><div class="detail-label">Category</div><div class="detail-value">${pkg.category}</div></div><div class="detail-field"><div class="detail-label">Strain</div><div class="detail-value">${pkg.strain}</div></div><div class="detail-field"><div class="detail-label">Created</div><div class="detail-value mono">${pkg.date}</div></div>`;
+  document.getElementById('detailLab').innerHTML = `<div class="detail-field"><div class="detail-label">Testing Lab</div><div class="detail-value">${pkg.lab||'Not assigned'}</div></div><div class="detail-field"><div class="detail-label">Test Date</div><div class="detail-value mono">${pkg.status==='NotSubmitted'?'—':pkg.date}</div></div><div class="detail-field"><div class="detail-label">Testing State</div><div class="detail-value">${statusLabels[pkg.status]||pkg.status}</div></div><div class="detail-field"><div class="detail-label">COA Document</div><div class="detail-value">${pkg.status==='TestPassed'||pkg.status==='TestFailed'?'<span style="color:var(--accent);cursor:pointer">📄 View PDF</span>':'—'}</div></div>`;
+  document.getElementById('detailOverlay').classList.add('open');
+  document.getElementById('detailPanel').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDetail() {
+  document.getElementById('detailOverlay').classList.remove('open');
+  document.getElementById('detailPanel').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// PACKAGES: Sync
+function triggerSync() {
+  const btn = document.getElementById('refreshBtn');
+  const syncText = document.getElementById('syncText');
+  const syncDot = document.querySelector('.sync-dot');
+  btn.classList.add('syncing');
+  syncText.textContent = 'Syncing...';
+  syncDot.style.background = 'var(--warn)';
+  syncDot.style.boxShadow = '0 0 4px var(--warn)';
+  setTimeout(() => {
+    btn.classList.remove('syncing');
+    syncText.textContent = 'Synced just now';
+    syncDot.style.background = 'var(--pass)';
+    syncDot.style.boxShadow = '0 0 4px var(--pass)';
+    const tc = document.getElementById('packagesTable');
+    tc.style.borderColor = 'var(--accent)';
+    setTimeout(() => { tc.style.borderColor = ''; }, 600);
+  }, 1500);
+}
+
+// PACKAGES: View toggle
+let currentView = 'table';
+function setView(view) {
+  currentView = view;
+  const tc = document.getElementById('packagesTable');
+  const cc = document.getElementById('packagesCards');
+  document.querySelectorAll('.view-toggle-btn').forEach(b => b.classList.toggle('active', b.getAttribute('data-view') === view));
+  if (view === 'cards') { tc.classList.add('force-hide'); cc.classList.add('force-show'); }
+  else { tc.classList.remove('force-hide'); cc.classList.remove('force-show'); }
+  localStorage.setItem('ls-view', view);
+}
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function() {
+
+  // View preference
+  const savedView = localStorage.getItem('ls-view') || 'table';
+  if (savedView !== 'table') setView(savedView);
+
+  // Status tabs
+  document.querySelectorAll('.status-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      currentFilter = this.getAttribute('data-status');
+      filterData();
+    });
+  });
+
+  // Search
+  document.getElementById('packageSearch').addEventListener('input', function(e) {
+    searchTerm = e.target.value;
+    filterData();
+  });
+
+  // Metrc copy
+  document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('package-metrc')) {
+      e.stopPropagation();
+      navigator.clipboard.writeText(e.target.title || e.target.textContent).then(() => {
+        e.target.style.background = 'rgba(16,185,129,0.2)';
+        setTimeout(() => { e.target.style.background = ''; }, 300);
+      });
+    }
+  });
+
+  // Escape to close detail
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeDetail(); });
+
+  // Initial render
+  filterData();
+  initDashboardAnimations();
+});
+</script>
+
+
+<script src="shared.js"></script>
+<script>LabstakShared.init({ page: 'dashboard', title: 'Dashboard', spaPages: ['dashboard','packages','connections'] });</script>
+</body>
+</html>

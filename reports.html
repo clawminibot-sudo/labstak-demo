@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Labstak — Reports & Documents</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+[data-theme="light"] .reports-table-card { border: 1px solid rgba(0,0,0,0.12); background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+[data-theme="light"] .reports-table tr { border-bottom-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .reports-table tbody tr:hover { background: rgba(0,0,0,0.02); }
+[data-theme="light"] .quick-actions { background: #fff; border-color: rgba(0,0,0,0.10); }
+[data-theme="light"] .compliance-card { background: #fff; border-color: rgba(0,0,0,0.12); box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+[data-theme="light"] .doc-preview-area { background: #F0F1F4; border-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .enrichment-card { background: #F0F1F4; border-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .theme-toggle .icon-sun { display: block; }
+[data-theme="light"] .theme-toggle .icon-moon { display: none; }
+   QUICK ACTIONS
+   ══════════════════════════════════════════════════════════════ */
+.quick-actions {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 20px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-lg);
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   REPORTS TABLE
+   ══════════════════════════════════════════════════════════════ */
+.reports-table-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.reports-table {
+  width: 100%; border-collapse: collapse;
+}
+.reports-table th {
+  text-align: left; padding: 14px 20px;
+  font-size: 10px; font-weight: 700; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-surface); position: sticky; top: 0;
+}
+.reports-table th.r { text-align: right; }
+.reports-table th.c { text-align: center; }
+.reports-table td {
+  padding: 14px 20px; font-size: 13px;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+}
+.reports-table td.r { text-align: right; }
+.reports-table td.c { text-align: center; }
+.reports-table tr:last-child td { border-bottom: none; }
+.reports-table tbody tr {
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease);
+}
+.reports-table tbody tr:hover { background: rgba(255,255,255,0.025); }
+
+.doc-name-cell {
+  display: flex; align-items: center; gap: 10px;
+}
+.doc-icon {
+  width: 32px; height: 32px; border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.doc-icon.coa { background: var(--info-bg); color: var(--info); }
+.doc-icon svg { width: 16px; height: 16px; }
+.doc-info { display: flex; flex-direction: column; gap: 1px; }
+.doc-title { font-weight: 600; color: var(--text-primary); }
+.doc-subtitle { font-size: 11px; color: var(--text-tertiary); }
+.enriched-indicator { margin-left: 4px; font-size: 14px; cursor: help; }
+
+.action-cell {
+  display: flex; gap: 4px; justify-content: center;
+}
+.action-btn {
+  padding: 5px 10px; border-radius: var(--r-md); border: none;
+  background: transparent; color: var(--text-secondary);
+  font-family: var(--font-sans); font-size: 11px; font-weight: 600;
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease);
+}
+.action-btn:hover { background: rgba(255,255,255,0.06); color: var(--text-primary); }
+.action-btn.primary { color: var(--accent); }
+.action-btn.primary:hover { background: var(--accent-subtle); }
+
+/* ══════════════════════════════════════════════════════════════
+   DETAIL PANEL (slide-out)
+   ══════════════════════════════════════════════════════════════ */
+.detail-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--dur-base) var(--ease);
+}
+.detail-overlay.open { opacity: 1; pointer-events: auto; }
+.detail-panel {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 201;
+  width: min(520px, 90vw);
+  background: var(--bg-surface); border-left: 1px solid var(--border-default);
+  box-shadow: -8px 0 30px rgba(0,0,0,0.3);
+  transform: translateX(100%);
+  transition: transform var(--dur-slow) var(--ease-out);
+  display: flex; flex-direction: column; overflow-y: auto;
+}
+.detail-panel.open { transform: translateX(0); }
+.detail-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px; border-bottom: 1px solid var(--border-subtle);
+  position: sticky; top: 0; z-index: 1; background: var(--bg-surface);
+}
+.detail-header-left { display: flex; flex-direction: column; gap: 4px; }
+.detail-title { font-size: 18px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em; }
+.detail-subtitle { font-size: 13px; color: var(--text-secondary); }
+.detail-close {
+  width: 36px; height: 36px; border-radius: var(--r-md);
+  border: 1px solid var(--border-default); background: var(--bg-elevated);
+  color: var(--text-secondary); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--dur-fast) var(--ease); flex-shrink: 0;
+}
+.detail-close:hover { border-color: var(--border-strong); color: var(--text-primary); background: var(--bg-overlay); }
+.detail-close svg { width: 16px; height: 16px; }
+.detail-body { padding: 24px; flex: 1; }
+.detail-section { margin-bottom: 24px; }
+.detail-section-title {
+  font-size: 11px; font-weight: 600; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px;
+}
+
+/* Document Preview Area */
+.doc-preview-area {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-lg);
+  height: 200px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: var(--text-tertiary);
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.doc-preview-area svg { width: 48px; height: 48px; opacity: 0.3; }
+
+/* Document metadata */
+.meta-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+}
+.meta-field { display: flex; flex-direction: column; gap: 2px; }
+.meta-field.full { grid-column: 1 / -1; }
+.meta-label { font-size: 11px; color: var(--text-tertiary); font-weight: 500; }
+.meta-value { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+.meta-value.mono { font-family: var(--font-mono); font-size: 13px; }
+
+/* Enrichment card */
+.enrichment-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+  padding: 16px;
+}
+.enrichment-header {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 12px;
+}
+.enrichment-badge {
+  font-size: 11px; font-weight: 700; padding: 3px 10px;
+  border-radius: var(--r-full);
+  background: var(--accent-subtle); color: var(--accent);
+  border: 1px solid rgba(16,185,129,0.25);
+}
+.enrichment-row {
+  display: flex; justify-content: space-between;
+  padding: 6px 0; font-size: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.enrichment-row:last-child { border-bottom: none; }
+.enrichment-label { color: var(--text-secondary); }
+.enrichment-value { font-weight: 600; font-family: var(--font-mono); }
+
+/* Detail action buttons */
+.detail-actions {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  padding: 20px 24px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   COMPLIANCE CARD
+   ══════════════════════════════════════════════════════════════ */
+.compliance-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-lg);
+  padding: 24px;
+}
+.compliance-title {
+  font-size: 16px; font-weight: 700; letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+.compliance-subtitle {
+  font-size: 12px; color: var(--text-tertiary);
+  margin-bottom: 20px;
+}
+.compliance-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  margin-bottom: 20px;
+}
+.compliance-stat {
+  text-align: center; padding: 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+}
+.compliance-stat-value {
+  font-size: 28px; font-weight: 800; font-family: var(--font-mono);
+  line-height: 1.1;
+}
+.compliance-stat-label {
+  font-size: 11px; color: var(--text-tertiary); margin-top: 4px;
+  text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600;
+}
+.compliance-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.compliance-item:last-of-type { border-bottom: none; }
+.compliance-icon {
+  width: 28px; height: 28px; border-radius: var(--r-full);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 2px;
+}
+.compliance-icon.fail { background: var(--fail-bg); color: var(--fail); }
+.compliance-icon.warn { background: var(--warn-bg); color: var(--warn); }
+.compliance-icon svg { width: 14px; height: 14px; }
+.compliance-text { flex: 1; }
+.compliance-text-title { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.compliance-text-desc { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+
+/* ══════════════════════════════════════════════════════════════
+   ANIMATIONS
+   ══════════════════════════════════════════════════════════════ */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.anim-in { animation: fade-up var(--dur-slow) var(--ease-out) forwards; }
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 1100px) {
+  .compliance-stats { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 900px) {
+  .page { padding: 20px; }
+  .header { padding: 12px 20px; }
+  .compliance-stats { grid-template-columns: 1fr; }
+  .quick-actions { flex-direction: column; align-items: stretch; }
+}
+@media (max-width: 768px) {
+  .header-search-input { min-width: 160px; }
+}
+</style>
+</head>
+<body>
+<!-- ═══ MAIN ═══ -->
+<main class="main" id="main">
+  <div class="header">
+    <div class="header-left">
+      <span class="header-title">Reports & Documents</span>
+      <div class="sync-indicator">
+        <span class="sync-dot"></span>
+        <span>Synced 2m ago</span>
+      </div>
+    </div>
+
+    <div class="header-search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="header-search-input" type="text" placeholder="Search documents..." id="docSearch">
+    </div>
+
+    <div class="filter-btn">
+      <span>All Types</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+
+    <div id="header-actions"></div>
+  </div>
+
+  <div class="page">
+
+    <!-- Quick Actions -->
+    <div class="quick-actions anim-in">
+      <button class="btn btn-primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download All COAs
+      </button>
+      <button class="btn btn-secondary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Generate Compliance Report
+      </button>
+      <button class="btn btn-secondary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+        Export to CSV
+      </button>
+      <div style="margin-left:auto;font-size:12px;color:var(--text-tertiary)">
+        <span style="font-family:var(--font-mono);font-weight:700;color:var(--text-primary)">11</span> documents total
+      </div>
+    </div>
+
+    <!-- Reports Table -->
+    <div class="reports-table-card anim-in" style="animation-delay:100ms">
+      <table class="reports-table">
+        <thead>
+          <tr>
+            <th>Document</th>
+            <th>Package</th>
+            <th>Lab</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th class="c">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr onclick="openDocPreview(1)">
+            <td>
+              <div class="doc-name-cell">
+                <div class="doc-icon coa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                <div class="doc-info">
+                  <div class="doc-title">COA — Purple Haze Live Rosin<span class="enriched-indicator" title="AI-enriched data">🔬</span></div>
+                  <div class="doc-subtitle">COA-2026-0304-001.pdf · 2.4 MB</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="mono" style="font-size:12px;color:var(--text-secondary)">1A423...6847</span></td>
+            <td style="font-size:12px">Delta Testing Co</td>
+            <td><span class="badge badge-pass" style="font-size:9px;padding:2px 8px">COA</span></td>
+            <td class="mono" style="font-size:12px;color:var(--text-secondary)">Mar 4, 2026</td>
+            <td><span class="badge badge-pass">✓ Verified</span></td>
+            <td class="c">
+              <div class="action-cell">
+                <button class="action-btn primary" onclick="event.stopPropagation();openDocPreview(1)">View</button>
+                <button class="action-btn" onclick="event.stopPropagation()">Download</button>
+                <button class="action-btn" onclick="event.stopPropagation()">Share</button>
+              </div>
+            </td>
+          </tr>
+          <tr onclick="openDocPreview(2)">
+            <td>
+              <div class="doc-name-cell">
+                <div class="doc-icon coa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                <div class="doc-info">
+                  <div class="doc-title">COA — Blue Dream Flower</div>
+                  <div class="doc-subtitle">COA-2026-0302-002.pdf · 1.8 MB</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="mono" style="font-size:12px;color:var(--text-secondary)">1A423...6848</span></td>
+            <td style="font-size:12px">Delta Testing Co</td>
+            <td><span class="badge badge-pass" style="font-size:9px;padding:2px 8px">COA</span></td>
+            <td class="mono" style="font-size:12px;color:var(--text-secondary)">Mar 2, 2026</td>
+            <td><span class="badge badge-pass">✓ Verified</span></td>
+            <td class="c">
+              <div class="action-cell">
+                <button class="action-btn primary" onclick="event.stopPropagation();openDocPreview(2)">View</button>
+                <button class="action-btn" onclick="event.stopPropagation()">Download</button>
+                <button class="action-btn" onclick="event.stopPropagation()">Share</button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="doc-name-cell">
+                <div class="doc-icon coa" style="background:var(--warn-bg);color:var(--warn)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                <div class="doc-info">
+                  <div class="doc-title">COA — OG Kush Premium</div>
+                  <div class="doc-subtitle">Testing in progress...</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="mono" style="font-size:12px;color:var(--text-secondary)">1A423...6849</span></td>
+            <td style="font-size:12px">Southern Analytical</td>
+            <td><span class="badge badge-warn" style="font-size:9px;padding:2px 8px">COA</span></td>
+            <td class="mono" style="font-size:12px;color:var(--text-secondary)">Mar 5, 2026</td>
+            <td><span class="badge badge-pending">◷ Pending</span></td>
+            <td class="c">
+              <div class="action-cell">
+                <span style="font-size:11px;color:var(--text-disabled)">—</span>
+              </div>
+            </td>
+          </tr>
+          <tr onclick="openDocPreview(4)">
+            <td>
+              <div class="doc-name-cell">
+                <div class="doc-icon coa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                <div class="doc-info">
+                  <div class="doc-title">COA — Gorilla Glue #4<span class="enriched-indicator" title="AI-enriched data">🔬</span></div>
+                  <div class="doc-subtitle">COA-2026-0228-004.pdf · 2.1 MB</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="mono" style="font-size:12px;color:var(--text-secondary)">1A423...6850</span></td>
+            <td style="font-size:12px">Delta Testing Co</td>
+            <td><span class="badge badge-pass" style="font-size:9px;padding:2px 8px">COA</span></td>
+            <td class="mono" style="font-size:12px;color:var(--text-secondary)">Feb 28, 2026</td>
+            <td><span class="badge badge-pass">✓ Verified</span></td>
+            <td class="c">
+              <div class="action-cell">
+                <button class="action-btn primary" onclick="event.stopPropagation();openDocPreview(4)">View</button>
+                <button class="action-btn" onclick="event.stopPropagation()">Download</button>
+                <button class="action-btn" onclick="event.stopPropagation()">Share</button>
+              </div>
+            </td>
+          </tr>
+          <tr onclick="openDocPreview(5)">
+            <td>
+              <div class="doc-name-cell">
+                <div class="doc-icon coa" style="background:var(--fail-bg);color:var(--fail)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                <div class="doc-info">
+                  <div class="doc-title">COA — Wedding Cake Distillate</div>
+                  <div class="doc-subtitle">COA-2026-0227-005.pdf · 1.6 MB</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="mono" style="font-size:12px;color:var(--text-secondary)">1A423...6851</span></td>
+            <td style="font-size:12px">Southern Analytical</td>
+            <td><span class="badge badge-fail" style="font-size:9px;padding:2px 8px">COA</span></td>
+            <td class="mono" style="font-size:12px;color:var(--text-secondary)">Feb 27, 2026</td>
+            <td><span class="badge badge-fail">⚠ Failed</span></td>
+            <td class="c">
+              <div class="action-cell">
+                <button class="action-btn primary" onclick="event.stopPropagation();openDocPreview(5)">View</button>
+                <button class="action-btn" onclick="event.stopPropagation()">Download</button>
+              </div>
+            </td>
+          </tr>
+          <tr onclick="openDocPreview(6)">
+            <td>
+              <div class="doc-name-cell">
+                <div class="doc-icon coa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                <div class="doc-info">
+                  <div class="doc-title">COA — Sour Diesel Pre-Roll 5pk<span class="enriched-indicator" title="AI-enriched data">🔬</span></div>
+                  <div class="doc-subtitle">COA-2026-0225-006.pdf · 2.0 MB</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="mono" style="font-size:12px;color:var(--text-secondary)">1A423...6852</span></td>
+            <td style="font-size:12px">Delta Testing Co</td>
+            <td><span class="badge badge-pass" style="font-size:9px;padding:2px 8px">COA</span></td>
+            <td class="mono" style="font-size:12px;color:var(--text-secondary)">Feb 25, 2026</td>
+            <td><span class="badge badge-pass">✓ Verified</span></td>
+            <td class="c">
+              <div class="action-cell">
+                <button class="action-btn primary" onclick="event.stopPropagation();openDocPreview(6)">View</button>
+                <button class="action-btn" onclick="event.stopPropagation()">Download</button>
+                <button class="action-btn" onclick="event.stopPropagation()">Share</button>
+              </div>
+            </td>
+          </tr>
+          <tr onclick="openDocPreview(7)">
+            <td>
+              <div class="doc-name-cell">
+                <div class="doc-icon coa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                <div class="doc-info">
+                  <div class="doc-title">COA — Gelato #41 Shatter</div>
+                  <div class="doc-subtitle">COA-2026-0222-007.pdf · 1.9 MB</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="mono" style="font-size:12px;color:var(--text-secondary)">1A423...6854</span></td>
+            <td style="font-size:12px">Delta Testing Co</td>
+            <td><span class="badge badge-pass" style="font-size:9px;padding:2px 8px">COA</span></td>
+            <td class="mono" style="font-size:12px;color:var(--text-secondary)">Feb 22, 2026</td>
+            <td><span class="badge badge-pass">✓ Verified</span></td>
+            <td class="c">
+              <div class="action-cell">
+                <button class="action-btn primary" onclick="event.stopPropagation();openDocPreview(7)">View</button>
+                <button class="action-btn" onclick="event.stopPropagation()">Download</button>
+                <button class="action-btn" onclick="event.stopPropagation()">Share</button>
+              </div>
+            </td>
+          </tr>
+          <tr onclick="openDocPreview(8)">
+            <td>
+              <div class="doc-name-cell">
+                <div class="doc-icon coa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                <div class="doc-info">
+                  <div class="doc-title">COA — Jack Herer Flower<span class="enriched-indicator" title="AI-enriched data">🔬</span></div>
+                  <div class="doc-subtitle">COA-2026-0220-008.pdf · 2.2 MB</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="mono" style="font-size:12px;color:var(--text-secondary)">1A423...6855</span></td>
+            <td style="font-size:12px">Southern Analytical</td>
+            <td><span class="badge badge-pass" style="font-size:9px;padding:2px 8px">COA</span></td>
+            <td class="mono" style="font-size:12px;color:var(--text-secondary)">Feb 20, 2026</td>
+            <td><span class="badge badge-pass">✓ Verified</span></td>
+            <td class="c">
+              <div class="action-cell">
+                <button class="action-btn primary" onclick="event.stopPropagation();openDocPreview(8)">View</button>
+                <button class="action-btn" onclick="event.stopPropagation()">Download</button>
+                <button class="action-btn" onclick="event.stopPropagation()">Share</button>
+              </div>
+            </td>
+          </tr>
+          <tr onclick="openDocPreview(9)">
+            <td>
+              <div class="doc-name-cell">
+                <div class="doc-icon coa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                <div class="doc-info">
+                  <div class="doc-title">COA — Northern Lights Gummies</div>
+                  <div class="doc-subtitle">COA-2026-0218-009.pdf · 1.5 MB</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="mono" style="font-size:12px;color:var(--text-secondary)">1A423...6856</span></td>
+            <td style="font-size:12px">Delta Testing Co</td>
+            <td><span class="badge badge-pass" style="font-size:9px;padding:2px 8px">COA</span></td>
+            <td class="mono" style="font-size:12px;color:var(--text-secondary)">Feb 18, 2026</td>
+            <td><span class="badge badge-pass">✓ Verified</span></td>
+            <td class="c">
+              <div class="action-cell">
+                <button class="action-btn primary" onclick="event.stopPropagation();openDocPreview(9)">View</button>
+                <button class="action-btn" onclick="event.stopPropagation()">Download</button>
+                <button class="action-btn" onclick="event.stopPropagation()">Share</button>
+              </div>
+            </td>
+          </tr>
+          <tr onclick="openDocPreview(10)">
+            <td>
+              <div class="doc-name-cell">
+                <div class="doc-icon coa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                <div class="doc-info">
+                  <div class="doc-title">COA — Pineapple Express<span class="enriched-indicator" title="AI-enriched data">🔬</span></div>
+                  <div class="doc-subtitle">COA-2026-0215-010.pdf · 2.3 MB</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="mono" style="font-size:12px;color:var(--text-secondary)">1A423...6857</span></td>
+            <td style="font-size:12px">Delta Testing Co</td>
+            <td><span class="badge badge-pass" style="font-size:9px;padding:2px 8px">COA</span></td>
+            <td class="mono" style="font-size:12px;color:var(--text-secondary)">Feb 15, 2026</td>
+            <td><span class="badge badge-pass">✓ Verified</span></td>
+            <td class="c">
+              <div class="action-cell">
+                <button class="action-btn primary" onclick="event.stopPropagation();openDocPreview(10)">View</button>
+                <button class="action-btn" onclick="event.stopPropagation()">Download</button>
+                <button class="action-btn" onclick="event.stopPropagation()">Share</button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="doc-name-cell">
+                <div class="doc-icon coa" style="background:var(--pending-bg);color:var(--text-disabled)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                <div class="doc-info">
+                  <div class="doc-title" style="color:var(--text-secondary)">COA — Zkittlez Live Resin</div>
+                  <div class="doc-subtitle">Testing in progress...</div>
+                </div>
+              </div>
+            </td>
+            <td><span class="mono" style="font-size:12px;color:var(--text-secondary)">1A423...6858</span></td>
+            <td style="font-size:12px">Delta Testing Co</td>
+            <td><span class="badge badge-warn" style="font-size:9px;padding:2px 8px">COA</span></td>
+            <td class="mono" style="font-size:12px;color:var(--text-secondary)">Mar 6, 2026</td>
+            <td><span class="badge badge-pending">◷ Pending</span></td>
+            <td class="c">
+              <div class="action-cell">
+                <span style="font-size:11px;color:var(--text-disabled)">—</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Compliance Summary -->
+    <div class="compliance-card anim-in" style="animation-delay:200ms">
+      <div class="compliance-title">Monthly Compliance Summary — March 2026</div>
+      <div class="compliance-subtitle">Auto-generated from test results and COA documents</div>
+
+      <div class="compliance-stats">
+        <div class="compliance-stat">
+          <div class="compliance-stat-value" style="color:var(--text-primary)">12</div>
+          <div class="compliance-stat-label">Tests Completed</div>
+        </div>
+        <div class="compliance-stat">
+          <div class="compliance-stat-value" style="color:var(--pass)">91.7%</div>
+          <div class="compliance-stat-label">Pass Rate</div>
+        </div>
+        <div class="compliance-stat">
+          <div class="compliance-stat-value" style="color:var(--fail)">1</div>
+          <div class="compliance-stat-label">Failed Tests</div>
+        </div>
+      </div>
+
+      <div class="detail-section-title" style="margin-top:8px">Action Items</div>
+
+      <div class="compliance-item">
+        <div class="compliance-icon fail">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </div>
+        <div class="compliance-text">
+          <div class="compliance-text-title">Failed: Wedding Cake Distillate — Pesticide</div>
+          <div class="compliance-text-desc">Batch MS-2026-4234-03 failed pesticide screening at Southern Analytical. Myclobutanil detected at 0.08 ppm (limit: 0.05 ppm).</div>
+        </div>
+      </div>
+      <div class="compliance-item">
+        <div class="compliance-icon warn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        </div>
+        <div class="compliance-text">
+          <div class="compliance-text-title">Retest Required</div>
+          <div class="compliance-text-desc">Wedding Cake Distillate batch requires retest per MSDOH guidelines. Submit new sample to alternate lab within 14 days.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:20px">
+        <button class="btn btn-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Generate Full Report
+        </button>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ═══ DETAIL PANEL ═══ -->
+<div class="detail-overlay" id="detailOverlay" onclick="closeDocPreview()"></div>
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-header">
+    <div class="detail-header-left">
+      <div class="detail-title" id="previewTitle">COA — Purple Haze Live Rosin</div>
+      <div class="detail-subtitle" id="previewSubtitle">Certificate of Analysis</div>
+    </div>
+    <button class="detail-close" onclick="closeDocPreview()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="detail-body">
+
+    <!-- Document Preview -->
+    <div class="doc-preview-area">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+        <line x1="10" y1="9" x2="8" y2="9"/>
+      </svg>
+      <span style="font-size:12px;font-weight:600">PDF Preview</span>
+      <span style="font-size:11px">Click to open full document</span>
+    </div>
+
+    <!-- Document Metadata -->
+    <div class="detail-section">
+      <div class="detail-section-title">Document Info</div>
+      <div class="meta-grid" id="previewMeta">
+        <div class="meta-field">
+          <div class="meta-label">Package</div>
+          <div class="meta-value">Purple Haze Live Rosin</div>
+        </div>
+        <div class="meta-field">
+          <div class="meta-label">Lab</div>
+          <div class="meta-value">Delta Testing Co</div>
+        </div>
+        <div class="meta-field">
+          <div class="meta-label">Date</div>
+          <div class="meta-value mono">Mar 4, 2026</div>
+        </div>
+        <div class="meta-field">
+          <div class="meta-label">File Size</div>
+          <div class="meta-value mono">2.4 MB</div>
+        </div>
+        <div class="meta-field">
+          <div class="meta-label">Metrc Tag</div>
+          <div class="meta-value mono">1A42301000026847</div>
+        </div>
+        <div class="meta-field">
+          <div class="meta-label">Status</div>
+          <div class="meta-value" style="color:var(--pass);font-weight:600">✓ Verified</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enrichment Details -->
+    <div class="detail-section" id="enrichmentSection">
+      <div class="detail-section-title">🔬 Enrichment Details</div>
+      <div class="enrichment-card">
+        <div class="enrichment-header">
+          <span class="enrichment-badge">AI-Enriched</span>
+          <span style="font-size:11px;color:var(--text-tertiary);margin-left:auto">Processed Mar 4, 2026</span>
+        </div>
+        <div class="enrichment-row">
+          <span class="enrichment-label">Confidence Score</span>
+          <span class="enrichment-value" style="color:var(--pass)">98.4%</span>
+        </div>
+        <div class="enrichment-row">
+          <span class="enrichment-label">Analytes Extracted</span>
+          <span class="enrichment-value">24</span>
+        </div>
+        <div class="enrichment-row">
+          <span class="enrichment-label">Cannabinoids Found</span>
+          <span class="enrichment-value">8</span>
+        </div>
+        <div class="enrichment-row">
+          <span class="enrichment-label">Terpenes Found</span>
+          <span class="enrichment-value" style="color:var(--terps)">12</span>
+        </div>
+        <div class="enrichment-row">
+          <span class="enrichment-label">Total THC</span>
+          <span class="enrichment-value" style="color:var(--thc)">78.4%</span>
+        </div>
+        <div class="enrichment-row">
+          <span class="enrichment-label">Total Terpenes</span>
+          <span class="enrichment-value" style="color:var(--terps)">4.82%</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="detail-actions">
+    <button class="btn btn-primary" style="flex:1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download PDF
+    </button>
+    <button class="btn btn-secondary" style="flex:1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      Share Link
+    </button>
+    <button class="btn btn-secondary">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+      Print
+    </button>
+  </div>
+</div>
+
+<script>
+// Document data for preview panel
+const docs = {
+  1: { title: 'COA — Purple Haze Live Rosin', pkg: 'Purple Haze Live Rosin', lab: 'Delta Testing Co', date: 'Mar 4, 2026', size: '2.4 MB', metrc: '1A42301000026847', status: '✓ Verified', enriched: true, confidence: '98.4%', analytes: 24, cannabinoids: 8, terpenes: 12, thc: '78.4%', totalTerps: '4.82%' },
+  2: { title: 'COA — Blue Dream Flower', pkg: 'Blue Dream Flower', lab: 'Delta Testing Co', date: 'Mar 2, 2026', size: '1.8 MB', metrc: '1A42301000026848', status: '✓ Verified', enriched: false },
+  4: { title: 'COA — Gorilla Glue #4', pkg: 'Gorilla Glue #4', lab: 'Delta Testing Co', date: 'Feb 28, 2026', size: '2.1 MB', metrc: '1A42301000026850', status: '✓ Verified', enriched: true, confidence: '97.1%', analytes: 22, cannabinoids: 7, terpenes: 10, thc: '28.7%', totalTerps: '3.41%' },
+  5: { title: 'COA — Wedding Cake Distillate', pkg: 'Wedding Cake Distillate', lab: 'Southern Analytical', date: 'Feb 27, 2026', size: '1.6 MB', metrc: '1A42301000026851', status: '⚠ Failed', enriched: false, failed: true },
+  6: { title: 'COA — Sour Diesel Pre-Roll 5pk', pkg: 'Sour Diesel Pre-Roll 5pk', lab: 'Delta Testing Co', date: 'Feb 25, 2026', size: '2.0 MB', metrc: '1A42301000026852', status: '✓ Verified', enriched: true, confidence: '96.8%', analytes: 20, cannabinoids: 6, terpenes: 9, thc: '21.5%', totalTerps: '2.67%' },
+  7: { title: 'COA — Gelato #41 Shatter', pkg: 'Gelato #41 Shatter', lab: 'Delta Testing Co', date: 'Feb 22, 2026', size: '1.9 MB', metrc: '1A42301000026854', status: '✓ Verified', enriched: false },
+  8: { title: 'COA — Jack Herer Flower', pkg: 'Jack Herer Flower', lab: 'Southern Analytical', date: 'Feb 20, 2026', size: '2.2 MB', metrc: '1A42301000026855', status: '✓ Verified', enriched: true, confidence: '95.2%', analytes: 19, cannabinoids: 7, terpenes: 8, thc: '22.8%', totalTerps: '2.71%' },
+  9: { title: 'COA — Northern Lights Gummies', pkg: 'Northern Lights Gummies 100mg', lab: 'Delta Testing Co', date: 'Feb 18, 2026', size: '1.5 MB', metrc: '1A42301000026856', status: '✓ Verified', enriched: false },
+  10: { title: 'COA — Pineapple Express', pkg: 'Pineapple Express', lab: 'Delta Testing Co', date: 'Feb 15, 2026', size: '2.3 MB', metrc: '1A42301000026857', status: '✓ Verified', enriched: true, confidence: '97.9%', analytes: 23, cannabinoids: 8, terpenes: 11, thc: '25.1%', totalTerps: '3.28%' },
+};
+
+function openDocPreview(id) {
+  const doc = docs[id];
+  if (!doc) return;
+
+  document.getElementById('previewTitle').textContent = doc.title;
+  document.getElementById('previewSubtitle').textContent = doc.failed ? 'Certificate of Analysis — FAILED' : 'Certificate of Analysis';
+
+  const statusColor = doc.failed ? 'var(--fail)' : 'var(--pass)';
+  document.getElementById('previewMeta').innerHTML = `
+    <div class="meta-field"><div class="meta-label">Package</div><div class="meta-value">${doc.pkg}</div></div>
+    <div class="meta-field"><div class="meta-label">Lab</div><div class="meta-value">${doc.lab}</div></div>
+    <div class="meta-field"><div class="meta-label">Date</div><div class="meta-value mono">${doc.date}</div></div>
+    <div class="meta-field"><div class="meta-label">File Size</div><div class="meta-value mono">${doc.size}</div></div>
+    <div class="meta-field"><div class="meta-label">Metrc Tag</div><div class="meta-value mono">${doc.metrc}</div></div>
+    <div class="meta-field"><div class="meta-label">Status</div><div class="meta-value" style="color:${statusColor};font-weight:600">${doc.status}</div></div>
+  `;
+
+  const enrichSection = document.getElementById('enrichmentSection');
+  if (doc.enriched) {
+    enrichSection.style.display = 'block';
+    enrichSection.innerHTML = `
+      <div class="detail-section-title">🔬 Enrichment Details</div>
+      <div class="enrichment-card">
+        <div class="enrichment-header">
+          <span class="enrichment-badge">AI-Enriched</span>
+          <span style="font-size:11px;color:var(--text-tertiary);margin-left:auto">Processed ${doc.date}</span>
+        </div>
+        <div class="enrichment-row"><span class="enrichment-label">Confidence Score</span><span class="enrichment-value" style="color:var(--pass)">${doc.confidence}</span></div>
+        <div class="enrichment-row"><span class="enrichment-label">Analytes Extracted</span><span class="enrichment-value">${doc.analytes}</span></div>
+        <div class="enrichment-row"><span class="enrichment-label">Cannabinoids Found</span><span class="enrichment-value">${doc.cannabinoids}</span></div>
+        <div class="enrichment-row"><span class="enrichment-label">Terpenes Found</span><span class="enrichment-value" style="color:var(--terps)">${doc.terpenes}</span></div>
+        <div class="enrichment-row"><span class="enrichment-label">Total THC</span><span class="enrichment-value" style="color:var(--thc)">${doc.thc}</span></div>
+        <div class="enrichment-row"><span class="enrichment-label">Total Terpenes</span><span class="enrichment-value" style="color:var(--terps)">${doc.totalTerps}</span></div>
+      </div>
+    `;
+  } else {
+    enrichSection.style.display = 'none';
+  }
+
+  document.getElementById('detailOverlay').classList.add('open');
+  document.getElementById('detailPanel').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDocPreview() {
+  document.getElementById('detailOverlay').classList.remove('open');
+  document.getElementById('detailPanel').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Theme
+
+// Init
+document.addEventListener('DOMContentLoaded', function() {
+  // Escape to close
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeDocPreview(); });
+});
+</script>
+
+
+<script src="shared.js"></script>
+<script>LabstakShared.init({ page: 'reports', title: 'Reports & Documents' });</script>
+</body>
+</html>

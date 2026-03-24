@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lab Results — Purple Haze Live Rosin | Shared via Labstak</title>
+
+<!-- OG Meta for link previews -->
+<meta property="og:title" content="Lab Results — Purple Haze Live Rosin">
+<meta property="og:description" content="THC: 78.4% · CBD: 2.1% · All Tests Passed · Shared via Labstak">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Labstak">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Lab Results — Purple Haze Live Rosin">
+<meta name="twitter:description" content="THC: 78.4% · CBD: 2.1% · All Tests Passed · View full lab results on Labstak">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════
+   LABSTAK DESIGN SYSTEM TOKENS
+   ══════════════════════════════════════════════════════════════ */
+:root {
+  --bg-body: #0B0D12;
+  --bg-surface: #141720;
+  --bg-elevated: #1C2029;
+  --bg-overlay: #242933;
+  --bg-float: #2D333F;
+
+  --text-primary: #EAEDF2;
+  --text-secondary: #8B95A6;
+  --text-tertiary: #5C6578;
+  --text-disabled: #3D4555;
+
+  --border-subtle: rgba(255,255,255,0.06);
+  --border-default: rgba(255,255,255,0.10);
+  --border-strong: rgba(255,255,255,0.16);
+
+  --accent: #10B981;
+  --accent-hover: #34D399;
+  --accent-subtle: rgba(16,185,129,0.10);
+
+  --thc: #F59E0B;
+  --thc-subtle: rgba(245,158,11,0.10);
+  --terps: #A78BFA;
+  --terps-subtle: rgba(167,139,250,0.10);
+  --cbd: #60A5FA;
+  --cbd-subtle: rgba(96,165,250,0.10);
+
+  --pass: #10B981;
+  --pass-bg: rgba(16,185,129,0.10);
+  --pass-border: rgba(16,185,129,0.25);
+  --fail: #F87171;
+  --fail-bg: rgba(248,113,113,0.10);
+  --fail-border: rgba(248,113,113,0.25);
+  --warn: #FBBF24;
+  --warn-bg: rgba(251,191,36,0.10);
+  --warn-border: rgba(251,191,36,0.25);
+  --info: #60A5FA;
+  --info-bg: rgba(96,165,250,0.10);
+  --pending-bg: rgba(255,255,255,0.06);
+
+  --terp-myrcene: #818CF8;
+  --terp-limonene: #FBBF24;
+  --terp-caryophyllene: #A78BFA;
+  --terp-pinene: #34D399;
+  --terp-terpinolene: #FB923C;
+  --terp-linalool: #F472B6;
+  --terp-humulene: #38BDF8;
+  --terp-ocimene: #FB7185;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  --dur-instant: 80ms;
+  --dur-fast: 150ms;
+  --dur-base: 250ms;
+  --dur-slow: 350ms;
+  --dur-emphasis: 500ms;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+  --r-full: 9999px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LIGHT THEME
+   ══════════════════════════════════════════════════════════════ */
+[data-theme="light"] {
+  --bg-body: #F5F6F8;
+  --bg-surface: #FFFFFF;
+  --bg-elevated: #F0F1F4;
+  --bg-overlay: #E8E9ED;
+  --bg-float: #DDDEE3;
+
+  --text-primary: #1A1D26;
+  --text-secondary: #5C6478;
+  --text-tertiary: #8B92A5;
+  --text-disabled: #B8BDC9;
+
+  --border-subtle: rgba(0,0,0,0.06);
+  --border-default: rgba(0,0,0,0.10);
+  --border-strong: rgba(0,0,0,0.16);
+
+  --accent-subtle: rgba(16,185,129,0.08);
+  --thc-subtle: rgba(245,158,11,0.08);
+  --terps-subtle: rgba(167,139,250,0.08);
+  --cbd-subtle: rgba(96,165,250,0.08);
+  --pass-bg: rgba(16,185,129,0.08);
+  --pass-border: rgba(16,185,129,0.20);
+  --fail-bg: rgba(248,113,113,0.08);
+  --fail-border: rgba(248,113,113,0.20);
+  --warn-bg: rgba(251,191,36,0.08);
+  --warn-border: rgba(251,191,36,0.20);
+  --info-bg: rgba(96,165,250,0.08);
+  --pending-bg: rgba(0,0,0,0.04);
+}
+[data-theme="light"] .topbar { background: rgba(255,255,255,0.90); border-bottom-color: rgba(0,0,0,0.10); }
+[data-theme="light"] .card { border-color: rgba(0,0,0,0.12); box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+[data-theme="light"] .section-card { border-color: rgba(0,0,0,0.12); box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+[data-theme="light"] .hero-card { border-color: rgba(0,0,0,0.12); }
+[data-theme="light"] .potency-big-card { border-color: rgba(0,0,0,0.08); background: var(--bg-elevated); }
+[data-theme="light"] .compliance-item { border-color: rgba(0,0,0,0.08); }
+[data-theme="light"] .compliance-item:hover { border-color: rgba(0,0,0,0.15); }
+[data-theme="light"] .coa-preview { border-color: rgba(0,0,0,0.12); background: #F8F9FA; }
+[data-theme="light"] .meta-row { border-color: rgba(0,0,0,0.06); }
+[data-theme="light"] .terpene-bar-track { background: rgba(0,0,0,0.06); }
+[data-theme="light"] .analyte-row:hover { background: rgba(0,0,0,0.03); }
+[data-theme="light"] .share-banner { background: rgba(16,185,129,0.06); border-color: rgba(16,185,129,0.15); }
+[data-theme="light"] .btn-primary { color: #fff; }
+[data-theme="light"] .btn-secondary { border-color: rgba(0,0,0,0.15); background: #fff; }
+[data-theme="light"] .cta-section { background: var(--bg-surface); border-color: rgba(0,0,0,0.12); }
+[data-theme="light"] #pin-gate { background: #F5F6F8 !important; }
+[data-theme="light"] #pin-gate h2 { color: #1A1D26 !important; }
+[data-theme="light"] #pin-gate p { color: #8B92A5 !important; }
+[data-theme="light"] #pin-gate input { background: #fff !important; color: #1A1D26 !important; border-color: rgba(0,0,0,0.12) !important; }
+[data-theme="light"] .footer-bar { background: rgba(255,255,255,0.90); border-top-color: rgba(0,0,0,0.10); }
+
+/* Theme toggle */
+.theme-toggle {
+  width: 32px; height: 32px; border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  border: none; background: transparent; cursor: pointer;
+  color: var(--text-secondary); transition: background var(--dur-fast) var(--ease);
+}
+.theme-toggle:hover { background: rgba(128,128,128,0.1); }
+.theme-toggle svg { width: 16px; height: 16px; }
+.theme-toggle .icon-sun { display: none; }
+.theme-toggle .icon-moon { display: block; }
+[data-theme="light"] .theme-toggle .icon-sun { display: block; }
+[data-theme="light"] .theme-toggle .icon-moon { display: none; }
+
+/* ── Reset ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-body);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+a { color: inherit; text-decoration: none; }
+
+/* ══════════════════════════════════════════════════════════════
+   TOP BAR — minimal branding, no sidebar
+   ══════════════════════════════════════════════════════════════ */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 32px;
+  background: rgba(11,13,18,0.85);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-default);
+}
+.topbar-left {
+  display: flex; align-items: center; gap: 10px;
+}
+.logo-mark {
+  width: 30px; height: 30px; min-width: 30px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(16,185,129,0.25);
+}
+.logo-mark svg { width: 16px; height: 16px; fill: white; }
+.logo-text {
+  font-size: 14px; font-weight: 700; letter-spacing: 0.08em;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.topbar-right {
+  display: flex; align-items: center; gap: 8px;
+}
+.topbar-cta {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: var(--r-md);
+  background: var(--accent); color: #fff;
+  font-size: 12px; font-weight: 600;
+  border: none; cursor: pointer;
+  transition: background var(--dur-fast) var(--ease);
+  text-decoration: none;
+}
+.topbar-cta:hover { background: var(--accent-hover); }
+
+/* ══════════════════════════════════════════════════════════════
+   PIN GATE (optional — controlled by JS)
+   ══════════════════════════════════════════════════════════════ */
+#pin-gate {
+  position: fixed; inset: 0; z-index: 9999;
+  background: #0B0D12;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-sans);
+}
+#pin-gate.hidden { display: none; }
+
+/* ══════════════════════════════════════════════════════════════
+   PAGE CONTAINER
+   ══════════════════════════════════════════════════════════════ */
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 32px 80px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SHARE BANNER — who shared, when, expiry
+   ══════════════════════════════════════════════════════════════ */
+.share-banner {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--accent-subtle);
+  border: 1px solid rgba(16,185,129,0.20);
+  border-radius: var(--r-lg);
+  margin-bottom: 24px;
+  font-size: 13px;
+}
+.share-banner-left {
+  display: flex; align-items: center; gap: 8px;
+  color: var(--text-secondary);
+}
+.share-banner-left svg { width: 16px; height: 16px; color: var(--accent); flex-shrink: 0; }
+.share-banner-left strong { color: var(--text-primary); font-weight: 600; }
+.share-banner-right {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--text-tertiary);
+}
+.share-banner-right svg { width: 14px; height: 14px; }
+
+/* ══════════════════════════════════════════════════════════════
+   HERO CARD
+   ══════════════════════════════════════════════════════════════ */
+.hero-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-xl);
+  padding: 28px 32px;
+  margin-bottom: 24px;
+}
+.hero-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  gap: 24px; margin-bottom: 20px;
+}
+.hero-name {
+  font-size: 26px; font-weight: 800; letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+.hero-strain {
+  font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;
+}
+.hero-metrc {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 12px;
+  color: var(--text-tertiary); cursor: pointer;
+  transition: color var(--dur-fast) var(--ease);
+}
+.hero-metrc:hover { color: var(--text-secondary); }
+.hero-metrc svg { width: 13px; height: 13px; }
+.hero-status-block { text-align: right; flex-shrink: 0; }
+.status-badge-big {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 20px; border-radius: var(--r-lg);
+  font-size: 15px; font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.status-badge-big.passed {
+  background: var(--pass-bg); color: var(--pass);
+  border: 1px solid var(--pass-border);
+}
+.status-badge-big.failed {
+  background: var(--fail-bg); color: var(--fail);
+  border: 1px solid var(--fail-border);
+}
+.status-badge-big svg { width: 18px; height: 18px; }
+.confidence-score {
+  margin-top: 8px; font-size: 12px; color: var(--text-tertiary);
+  display: flex; align-items: center; gap: 6px; justify-content: flex-end;
+}
+.confidence-score .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--pass); box-shadow: 0 0 4px rgba(16,185,129,0.5);
+}
+
+.hero-actions {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 20px;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 16px; border-radius: var(--r-md);
+  font-family: var(--font-sans); font-size: 13px; font-weight: 600;
+  cursor: pointer; border: none;
+  transition: all var(--dur-fast) var(--ease);
+}
+.btn svg { width: 15px; height: 15px; }
+.btn-primary {
+  background: var(--accent); color: var(--bg-body);
+}
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-secondary {
+  background: transparent; color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+}
+.btn-secondary:hover { color: var(--text-primary); border-color: var(--border-strong); }
+
+/* ══════════════════════════════════════════════════════════════
+   POTENCY CARDS
+   ══════════════════════════════════════════════════════════════ */
+.potency-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  margin-bottom: 24px;
+}
+.potency-big-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-lg);
+  padding: 20px 22px;
+}
+.potency-big-card.thc-card { border-left: 3px solid var(--thc); }
+.potency-big-card.cbd-card { border-left: 3px solid var(--cbd); }
+.potency-big-card.terp-card { border-left: 3px solid var(--terps); }
+.potency-big-card.total-card { border-left: 3px solid var(--accent); }
+.potency-label {
+  font-size: 11px; font-weight: 600; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+.potency-value {
+  font-size: 32px; font-weight: 800;
+  font-family: var(--font-mono);
+  letter-spacing: -0.02em; line-height: 1;
+}
+.potency-value.thc { color: var(--thc); }
+.potency-value.cbd { color: var(--cbd); }
+.potency-value.terps { color: var(--terps); }
+.potency-value.total { color: var(--accent); }
+.potency-unit { font-size: 16px; font-weight: 600; opacity: 0.7; }
+.potency-source {
+  margin-top: 6px; font-size: 11px; color: var(--text-tertiary);
+  display: flex; align-items: center; gap: 4px;
+}
+.potency-source .enriched { color: var(--accent); font-weight: 600; }
+
+/* ══════════════════════════════════════════════════════════════
+   CONTENT GRID — 2 columns
+   ══════════════════════════════════════════════════════════════ */
+.content-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  margin-bottom: 24px;
+}
+.section-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+.section-card.full-width { grid-column: 1 / -1; }
+.section-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.section-title {
+  font-size: 14px; font-weight: 700; letter-spacing: -0.01em;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-title svg { width: 16px; height: 16px; opacity: 0.5; }
+.section-tag {
+  font-size: 10px; font-weight: 600; padding: 2px 8px;
+  border-radius: var(--r-full); text-transform: uppercase; letter-spacing: 0.05em;
+}
+.section-tag.metrc { background: var(--info-bg); color: var(--info); border: 1px solid rgba(96,165,250,0.2); }
+.section-tag.enriched { background: var(--accent-subtle); color: var(--accent); border: 1px solid rgba(16,185,129,0.2); }
+.section-body { padding: 20px 24px; }
+
+/* ══════════════════════════════════════════════════════════════
+   CANNABINOID TABLE
+   ══════════════════════════════════════════════════════════════ */
+.analyte-table { width: 100%; }
+.analyte-header {
+  display: grid; grid-template-columns: 1fr 80px 80px 70px; gap: 8px;
+  padding: 8px 0; border-bottom: 1px solid var(--border-subtle);
+  font-size: 10px; font-weight: 600; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.analyte-header > *:not(:first-child) { text-align: right; }
+.analyte-row {
+  display: grid; grid-template-columns: 1fr 80px 80px 70px; gap: 8px;
+  padding: 10px 0; border-bottom: 1px solid var(--border-subtle);
+  align-items: center; font-size: 13px;
+  transition: background var(--dur-fast) var(--ease);
+  cursor: default;
+}
+.analyte-row:last-child { border-bottom: none; }
+.analyte-row:hover { background: rgba(255,255,255,0.02); }
+.analyte-row.highlight {
+  background: var(--thc-subtle);
+  border-radius: var(--r-sm);
+  margin: 0 -8px; padding: 10px 8px;
+}
+.analyte-name { font-weight: 500; color: var(--text-primary); }
+.analyte-name .sub { font-size: 11px; color: var(--text-tertiary); margin-left: 4px; }
+.analyte-value {
+  text-align: right; font-family: var(--font-mono);
+  font-weight: 600; font-size: 13px;
+}
+.analyte-limit { text-align: right; color: var(--text-tertiary); font-family: var(--font-mono); font-size: 12px; }
+.analyte-status { text-align: right; }
+.mini-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 8px; border-radius: var(--r-full);
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.mini-badge.pass { background: var(--pass-bg); color: var(--pass); }
+.mini-badge.fail { background: var(--fail-bg); color: var(--fail); }
+.mini-badge.na { background: var(--pending-bg); color: var(--text-tertiary); }
+
+/* ══════════════════════════════════════════════════════════════
+   TERPENE PROFILE — BAR CHART
+   ══════════════════════════════════════════════════════════════ */
+.terpene-list { display: flex; flex-direction: column; gap: 14px; }
+.terpene-item {
+  display: grid; grid-template-columns: 120px 1fr 50px; gap: 12px;
+  align-items: center;
+}
+.terpene-name {
+  font-size: 13px; font-weight: 600; color: var(--text-primary);
+  display: flex; align-items: center; gap: 8px;
+}
+.terpene-dot { width: 8px; height: 8px; min-width: 8px; border-radius: 50%; }
+.terpene-bar-track {
+  height: 10px; border-radius: var(--r-full);
+  background: rgba(255,255,255,0.06);
+  overflow: hidden; position: relative;
+}
+.terpene-bar-fill {
+  height: 100%; border-radius: var(--r-full);
+  transition: width 0.8s var(--ease-out);
+  position: relative;
+}
+.terpene-bar-fill::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.15) 100%);
+  border-radius: var(--r-full);
+}
+.terpene-pct {
+  font-family: var(--font-mono); font-size: 13px;
+  font-weight: 600; color: var(--text-secondary);
+  text-align: right;
+}
+.terpene-aroma {
+  font-size: 11px; color: var(--text-tertiary); margin-top: 2px;
+  grid-column: 1 / -1;
+  padding-left: 28px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   COMPLIANCE TESTS
+   ══════════════════════════════════════════════════════════════ */
+.compliance-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+}
+.compliance-item {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  display: flex; justify-content: space-between; align-items: center;
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease);
+}
+.compliance-item:hover { border-color: var(--border-strong); }
+.compliance-item.expanded { border-color: var(--accent); }
+.compliance-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.compliance-detail { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+.compliance-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 12px; border-radius: var(--r-full);
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.compliance-badge.pass { background: var(--pass-bg); color: var(--pass); border: 1px solid var(--pass-border); }
+.compliance-badge.fail { background: var(--fail-bg); color: var(--fail); border: 1px solid var(--fail-border); }
+.compliance-badge.pending { background: var(--pending-bg); color: var(--text-secondary); border: 1px solid var(--border-default); }
+.compliance-expand {
+  display: none; grid-column: 1 / -1;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-md);
+  padding: 16px 20px;
+}
+.compliance-expand.show { display: block; }
+
+/* ══════════════════════════════════════════════════════════════
+   COA DOCUMENT
+   ══════════════════════════════════════════════════════════════ */
+.coa-section { display: flex; gap: 20px; align-items: flex-start; }
+.coa-preview {
+  width: 120px; min-width: 120px; height: 160px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-md);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease);
+}
+.coa-preview:hover { border-color: var(--accent); }
+.coa-preview svg { width: 32px; height: 32px; opacity: 0.4; }
+.coa-preview span { font-size: 11px; font-weight: 500; }
+.coa-info { flex: 1; }
+.coa-filename { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.coa-meta { font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; }
+.coa-badges { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.coa-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: var(--r-full);
+  font-size: 11px; font-weight: 600;
+}
+.coa-badge.official { background: var(--info-bg); color: var(--info); border: 1px solid rgba(96,165,250,0.2); }
+.coa-badge.verified { background: var(--accent-subtle); color: var(--accent); border: 1px solid rgba(16,185,129,0.2); }
+.coa-actions { display: flex; gap: 8px; }
+
+/* ══════════════════════════════════════════════════════════════
+   METADATA
+   ══════════════════════════════════════════════════════════════ */
+.meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0; }
+.meta-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.meta-row:last-child { border-bottom: none; }
+.meta-label { font-size: 12px; color: var(--text-tertiary); font-weight: 500; }
+.meta-value { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+.meta-value.mono { font-family: var(--font-mono); font-size: 12px; }
+
+/* ══════════════════════════════════════════════════════════════
+   CTA SECTION — "Get your own Labstak"
+   ══════════════════════════════════════════════════════════════ */
+.cta-section {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-xl);
+  padding: 32px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+.cta-icon {
+  width: 48px; height: 48px; margin: 0 auto 16px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(16,185,129,0.25);
+}
+.cta-icon svg { width: 24px; height: 24px; fill: white; }
+.cta-title {
+  font-size: 18px; font-weight: 700; margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+.cta-desc {
+  font-size: 14px; color: var(--text-secondary);
+  margin-bottom: 20px; max-width: 460px; margin-left: auto; margin-right: auto;
+  line-height: 1.6;
+}
+.cta-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 24px; border-radius: var(--r-md);
+  background: var(--accent); color: #fff;
+  font-family: var(--font-sans); font-size: 14px; font-weight: 700;
+  border: none; cursor: pointer;
+  transition: all var(--dur-fast) var(--ease);
+  text-decoration: none;
+}
+.cta-btn:hover { background: var(--accent-hover); transform: translateY(-1px); }
+.cta-btn svg { width: 16px; height: 16px; }
+
+/* ══════════════════════════════════════════════════════════════
+   FOOTER
+   ══════════════════════════════════════════════════════════════ */
+.footer-bar {
+  text-align: center; padding: 16px 32px;
+  font-size: 12px; color: var(--text-tertiary);
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+}
+.footer-bar a {
+  color: var(--accent); font-weight: 600;
+  transition: color var(--dur-fast) var(--ease);
+}
+.footer-bar a:hover { color: var(--accent-hover); }
+
+/* ══════════════════════════════════════════════════════════════
+   PRINT VIEW
+   ══════════════════════════════════════════════════════════════ */
+@media print {
+  .topbar, .hero-actions, .cta-section, .footer-bar, .share-banner, .theme-toggle { display: none !important; }
+  .page { padding: 0; max-width: none; }
+  .section-card, .hero-card { break-inside: avoid; }
+  body { background: #fff; color: #000; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 1100px) {
+  .potency-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 900px) {
+  .content-grid { grid-template-columns: 1fr; }
+  .compliance-grid { grid-template-columns: repeat(2, 1fr); }
+  .page { padding: 20px 20px 60px; }
+  .topbar { padding: 12px 20px; }
+  .hero-card { padding: 20px; }
+  .hero-name { font-size: 22px; }
+  .potency-value { font-size: 26px; }
+}
+@media (max-width: 600px) {
+  .potency-grid { grid-template-columns: 1fr 1fr; }
+  .compliance-grid { grid-template-columns: 1fr; }
+  .hero-top { flex-direction: column; }
+  .hero-status-block { align-items: flex-start; text-align: left; }
+  .confidence-score { justify-content: flex-start; }
+  .coa-section { flex-direction: column; }
+  .coa-preview { width: 100%; height: 120px; }
+  .terpene-item { grid-template-columns: 100px 1fr 45px; gap: 8px; }
+  .analyte-header, .analyte-row { grid-template-columns: 1fr 60px 60px 55px; }
+  .meta-grid { grid-template-columns: 1fr; }
+  .share-banner { flex-direction: column; gap: 8px; align-items: flex-start; }
+  .topbar-cta span { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ PIN GATE (optional — remove class="hidden" to enable) ═══ -->
+<div id="pin-gate" class="hidden">
+  <div style="text-align:center;max-width:360px;padding:24px;">
+    <div style="margin-bottom:24px;">
+      <div style="width:48px;height:48px;background:linear-gradient(135deg,#10B981,#059669);border-radius:10px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;box-shadow:0 4px 16px rgba(16,185,129,0.25);">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <h2 style="font-size:1.25rem;margin-bottom:4px;color:#EAEDF2;">This link is PIN-protected</h2>
+      <p style="font-size:0.85rem;color:#5C6578;line-height:1.5;">The person who shared these results set a PIN.<br>Enter it below to continue.</p>
+    </div>
+    <input id="pin-input" type="password" inputmode="numeric" maxlength="10" placeholder="Enter PIN" autocomplete="off" style="
+      width:100%;padding:14px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.10);
+      background:#141720;color:#EAEDF2;font-family:var(--font-mono);font-size:1.1rem;
+      outline:none;margin-bottom:12px;text-align:center;letter-spacing:0.2em;
+    ">
+    <button id="pin-btn" style="
+      width:100%;padding:12px;border-radius:8px;border:none;
+      background:#10B981;color:#fff;font-family:var(--font-sans);font-size:0.95rem;font-weight:600;
+      cursor:pointer;transition:background 0.15s;
+    ">View Results</button>
+    <p id="pin-error" style="font-size:0.8rem;color:#F87171;margin-top:10px;display:none;">Incorrect PIN — please try again</p>
+    <div style="margin-top:20px;">
+      <div style="display:flex;align-items:center;gap:8px;justify-content:center;">
+        <div style="width:24px;height:24px;border-radius:5px;background:linear-gradient(135deg,#10B981,#059669);display:flex;align-items:center;justify-content:center;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M4 6a2 2 0 012-2h12a2 2 0 012 2v1a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm0 5.5A1.5 1.5 0 015.5 10h13a1.5 1.5 0 011.5 1.5v1a1.5 1.5 0 01-1.5 1.5h-13A1.5 1.5 0 014 12.5v-1zM4 17a2 2 0 012-2h12a2 2 0 012 2v1a2 2 0 01-2 2H6a2 2 0 01-2-2v-1z"/></svg>
+        </div>
+        <span style="font-size:12px;color:#5C6578;">Shared via <strong style="color:#10B981;">Labstak</strong></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // PIN gate demo — set requirePin = true to test
+  const requirePin = false;
+  const correctPin = '1234';
+
+  if (!requirePin) {
+    document.getElementById('pin-gate').classList.add('hidden');
+  } else {
+    document.getElementById('pin-gate').classList.remove('hidden');
+  }
+
+  function tryPin() {
+    if (document.getElementById('pin-input').value === correctPin) {
+      document.getElementById('pin-gate').classList.add('hidden');
+    } else {
+      document.getElementById('pin-error').style.display = 'block';
+      document.getElementById('pin-input').value = '';
+      document.getElementById('pin-input').focus();
+    }
+  }
+  document.getElementById('pin-btn').onclick = tryPin;
+  document.getElementById('pin-input').onkeydown = function(e) { if (e.key === 'Enter') tryPin(); };
+})();
+</script>
+
+<!-- ═══ TOP BAR ═══ -->
+<nav class="topbar">
+  <div class="topbar-left">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M4 6a2 2 0 012-2h12a2 2 0 012 2v1a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm0 5.5A1.5 1.5 0 015.5 10h13a1.5 1.5 0 011.5 1.5v1a1.5 1.5 0 01-1.5 1.5h-13A1.5 1.5 0 014 12.5v-1zM4 17a2 2 0 012-2h12a2 2 0 012 2v1a2 2 0 01-2 2H6a2 2 0 01-2-2v-1z"/></svg>
+    </div>
+    <span class="logo-text">LABSTAK</span>
+  </div>
+  <div class="topbar-right">
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+    <a href="app.html" class="topbar-cta">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      <span>Sign Up Free</span>
+    </a>
+  </div>
+</nav>
+
+<!-- ═══ MAIN CONTENT ═══ -->
+<div class="page">
+
+  <!-- ═══ SHARE BANNER ═══ -->
+  <div class="share-banner">
+    <div class="share-banner-left">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      Shared by <strong>Delta Farms</strong> · March 8, 2026
+    </div>
+    <div class="share-banner-right">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Expires Apr 7, 2026
+    </div>
+  </div>
+
+  <!-- ═══ HERO CARD ═══ -->
+  <div class="hero-card">
+    <div class="hero-top">
+      <div class="hero-info">
+        <div class="hero-name">Purple Haze Live Rosin</div>
+        <div class="hero-strain">Purple Haze — Batch B2026-0228 · Concentrate (Extract)</div>
+        <div class="hero-metrc" onclick="copyMetrc(this)" title="Click to copy Metrc tag">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          1A42301000026847
+        </div>
+      </div>
+      <div class="hero-status-block">
+        <div class="status-badge-big passed">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          All Tests Passed
+        </div>
+        <div class="confidence-score">
+          <span class="dot"></span>
+          98% cross-validation confidence
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-actions">
+      <button class="btn btn-primary" onclick="alert('Would download COA PDF')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download COA
+      </button>
+      <button class="btn btn-secondary" onclick="window.print()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Print
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══ POTENCY CARDS ═══ -->
+  <div class="potency-grid">
+    <div class="potency-big-card thc-card">
+      <div class="potency-label">Total THC</div>
+      <div class="potency-value thc">78.4<span class="potency-unit">%</span></div>
+      <div class="potency-source"><span class="enriched">🔬 COA Verified</span></div>
+    </div>
+    <div class="potency-big-card cbd-card">
+      <div class="potency-label">Total CBD</div>
+      <div class="potency-value cbd">2.1<span class="potency-unit">%</span></div>
+      <div class="potency-source"><span class="enriched">🔬 COA Verified</span></div>
+    </div>
+    <div class="potency-big-card terp-card">
+      <div class="potency-label">Total Terpenes</div>
+      <div class="potency-value terps">4.82<span class="potency-unit">%</span></div>
+      <div class="potency-source"><span class="enriched">🔬 COA Verified</span></div>
+    </div>
+    <div class="potency-big-card total-card">
+      <div class="potency-label">Total Cannabinoids</div>
+      <div class="potency-value total">84.7<span class="potency-unit">%</span></div>
+      <div class="potency-source">Combined</div>
+    </div>
+  </div>
+
+  <!-- ═══ CONTENT GRID ═══ -->
+  <div class="content-grid">
+
+    <!-- ── CANNABINOID PROFILE ── -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Cannabinoid Profile
+        </div>
+        <div style="display:flex;gap:6px;">
+          <span class="section-tag metrc">Metrc</span>
+          <span class="section-tag enriched">🔬 COA Enriched</span>
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="analyte-table">
+          <div class="analyte-header">
+            <div>Analyte</div>
+            <div>Result</div>
+            <div>Limit</div>
+            <div>Status</div>
+          </div>
+          <div class="analyte-row highlight">
+            <div class="analyte-name">Δ9-THC <span class="sub">(delta-9)</span></div>
+            <div class="analyte-value" style="color:var(--thc)">3.42%</div>
+            <div class="analyte-limit">—</div>
+            <div class="analyte-status"><span class="mini-badge pass">Pass</span></div>
+          </div>
+          <div class="analyte-row highlight">
+            <div class="analyte-name">THCA</div>
+            <div class="analyte-value" style="color:var(--thc)">85.44%</div>
+            <div class="analyte-limit">—</div>
+            <div class="analyte-status"><span class="mini-badge pass">Pass</span></div>
+          </div>
+          <div class="analyte-row">
+            <div class="analyte-name">Total THC</div>
+            <div class="analyte-value" style="color:var(--thc)">78.40%</div>
+            <div class="analyte-limit">—</div>
+            <div class="analyte-status"><span class="mini-badge pass">Pass</span></div>
+          </div>
+          <div class="analyte-row">
+            <div class="analyte-name">CBD</div>
+            <div class="analyte-value" style="color:var(--cbd)">0.18%</div>
+            <div class="analyte-limit">—</div>
+            <div class="analyte-status"><span class="mini-badge pass">Pass</span></div>
+          </div>
+          <div class="analyte-row">
+            <div class="analyte-name">CBDA</div>
+            <div class="analyte-value" style="color:var(--cbd)">2.19%</div>
+            <div class="analyte-limit">—</div>
+            <div class="analyte-status"><span class="mini-badge pass">Pass</span></div>
+          </div>
+          <div class="analyte-row">
+            <div class="analyte-name">Total CBD</div>
+            <div class="analyte-value" style="color:var(--cbd)">2.10%</div>
+            <div class="analyte-limit">—</div>
+            <div class="analyte-status"><span class="mini-badge pass">Pass</span></div>
+          </div>
+          <div class="analyte-row">
+            <div class="analyte-name">CBG</div>
+            <div class="analyte-value">1.23%</div>
+            <div class="analyte-limit">—</div>
+            <div class="analyte-status"><span class="mini-badge pass">Pass</span></div>
+          </div>
+          <div class="analyte-row">
+            <div class="analyte-name">CBN</div>
+            <div class="analyte-value">0.41%</div>
+            <div class="analyte-limit">—</div>
+            <div class="analyte-status"><span class="mini-badge pass">Pass</span></div>
+          </div>
+          <div class="analyte-row">
+            <div class="analyte-name">CBC</div>
+            <div class="analyte-value">0.28%</div>
+            <div class="analyte-limit">—</div>
+            <div class="analyte-status"><span class="mini-badge pass">Pass</span></div>
+          </div>
+          <div class="analyte-row">
+            <div class="analyte-name">THCV</div>
+            <div class="analyte-value">0.15%</div>
+            <div class="analyte-limit">—</div>
+            <div class="analyte-status"><span class="mini-badge pass">Pass</span></div>
+          </div>
+          <div class="analyte-row">
+            <div class="analyte-name">CBDV</div>
+            <div class="analyte-value">&lt;LOQ</div>
+            <div class="analyte-limit">—</div>
+            <div class="analyte-status"><span class="mini-badge na">N/A</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TERPENE PROFILE ── -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          Terpene Profile
+        </div>
+        <span class="section-tag enriched">🔬 From COA</span>
+      </div>
+      <div class="section-body">
+        <div class="terpene-list" id="terpeneList"></div>
+      </div>
+    </div>
+
+    <!-- ── COMPLIANCE TESTS ── -->
+    <div class="section-card full-width">
+      <div class="section-header">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 12l2 2 4-4"/><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Compliance Tests
+        </div>
+        <span class="section-tag metrc">From Metrc</span>
+      </div>
+      <div class="section-body">
+        <div class="compliance-grid" id="complianceGrid"></div>
+      </div>
+    </div>
+
+    <!-- ── COA DOCUMENT ── -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Certificate of Analysis
+        </div>
+      </div>
+      <div class="section-body">
+        <div class="coa-section">
+          <div class="coa-preview" onclick="alert('Would open PDF viewer')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            <span>PDF</span>
+          </div>
+          <div class="coa-info">
+            <div class="coa-filename">COA-PurpleHaze-LR-20260304.pdf</div>
+            <div class="coa-meta">Delta Testing Co · March 4, 2026 · 2.4 MB</div>
+            <div class="coa-badges">
+              <span class="coa-badge official">📄 Official Lab Report</span>
+              <span class="coa-badge verified">✓ Data Verified</span>
+            </div>
+            <div class="coa-actions">
+              <button class="btn btn-primary" onclick="alert('Would open PDF viewer')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                View PDF
+              </button>
+              <button class="btn btn-secondary" onclick="alert('Would download PDF')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PACKAGE INFO ── -->
+    <div class="section-card">
+      <div class="section-header">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          Package Information
+        </div>
+      </div>
+      <div class="section-body" style="padding:12px 24px;">
+        <div class="meta-grid">
+          <div>
+            <div class="meta-row">
+              <span class="meta-label">Product</span>
+              <span class="meta-value">Purple Haze Live Rosin</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Category</span>
+              <span class="meta-value">Concentrate (Extract)</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Strain</span>
+              <span class="meta-value">Purple Haze</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Batch</span>
+              <span class="meta-value mono">B2026-0228</span>
+            </div>
+          </div>
+          <div>
+            <div class="meta-row">
+              <span class="meta-label">Testing Lab</span>
+              <span class="meta-value">Delta Testing Co</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Test Date</span>
+              <span class="meta-value mono">Mar 4, 2026</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Lab Testing State</span>
+              <span class="meta-value" style="color:var(--pass);font-weight:600;">TestPassed</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-label">Metrc Tag</span>
+              <span class="meta-value mono" style="font-size:11px;">1A42301000026847</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- /content-grid -->
+
+  <!-- ═══ CTA SECTION ═══ -->
+  <div class="cta-section">
+    <div class="cta-icon">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M4 6a2 2 0 012-2h12a2 2 0 012 2v1a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm0 5.5A1.5 1.5 0 015.5 10h13a1.5 1.5 0 011.5 1.5v1a1.5 1.5 0 01-1.5 1.5h-13A1.5 1.5 0 014 12.5v-1zM4 17a2 2 0 012-2h12a2 2 0 012 2v1a2 2 0 01-2 2H6a2 2 0 01-2-2v-1z"/></svg>
+    </div>
+    <div class="cta-title">See your own lab results like this</div>
+    <div class="cta-desc">
+      Labstak connects directly to Metrc to pull your test results automatically. 
+      Track potency trends, share COAs with buyers, and never dig through email for a lab report again.
+    </div>
+    <a href="app.html" class="cta-btn">
+      Start Free
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+  </div>
+
+</div>
+<!-- /page -->
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="footer-bar">
+  Powered by <a href="#">Labstak</a> · Lab testing data for cannabis growers
+</footer>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// THEME TOGGLE
+// ══════════════════════════════════════════════════════════════
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  html.setAttribute('data-theme', current === 'light' ? '' : 'light');
+  localStorage.setItem('ls-theme', html.getAttribute('data-theme'));
+}
+(function() {
+  const saved = localStorage.getItem('ls-theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+  // Respect OS preference
+  if (!saved && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+
+// ══════════════════════════════════════════════════════════════
+// COPY METRC TAG
+// ══════════════════════════════════════════════════════════════
+function copyMetrc(el) {
+  const tag = '1A42301000026847';
+  navigator.clipboard.writeText(tag).then(() => {
+    const orig = el.innerHTML;
+    el.style.color = 'var(--accent)';
+    setTimeout(() => { el.style.color = ''; }, 1200);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+// TERPENE DATA
+// ══════════════════════════════════════════════════════════════
+const terpenes = [
+  { name: 'Myrcene',         pct: 1.52, color: 'var(--terp-myrcene)',       aroma: 'Earthy, musky, herbal' },
+  { name: 'Limonene',        pct: 0.98, color: 'var(--terp-limonene)',      aroma: 'Citrus, lemon, orange peel' },
+  { name: 'β-Caryophyllene', pct: 0.87, color: 'var(--terp-caryophyllene)', aroma: 'Spicy, peppery, woody' },
+  { name: 'α-Pinene',        pct: 0.54, color: 'var(--terp-pinene)',        aroma: 'Pine, fresh, sharp' },
+  { name: 'Terpinolene',     pct: 0.38, color: 'var(--terp-terpinolene)',   aroma: 'Floral, herbal, piney' },
+  { name: 'Linalool',        pct: 0.31, color: 'var(--terp-linalool)',      aroma: 'Lavender, floral, sweet' },
+  { name: 'Humulene',        pct: 0.14, color: 'var(--terp-humulene)',      aroma: 'Hoppy, earthy, woody' },
+  { name: 'Ocimene',         pct: 0.08, color: 'var(--terp-ocimene)',       aroma: 'Sweet, tropical, herbaceous' },
+];
+
+function renderTerpenes() {
+  const maxPct = Math.max(...terpenes.map(t => t.pct));
+  const container = document.getElementById('terpeneList');
+  container.innerHTML = terpenes.map(t => {
+    const barWidth = (t.pct / maxPct * 100).toFixed(1);
+    return `
+      <div class="terpene-item">
+        <div class="terpene-name">
+          <span class="terpene-dot" style="background:${t.color}"></span>
+          ${t.name}
+        </div>
+        <div class="terpene-bar-track">
+          <div class="terpene-bar-fill" style="width:${barWidth}%;background:${t.color};" data-width="${barWidth}"></div>
+        </div>
+        <div class="terpene-pct">${t.pct.toFixed(2)}%</div>
+        <div class="terpene-aroma">${t.aroma}</div>
+      </div>
+    `;
+  }).join('');
+
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.terpene-bar-fill').forEach(bar => {
+      const w = bar.dataset.width;
+      bar.style.width = '0%';
+      requestAnimationFrame(() => { bar.style.width = w + '%'; });
+    });
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+// COMPLIANCE DATA
+// ══════════════════════════════════════════════════════════════
+const complianceTests = [
+  { 
+    name: 'Pesticides', status: 'pass', detail: '70 analytes tested',
+    analytes: [
+      { name: 'Abamectin', result: 'ND', limit: '0.50 ppm', pass: true },
+      { name: 'Bifenazate', result: 'ND', limit: '0.50 ppm', pass: true },
+      { name: 'Myclobutanil', result: 'ND', limit: '0.50 ppm', pass: true },
+      { name: 'Spinosad', result: 'ND', limit: '0.50 ppm', pass: true },
+    ]
+  },
+  { 
+    name: 'Heavy Metals', status: 'pass', detail: '4 analytes tested',
+    analytes: [
+      { name: 'Arsenic', result: '0.028 ppm', limit: '0.40 ppm', pass: true },
+      { name: 'Cadmium', result: '0.015 ppm', limit: '0.40 ppm', pass: true },
+      { name: 'Lead', result: 'ND', limit: '0.50 ppm', pass: true },
+      { name: 'Mercury', result: 'ND', limit: '0.10 ppm', pass: true },
+    ]
+  },
+  { 
+    name: 'Microbials', status: 'pass', detail: 'All within limits',
+    analytes: [
+      { name: 'Total Yeast & Mold', result: '182 CFU/g', limit: '10,000 CFU/g', pass: true },
+      { name: 'Total Coliforms', result: 'ND', limit: '100 CFU/g', pass: true },
+      { name: 'E. coli', result: 'ND', limit: '100 CFU/g', pass: true },
+      { name: 'Salmonella', result: 'ND', limit: 'Not Detected', pass: true },
+    ]
+  },
+  { 
+    name: 'Residual Solvents', status: 'pass', detail: '13 analytes tested',
+    analytes: [
+      { name: 'Butane', result: 'ND', limit: '5000 ppm', pass: true },
+      { name: 'Propane', result: 'ND', limit: '5000 ppm', pass: true },
+      { name: 'Ethanol', result: '42 ppm', limit: '5000 ppm', pass: true },
+    ]
+  },
+  { 
+    name: 'Mycotoxins', status: 'pass', detail: 'Aflatoxins + Ochratoxin A',
+    analytes: [
+      { name: 'Total Aflatoxins', result: 'ND', limit: '20 µg/kg', pass: true },
+      { name: 'Ochratoxin A', result: 'ND', limit: '20 µg/kg', pass: true },
+    ]
+  },
+  { 
+    name: 'Foreign Material', status: 'pass', detail: 'Visual inspection',
+    analytes: [
+      { name: 'Foreign Material', result: 'Not Detected', limit: 'None', pass: true },
+    ]
+  },
+];
+
+function renderCompliance() {
+  const grid = document.getElementById('complianceGrid');
+  grid.innerHTML = complianceTests.map((test, i) => `
+    <div class="compliance-item" onclick="toggleCompliance(${i})" id="comp-${i}">
+      <div>
+        <div class="compliance-name">${test.name}</div>
+        <div class="compliance-detail">${test.detail}</div>
+      </div>
+      <span class="compliance-badge ${test.status}">${test.status === 'pass' ? '✓ Pass' : test.status === 'fail' ? '✗ Fail' : '— Pending'}</span>
+    </div>
+  `).join('') + complianceTests.map((test, i) => `
+    <div class="compliance-expand" id="comp-detail-${i}">
+      <div class="analyte-table">
+        <div class="analyte-header">
+          <div>Analyte</div>
+          <div>Result</div>
+          <div>Limit</div>
+          <div>Status</div>
+        </div>
+        ${test.analytes.map(a => `
+          <div class="analyte-row">
+            <div class="analyte-name">${a.name}</div>
+            <div class="analyte-value">${a.result}</div>
+            <div class="analyte-limit">${a.limit}</div>
+            <div class="analyte-status"><span class="mini-badge ${a.pass ? 'pass' : 'fail'}">${a.pass ? 'Pass' : 'Fail'}</span></div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+let expandedCompliance = null;
+function toggleCompliance(i) {
+  const detail = document.getElementById('comp-detail-' + i);
+  const item = document.getElementById('comp-' + i);
+  if (expandedCompliance === i) {
+    detail.classList.remove('show');
+    item.classList.remove('expanded');
+    expandedCompliance = null;
+  } else {
+    // Close previous
+    if (expandedCompliance !== null) {
+      document.getElementById('comp-detail-' + expandedCompliance).classList.remove('show');
+      document.getElementById('comp-' + expandedCompliance).classList.remove('expanded');
+    }
+    detail.classList.add('show');
+    item.classList.add('expanded');
+    expandedCompliance = i;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+renderTerpenes();
+renderCompliance();
+</script>
+
+</body>
+</html>

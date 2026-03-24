@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Labstak — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════
+   LABSTAK DESIGN SYSTEM TOKENS
+   ══════════════════════════════════════════════════════════════ */
+:root {
+  /* Background hierarchy */
+  --bg-body: #0B0D12;
+  --bg-surface: #141720;
+  --bg-elevated: #1C2029;
+  --bg-overlay: #242933;
+  --bg-float: #2D333F;
+
+  /* Text hierarchy */
+  --text-primary: #EAEDF2;
+  --text-secondary: #8B95A6;
+  --text-tertiary: #5C6578;
+  --text-disabled: #3D4555;
+
+  /* Borders */
+  --border-subtle: rgba(255,255,255,0.06);
+  --border-default: rgba(255,255,255,0.10);
+  --border-strong: rgba(255,255,255,0.16);
+
+  /* Brand */
+  --accent: #10B981;
+  --accent-hover: #34D399;
+  --accent-subtle: rgba(16,185,129,0.10);
+
+  /* Cannabis color language */
+  --thc: #F59E0B;
+  --thc-subtle: rgba(245,158,11,0.10);
+  --terps: #A78BFA;
+  --terps-subtle: rgba(167,139,250,0.10);
+  --cbd: #60A5FA;
+
+  /* Status */
+  --pass: #10B981;
+  --pass-bg: rgba(16,185,129,0.10);
+  --pass-border: rgba(16,185,129,0.25);
+  --fail: #F87171;
+  --fail-bg: rgba(248,113,113,0.10);
+  --fail-border: rgba(248,113,113,0.25);
+  --warn: #FBBF24;
+  --warn-bg: rgba(251,191,36,0.10);
+  --info: #60A5FA;
+  --info-bg: rgba(96,165,250,0.10);
+  --pending-bg: rgba(255,255,255,0.06);
+
+  /* Individual terpene colors */
+  --terp-myrcene: #818CF8;
+  --terp-limonene: #FBBF24;
+  --terp-caryophyllene: #A78BFA;
+  --terp-pinene: #34D399;
+  --terp-terpinolene: #FB923C;
+  --terp-linalool: #F472B6;
+
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Motion */
+  --dur-instant: 80ms;
+  --dur-fast: 150ms;
+  --dur-base: 250ms;
+  --dur-slow: 350ms;
+  --dur-emphasis: 500ms;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Radius */
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+  --r-full: 9999px;
+
+  /* Layout */
+  --sidebar-w: 260px;
+  --sidebar-collapsed: 72px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LIGHT THEME
+   ══════════════════════════════════════════════════════════════ */
+[data-theme="light"] {
+  --bg-body: #F5F6F8;
+  --bg-surface: #FFFFFF;
+  --bg-elevated: #F0F1F4;
+  --bg-overlay: #E8E9ED;
+  --bg-float: #DDDEE3;
+
+  --text-primary: #1A1D26;
+  --text-secondary: #5C6478;
+  --text-tertiary: #8B92A5;
+  --text-disabled: #B8BDC9;
+
+  --border-subtle: rgba(0,0,0,0.06);
+  --border-default: rgba(0,0,0,0.10);
+  --border-strong: rgba(0,0,0,0.16);
+
+  --accent-subtle: rgba(16,185,129,0.08);
+
+  --thc-subtle: rgba(245,158,11,0.08);
+  --terps-subtle: rgba(167,139,250,0.08);
+
+  --pass-bg: rgba(16,185,129,0.08);
+  --pass-border: rgba(16,185,129,0.20);
+  --fail-bg: rgba(248,113,113,0.08);
+  --fail-border: rgba(248,113,113,0.20);
+  --warn-bg: rgba(251,191,36,0.08);
+  --info-bg: rgba(96,165,250,0.08);
+  --pending-bg: rgba(0,0,0,0.04);
+}
+[data-theme="light"] .header {
+  background: rgba(245,246,248,0.85);
+}
+[data-theme="light"] .hero::before {
+  background: linear-gradient(180deg,
+    rgba(16,185,129,0.05) 0%,
+    rgba(16,185,129,0.01) 40%,
+    transparent 100%);
+}
+[data-theme="light"] .sidebar {
+  background: #FFFFFF;
+  border-right-color: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .btn-primary { color: #fff; }
+[data-theme="light"] .logo-mark {
+  box-shadow: 0 2px 10px rgba(16,185,129,0.2);
+}
+[data-theme="light"] .badge-highlight {
+  background: linear-gradient(135deg, rgba(245,158,11,0.10) 0%, rgba(245,158,11,0.05) 100%);
+  border-color: rgba(245,158,11,0.20);
+}
+[data-theme="light"] .bell-dot {
+  border-color: var(--bg-body);
+}
+[data-theme="light"] .search-kbd {
+  background: var(--bg-elevated);
+}
+/* Light mode: strong card borders + surface contrast */
+[data-theme="light"] .hero,
+[data-theme="light"] .card,
+[data-theme="light"] .kpi,
+[data-theme="light"] .kpi-strip {
+  border: 1px solid rgba(0,0,0,0.15);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+[data-theme="light"] .orders-table tr {
+  border-bottom: 1px solid rgba(0,0,0,0.10);
+}
+[data-theme="light"] .feed-item {
+  border: 1px solid rgba(0,0,0,0.12);
+}
+[data-theme="light"] .nav-item:hover,
+[data-theme="light"] .lab-item:hover {
+  background: rgba(0,0,0,0.04);
+}
+[data-theme="light"] .filter-btn,
+[data-theme="light"] .search-bar {
+  border-color: rgba(0,0,0,0.15);
+  background: #fff;
+}
+[data-theme="light"] .btn-secondary {
+  border-color: rgba(0,0,0,0.15);
+  background: #fff;
+}
+[data-theme="light"] .sidebar {
+  border-right: 1px solid rgba(0,0,0,0.12);
+  box-shadow: 1px 0 4px rgba(0,0,0,0.04);
+}
+[data-theme="light"] .header {
+  border-bottom: 1px solid rgba(0,0,0,0.10);
+}
+[data-theme="light"] .terp-bar-track {
+  background: rgba(0,0,0,0.06);
+}
+[data-theme="light"] .hero-divider {
+  background: rgba(0,0,0,0.10);
+}
+[data-theme="light"] .sidebar-divider {
+  background: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .badge-highlight {
+  border-color: rgba(245,158,11,0.30);
+}
+[data-theme="light"] #gate {
+  background: #F5F6F8 !important;
+}
+[data-theme="light"] #gate h2 { color: #1A1D26 !important; }
+[data-theme="light"] #gate p { color: #8B92A5 !important; }
+[data-theme="light"] #gate input {
+  background: #fff !important;
+  color: #1A1D26 !important;
+  border-color: rgba(0,0,0,0.12) !important;
+}
+
+/* Theme toggle */
+.theme-toggle {
+  width: 32px; height: 32px; border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  border: none; background: transparent; cursor: pointer;
+  color: var(--text-secondary);
+  transition: background var(--dur-fast) var(--ease);
+}
+.theme-toggle:hover { background: rgba(128,128,128,0.1); }
+.theme-toggle svg { width: 16px; height: 16px; }
+.theme-toggle .icon-sun { display: none; }
+.theme-toggle .icon-moon { display: block; }
+[data-theme="light"] .theme-toggle .icon-sun { display: block; }
+[data-theme="light"] .theme-toggle .icon-moon { display: none; }
+
+/* ── Reset ── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-body);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+a { color: inherit; text-decoration: none; }
+
+/* ══════════════════════════════════════════════════════════════
+   SIDEBAR
+   ══════════════════════════════════════════════════════════════ */
+.sidebar {
+  position: fixed; top: 0; left: 0; bottom: 0;
+  width: var(--sidebar-w);
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border-default);
+  display: flex; flex-direction: column;
+  padding: 24px 0 16px;
+  z-index: 100;
+  transition: width var(--dur-slow) var(--ease);
+  overflow: hidden;
+}
+
+/* Logo */
+.logo {
+  padding: 0 20px 20px;
+  display: flex; align-items: center; gap: 10px;
+  flex-shrink: 0;
+  min-width: 0;
+}
+.logo-mark {
+  width: 34px; height: 34px; min-width: 34px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 10px rgba(16,185,129,0.3);
+}
+.logo-mark svg { width: 18px; height: 18px; fill: white; }
+.logo-text {
+  font-size: 16px; font-weight: 700; letter-spacing: 0.08em;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  white-space: nowrap;
+  transition: opacity var(--dur-base) var(--ease);
+}
+
+/* Nav sections */
+.nav-section { padding: 12px 12px 4px; }
+.nav-label {
+  font-size: 10px; font-weight: 600; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.1em;
+  padding: 0 12px 6px;
+  white-space: nowrap; overflow: hidden;
+  transition: opacity var(--dur-base) var(--ease);
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: var(--r-md);
+  font-size: 14px; font-weight: 500; color: var(--text-secondary);
+  cursor: pointer; position: relative;
+  transition: all var(--dur-fast) var(--ease);
+  white-space: nowrap; overflow: hidden;
+}
+.nav-item:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
+.nav-item.active { background: var(--accent-subtle); color: var(--accent); }
+.nav-item.active::before {
+  content: ''; position: absolute; left: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 3px; height: 20px; border-radius: 0 3px 3px 0;
+  background: var(--accent);
+}
+.nav-icon {
+  width: 18px; height: 18px; min-width: 18px;
+  opacity: 0.5; flex-shrink: 0;
+}
+.nav-item.active .nav-icon { opacity: 1; }
+.nav-item:hover .nav-icon { opacity: 0.8; }
+.nav-text {
+  transition: opacity var(--dur-base) var(--ease);
+  overflow: hidden;
+}
+.nav-badge {
+  margin-left: auto; font-size: 10px; font-weight: 700;
+  padding: 1px 7px; border-radius: var(--r-full);
+  white-space: nowrap;
+  transition: opacity var(--dur-base) var(--ease);
+}
+.nav-badge.green { background: var(--accent-subtle); color: var(--accent); border: 1px solid rgba(16,185,129,0.25); }
+.nav-badge.red { background: var(--fail-bg); color: var(--fail); border: 1px solid var(--fail-border); }
+
+/* Lab items */
+.lab-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; border-radius: var(--r-md);
+  font-size: 13px; font-weight: 500; color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease);
+  white-space: nowrap; overflow: hidden;
+}
+.lab-item:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
+.lab-dot {
+  width: 8px; height: 8px; min-width: 8px; border-radius: 50%;
+  background: var(--pass); box-shadow: 0 0 4px rgba(16,185,129,0.4);
+}
+.lab-name { transition: opacity var(--dur-base) var(--ease); overflow: hidden; }
+.lab-add {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px; border-radius: var(--r-md);
+  font-size: 12px; color: var(--text-tertiary);
+  cursor: pointer; white-space: nowrap; overflow: hidden;
+  transition: all var(--dur-fast) var(--ease);
+}
+.lab-add:hover { color: var(--text-secondary); background: rgba(255,255,255,0.03); }
+.lab-add-icon {
+  width: 18px; height: 18px; min-width: 18px;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0.4;
+}
+
+/* Sidebar footer */
+.sidebar-footer {
+  margin-top: auto; flex-shrink: 0;
+}
+.sidebar-divider {
+  height: 1px; background: var(--border-subtle);
+  margin: 8px 20px;
+}
+
+/* Collapse toggle */
+.collapse-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  margin: 8px 12px 0; padding: 8px; border-radius: var(--r-md);
+  border: none; background: transparent;
+  color: var(--text-tertiary); cursor: pointer;
+  font-family: var(--font-sans); font-size: 12px;
+  transition: all var(--dur-fast) var(--ease);
+  white-space: nowrap; overflow: hidden;
+}
+.collapse-btn:hover { background: rgba(255,255,255,0.04); color: var(--text-secondary); }
+.collapse-btn svg {
+  width: 16px; height: 16px; min-width: 16px;
+  transition: transform var(--dur-slow) var(--ease);
+}
+.collapse-label { transition: opacity var(--dur-base) var(--ease); }
+
+/* User section */
+.user-section {
+  padding: 12px 16px 0;
+  display: flex; align-items: center; gap: 10px;
+  overflow: hidden;
+}
+.user-avatar {
+  width: 32px; height: 32px; min-width: 32px; border-radius: var(--r-md);
+  background: var(--bg-elevated); border: 1px solid var(--border-default);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; color: var(--text-secondary);
+}
+.user-info { white-space: nowrap; transition: opacity var(--dur-base) var(--ease); overflow: hidden; }
+.user-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.user-role { font-size: 11px; color: var(--text-tertiary); }
+
+/* ── Collapsed state ── */
+/* ── Collapsed sidebar — icons centered, evenly spaced ── */
+.sidebar.collapsed { width: var(--sidebar-collapsed); }
+.sidebar.collapsed .logo-text,
+.sidebar.collapsed .nav-label,
+.sidebar.collapsed .nav-text,
+.sidebar.collapsed .nav-badge,
+.sidebar.collapsed .lab-name,
+.sidebar.collapsed .lab-add span,
+.sidebar.collapsed .collapse-label,
+.sidebar.collapsed .user-info {
+  opacity: 0; width: 0; height: 0; overflow: hidden;
+  pointer-events: none; position: absolute;
+}
+.sidebar.collapsed .logo {
+  padding: 0 0 12px; justify-content: center;
+}
+.sidebar.collapsed .nav-section {
+  padding: 4px 0; display: flex; flex-direction: column;
+  align-items: center; gap: 2px;
+}
+.sidebar.collapsed .nav-item {
+  justify-content: center; padding: 0;
+  width: 44px; height: 44px; border-radius: var(--r-md);
+  gap: 0; margin: 0 auto;
+}
+.sidebar.collapsed .nav-icon {
+  width: 20px; height: 20px; min-width: 20px;
+}
+.sidebar.collapsed .nav-item.active::before { display: none; }
+.sidebar.collapsed .nav-item.active {
+  background: var(--accent-subtle);
+}
+.sidebar.collapsed .lab-item { display: none; }
+.sidebar.collapsed .lab-add { display: none; }
+.sidebar.collapsed .nav-section:last-of-type .nav-label { display: none; }
+.sidebar.collapsed .sidebar-footer {
+  margin-top: auto; display: flex; flex-direction: column; align-items: center;
+}
+.sidebar.collapsed .user-section {
+  justify-content: center; padding: 8px 0 4px;
+}
+.sidebar.collapsed .user-avatar { margin: 0; }
+.sidebar.collapsed .collapse-btn {
+  justify-content: center; width: 44px; height: 44px;
+  margin: 2px auto; padding: 0;
+}
+.sidebar.collapsed .collapse-btn svg { transform: rotate(180deg); }
+.sidebar.collapsed .sidebar-divider { margin: 6px 14px; }
+
+/* ══════════════════════════════════════════════════════════════
+   MAIN CONTENT
+   ══════════════════════════════════════════════════════════════ */
+.main {
+  margin-left: var(--sidebar-w);
+  padding: 0;
+  min-height: 100vh;
+  transition: margin-left var(--dur-slow) var(--ease);
+}
+.main.shifted { margin-left: var(--sidebar-collapsed); }
+
+/* ── Header ── */
+.header {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 40px;
+  background: rgba(11,13,18,0.8);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.header-title {
+  font-size: 20px; font-weight: 700; letter-spacing: -0.02em;
+}
+.header-left {
+  display: flex; align-items: center; gap: 12px;
+  margin-right: auto;
+}
+.header-filters { display: flex; gap: 8px; }
+.filter-btn {
+  font-family: var(--font-sans);
+  padding: 6px 14px; border-radius: var(--r-md);
+  border: 1px solid var(--border-default);
+  background: var(--bg-elevated); color: var(--text-secondary);
+  font-size: 12px; font-weight: 500; cursor: pointer;
+  display: flex; align-items: center; gap: 5px;
+  transition: all var(--dur-fast) var(--ease);
+}
+.filter-btn:hover { border-color: var(--border-strong); color: var(--text-primary); }
+.filter-btn svg { width: 12px; height: 12px; opacity: 0.5; }
+
+.search-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 14px; border-radius: var(--r-md);
+  background: var(--bg-elevated); border: 1px solid var(--border-default);
+  font-size: 12px; color: var(--text-tertiary); cursor: pointer;
+  min-width: 200px;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+.search-bar:hover { border-color: var(--border-strong); }
+.search-bar svg { width: 13px; height: 13px; opacity: 0.4; flex-shrink: 0; }
+.search-text { flex: 1; }
+.search-kbd {
+  font-size: 10px; font-family: var(--font-mono);
+  padding: 2px 5px; border-radius: 3px;
+  background: var(--bg-body); border: 1px solid var(--border-default);
+  color: var(--text-tertiary);
+}
+
+.header-bell {
+  position: relative; cursor: pointer;
+  width: 32px; height: 32px; border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  transition: background var(--dur-fast) var(--ease);
+}
+.header-bell:hover { background: rgba(255,255,255,0.04); }
+.header-bell svg { width: 16px; height: 16px; color: var(--text-secondary); }
+.bell-dot {
+  position: absolute; top: 5px; right: 5px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--fail); border: 2px solid var(--bg-body);
+}
+.sync-indicator {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--text-tertiary);
+}
+.sync-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--pass); box-shadow: 0 0 4px var(--pass);
+}
+
+/* ── Page body ── */
+.page { padding: 28px 40px 48px; }
+
+/* ══════════════════════════════════════════════════════════════
+   HERO CARD — The Peak Moment
+   ══════════════════════════════════════════════════════════════ */
+.hero {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-xl);
+  overflow: hidden; position: relative;
+  margin-bottom: 24px;
+}
+.hero::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 140px;
+  background: linear-gradient(180deg,
+    rgba(16,185,129,0.07) 0%,
+    rgba(16,185,129,0.02) 40%,
+    transparent 100%);
+  pointer-events: none;
+}
+
+.hero-top {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 12px;
+  padding: 18px 28px;
+  border-bottom: 1px solid var(--border-subtle);
+  position: relative;
+}
+.hero-title-group { display: flex; align-items: center; gap: 12px; }
+.hero-strain { font-size: 20px; font-weight: 700; letter-spacing: -0.015em; }
+.badge-highlight {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 12px; border-radius: var(--r-full);
+  font-size: 11px; font-weight: 600;
+  background: linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(245,158,11,0.08) 100%);
+  border: 1px solid rgba(245,158,11,0.3);
+  color: var(--thc);
+}
+.hero-meta {
+  font-size: 12px; color: var(--text-tertiary);
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono);
+}
+.hero-meta-sep { opacity: 0.4; }
+.hero-meta .meta-plain { font-family: var(--font-sans); }
+.hero-actions {
+  margin-left: auto; display: flex; gap: 8px;
+  position: relative;
+}
+
+/* Buttons */
+.btn {
+  font-family: var(--font-sans);
+  padding: 8px 16px; border-radius: var(--r-md);
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  border: none; display: inline-flex; align-items: center; gap: 6px;
+  transition: all var(--dur-fast) var(--ease);
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--accent); color: #022C22; }
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-secondary {
+  background: var(--bg-elevated); color: var(--text-primary);
+  border: 1px solid var(--border-default);
+}
+.btn-secondary:hover { background: var(--bg-overlay); border-color: var(--border-strong); }
+.btn-ghost { background: transparent; color: var(--text-secondary); }
+.btn-ghost:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
+.btn svg { width: 13px; height: 13px; }
+
+/* Hero body — metrics + terpene bars */
+.hero-body {
+  display: grid;
+  grid-template-columns: auto auto auto 1px 1fr;
+  align-items: center;
+  padding: 28px 0;
+  position: relative;
+}
+.hero-metric { text-align: center; padding: 0 36px; }
+.hero-metric-label {
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  margin-bottom: 6px;
+}
+.hero-metric-value {
+  font-size: 42px; font-weight: 700;
+  letter-spacing: -0.02em; line-height: 1.05;
+}
+.hero-metric-value .pct { font-size: 24px; font-weight: 600; opacity: 0.7; }
+.hero-metric-sub {
+  font-size: 12px; margin-top: 6px;
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+}
+.hero-trend {
+  font-weight: 600; display: inline-flex; align-items: center; gap: 3px;
+}
+.hero-trend.up { color: var(--pass); }
+.hero-trend-ctx { color: var(--text-tertiary); }
+
+/* Safety status line */
+.hero-safety { text-align: center; padding: 0 36px; }
+.hero-safety-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; margin-bottom: 6px;
+}
+.hero-safety-value {
+  font-size: 28px; font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.hero-safety-sub { font-size: 12px; margin-top: 6px; }
+
+.hero-divider {
+  width: 1px; background: var(--border-default);
+  align-self: stretch;
+}
+
+/* Terpene bars inside hero */
+.hero-terps { padding: 4px 32px; }
+.hero-terps-title {
+  font-size: 10px; font-weight: 600; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+.terp-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 10px;
+}
+.terp-row:last-child { margin-bottom: 0; }
+.terp-name {
+  width: 90px; font-size: 12px; font-weight: 500;
+  color: var(--text-secondary); white-space: nowrap;
+}
+.terp-bar-track {
+  flex: 1; height: 18px; background: rgba(255,255,255,0.03);
+  border-radius: 5px; overflow: hidden;
+}
+.terp-bar-fill {
+  height: 100%; border-radius: 5px;
+  transform-origin: left;
+  animation: bar-grow 900ms var(--ease-out) forwards;
+}
+@keyframes bar-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.terp-val {
+  width: 48px; text-align: right;
+  font-size: 12px; font-weight: 600;
+  font-family: var(--font-mono); color: var(--text-primary);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   KPI STRIP
+   ══════════════════════════════════════════════════════════════ */
+.kpi-strip {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 16px; margin-bottom: 24px;
+}
+.kpi {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-lg);
+  padding: 20px 22px;
+  transition: border-color var(--dur-fast) var(--ease);
+  cursor: pointer;
+}
+.kpi:hover { border-color: var(--border-strong); }
+.kpi-label {
+  font-size: 11px; font-weight: 600; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+.kpi-value {
+  font-size: 28px; font-weight: 700; letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+.kpi-value .unit { font-size: 16px; font-weight: 600; opacity: 0.6; }
+.kpi-foot {
+  display: flex; align-items: center; gap: 5px;
+  margin-top: 4px; font-size: 11px;
+}
+.kpi-change { font-weight: 600; }
+.kpi-change.up { color: var(--pass); }
+.kpi-change.down { color: var(--fail); }
+.kpi-period { color: var(--text-tertiary); }
+
+/* ══════════════════════════════════════════════════════════════
+   SPLIT: ORDERS TABLE + ACTIVITY FEED
+   ══════════════════════════════════════════════════════════════ */
+.split {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  align-items: start;
+}
+
+/* Shared card */
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+.split .card {
+  display: flex; flex-direction: column;
+  max-height: 440px;
+}
+.table-scroll {
+  flex: 1; overflow-y: auto;
+}
+.table-scroll::-webkit-scrollbar { width: 6px; }
+.table-scroll::-webkit-scrollbar-track { background: transparent; }
+.table-scroll::-webkit-scrollbar-thumb { background: var(--bg-float); border-radius: 3px; }
+.table-scroll::-webkit-scrollbar-thumb:hover { background: var(--text-disabled); }
+.card-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.card-title { font-size: 14px; font-weight: 600; }
+.card-link {
+  font-size: 12px; color: var(--accent); font-weight: 500;
+  cursor: pointer;
+  transition: color var(--dur-fast);
+}
+.card-link:hover { color: var(--accent-hover); }
+
+/* Orders table */
+.orders-table { width: 100%; border-collapse: collapse; }
+.orders-table th {
+  text-align: left; padding: 10px 22px;
+  font-size: 10px; font-weight: 600; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.07em;
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky; top: 0; background: var(--bg-surface); z-index: 1;
+}
+.orders-table th.r { text-align: right; }
+.orders-table th.c { text-align: center; }
+.orders-table td {
+  padding: 13px 22px; font-size: 13px;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+}
+.orders-table td.r { text-align: right; }
+.orders-table td.c { text-align: center; }
+.orders-table tr:last-child td { border-bottom: none; }
+.orders-table tbody tr {
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease);
+}
+.orders-table tbody tr:hover { background: rgba(255,255,255,0.025); }
+
+.strain-cell { display: flex; flex-direction: column; gap: 1px; }
+.strain-name { font-weight: 600; font-size: 13px; }
+.strain-id { font-size: 11px; color: var(--text-tertiary); font-family: var(--font-mono); }
+
+.val-thc { color: var(--thc); font-weight: 600; font-family: var(--font-mono); font-size: 13px; }
+.val-terps { color: var(--terps); font-weight: 600; font-family: var(--font-mono); font-size: 13px; }
+.val-na { color: var(--text-disabled); font-family: var(--font-mono); }
+
+/* COA button */
+.coa-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: var(--r-md);
+  border: 1px solid var(--border-default); background: transparent;
+  color: var(--text-tertiary); cursor: pointer;
+  transition: all var(--dur-fast) var(--ease);
+}
+.coa-btn:hover { background: var(--accent-subtle); color: var(--accent); border-color: rgba(16,185,129,0.25); }
+.coa-btn svg { width: 14px; height: 14px; }
+.coa-btn.disabled { opacity: 0.3; cursor: default; pointer-events: none; }
+
+.date-cell { color: var(--text-secondary); font-size: 12px; }
+
+/* Badges */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: var(--r-full);
+  font-size: 10px; font-weight: 600; letter-spacing: 0.04em;
+  text-transform: uppercase; white-space: nowrap;
+}
+.badge-pass { background: var(--pass-bg); color: var(--pass); border: 1px solid var(--pass-border); }
+.badge-fail { background: var(--fail-bg); color: var(--fail); border: 1px solid var(--fail-border); }
+.badge-pending { background: var(--pending-bg); color: var(--text-secondary); border: 1px solid var(--border-default); }
+.badge-new {
+  background: var(--accent-subtle); color: var(--accent);
+  border: 1px solid rgba(16,185,129,0.25);
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.2); }
+  50% { box-shadow: 0 0 0 4px rgba(16,185,129,0); }
+}
+
+/* ── Activity Feed ── */
+.feed {
+  display: flex; flex-direction: column;
+  flex: 1; overflow-y: auto;
+}
+.feed::-webkit-scrollbar { width: 6px; }
+.feed::-webkit-scrollbar-track { background: transparent; }
+.feed::-webkit-scrollbar-thumb { background: var(--bg-float); border-radius: 3px; }
+.feed::-webkit-scrollbar-thumb:hover { background: var(--text-disabled); }
+.feed-item {
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex; gap: 10px; align-items: flex-start;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease);
+}
+.feed-item:hover { background: rgba(255,255,255,0.02); }
+.feed-dot {
+  width: 8px; height: 8px; min-width: 8px;
+  border-radius: 50%; margin-top: 5px;
+}
+.feed-body { flex: 1; }
+.feed-text {
+  font-size: 13px; line-height: 1.45; color: var(--text-secondary);
+}
+.feed-text strong { color: var(--text-primary); font-weight: 600; }
+.feed-text .hl-pass { color: var(--pass); font-weight: 600; }
+.feed-text .hl-fail { color: var(--fail); font-weight: 600; }
+.feed-text .hl-thc { color: var(--thc); font-weight: 600; font-family: var(--font-mono); }
+.feed-text .hl-terps { color: var(--terps); font-weight: 600; font-family: var(--font-mono); }
+.feed-time { font-size: 11px; color: var(--text-tertiary); margin-top: 3px; }
+
+/* Hidden feed items */
+.feed-hidden { display: none; }
+.feed-hidden.visible { display: flex; }
+
+.feed-expand {
+  flex-shrink: 0;
+  border-top: 1px solid var(--border-subtle);
+  padding: 10px 22px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  font-size: 12px; font-weight: 500; color: var(--text-tertiary);
+  cursor: pointer; border: none; background: transparent; width: 100%;
+  font-family: var(--font-sans);
+  transition: color var(--dur-fast) var(--ease);
+}
+.feed-expand:hover { color: var(--text-secondary); }
+.feed-expand svg {
+  width: 14px; height: 14px;
+  transition: transform var(--dur-base) var(--ease);
+}
+.feed-expand.open svg { transform: rotate(180deg); }
+
+/* ══════════════════════════════════════════════════════════════
+   ANIMATIONS
+   ══════════════════════════════════════════════════════════════ */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.anim-in { animation: fade-up var(--dur-slow) var(--ease-out) forwards; }
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 1200px) {
+  .hero-body {
+    grid-template-columns: 1fr;
+    gap: 20px; padding: 24px 28px;
+  }
+  .hero-metric, .hero-safety { text-align: left; padding: 0; }
+  .hero-metric-sub, .hero-safety-sub { justify-content: flex-start; }
+  .hero-divider { width: 100%; height: 1px; align-self: auto; }
+  .hero-terps { padding: 0; }
+  .split { grid-template-columns: 1fr; }
+  .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 900px) {
+  .page { padding: 20px; }
+  .header { padding: 12px 20px; }
+  .search-bar { min-width: 140px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ PASSWORD GATE ═══ -->
+<div id="gate" style="position:fixed;inset:0;z-index:9999;background:#0B0D12;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;">
+  <div style="text-align:center;max-width:340px;padding:24px;">
+    <div style="margin-bottom:24px;">
+      <div style="width:48px;height:48px;background:#10B981;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <h2 style="font-size:1.25rem;margin-bottom:4px;color:#EAEDF2;">Labstak</h2>
+      <p style="font-size:0.85rem;color:#5C6578;">Enter password to continue</p>
+    </div>
+    <input id="gate-input" type="password" placeholder="Password" autocomplete="off" style="
+      width:100%;padding:12px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.10);
+      background:#141720;color:#EAEDF2;font-family:'Inter',sans-serif;font-size:1rem;
+      outline:none;margin-bottom:12px;text-align:center;letter-spacing:0.05em;
+    ">
+    <button id="gate-btn" style="
+      width:100%;padding:12px;border-radius:8px;border:none;
+      background:#10B981;color:#fff;font-family:'Inter',sans-serif;font-size:0.95rem;font-weight:600;
+      cursor:pointer;
+    ">Continue</button>
+    <p id="gate-error" style="font-size:0.8rem;color:#F87171;margin-top:10px;display:none;">Incorrect password</p>
+  </div>
+</div>
+<script>
+(function(){
+  var pw='labstak2026';
+  if(sessionStorage.getItem('ls_auth')==='1'){document.getElementById('gate').style.display='none';}
+  function tryAuth(){
+    if(document.getElementById('gate-input').value===pw){
+      sessionStorage.setItem('ls_auth','1');
+      document.getElementById('gate').style.display='none';
+    } else {
+      document.getElementById('gate-error').style.display='block';
+      document.getElementById('gate-input').value='';
+      document.getElementById('gate-input').focus();
+    }
+  }
+  document.getElementById('gate-btn').onclick=tryAuth;
+  document.getElementById('gate-input').onkeydown=function(e){if(e.key==='Enter')tryAuth();};
+  document.getElementById('gate-input').focus();
+})();
+</script>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24" fill="white"><path d="M4 6a2 2 0 012-2h12a2 2 0 012 2v1a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm0 5.5A1.5 1.5 0 015.5 10h13a1.5 1.5 0 011.5 1.5v1a1.5 1.5 0 01-1.5 1.5h-13A1.5 1.5 0 014 12.5v-1zM4 17a2 2 0 012-2h12a2 2 0 012 2v1a2 2 0 01-2 2H6a2 2 0 01-2-2v-1z"/></svg>
+    </div>
+    <span class="logo-text">LABSTAK</span>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Overview</div>
+    <div class="nav-item active">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span class="nav-text">Dashboard</span>
+    </div>
+    <div class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+      <span class="nav-text">Orders</span>
+      <span class="nav-badge green">3</span>
+    </div>
+    <div class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span class="nav-text">Samples</span>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Analytics</div>
+    <div class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span class="nav-text">Trends</span>
+    </div>
+    <div class="nav-item">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+      <span class="nav-text">Reports</span>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Labs</div>
+    <div class="lab-item">
+      <span class="lab-dot"></span>
+      <span class="lab-name">Delta Labs</span>
+    </div>
+    <div class="lab-item">
+      <span class="lab-dot"></span>
+      <span class="lab-name">Pine State Testing</span>
+    </div>
+    <div class="lab-add">
+      <span class="lab-add-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+      </span>
+      <span>Add Lab</span>
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="nav-section" style="padding-bottom:0">
+      <div class="nav-label">Settings</div>
+      <div class="nav-item">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12.22 2h-.44a2 2 0 00-2 2v.18a2 2 0 01-1 1.73l-.43.25a2 2 0 01-2 0l-.15-.08a2 2 0 00-2.73.73l-.22.38a2 2 0 00.73 2.73l.15.1a2 2 0 011 1.72v.51a2 2 0 01-1 1.74l-.15.09a2 2 0 00-.73 2.73l.22.38a2 2 0 002.73.73l.15-.08a2 2 0 012 0l.43.25a2 2 0 011 1.73V20a2 2 0 002 2h.44a2 2 0 002-2v-.18a2 2 0 011-1.73l.43-.25a2 2 0 012 0l.15.08a2 2 0 002.73-.73l.22-.39a2 2 0 00-.73-2.73l-.15-.08a2 2 0 01-1-1.74v-.5a2 2 0 011-1.74l.15-.09a2 2 0 00.73-2.73l-.22-.38a2 2 0 00-2.73-.73l-.15.08a2 2 0 01-2 0l-.43-.25a2 2 0 01-1-1.73V4a2 2 0 00-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span class="nav-text">Connections</span>
+      </div>
+    </div>
+    <div class="sidebar-divider"></div>
+    <button class="collapse-btn" id="collapseBtn" onclick="toggleSidebar()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
+      <span class="collapse-label">Collapse</span>
+    </button>
+    <div class="sidebar-divider"></div>
+    <div class="user-section">
+      <div class="user-avatar">D</div>
+      <div class="user-info">
+        <div class="user-name">Delta Farms</div>
+        <div class="user-role">Pro Plan</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<main class="main" id="main">
+  <div class="header">
+    <div class="header-left">
+      <span class="header-title">Dashboard</span>
+      <div class="sync-indicator">
+        <span class="sync-dot"></span>
+        <span>Synced 2m ago</span>
+      </div>
+    </div>
+    <div class="header-filters">
+      <button class="filter-btn">
+        All Labs
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <button class="filter-btn">
+        Last 30 Days
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+    <div class="header-bell">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span class="bell-dot"></span>
+    </div>
+    <div class="search-bar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span class="search-text">Search samples...</span>
+      <span class="search-kbd">⌘K</span>
+    </div>
+  </div>
+
+  <div class="page">
+
+    <!-- ═══ HERO CARD ═══ -->
+    <div class="hero">
+      <div class="hero-top">
+        <div class="hero-title-group">
+          <span class="hero-strain">Gelato #41</span>
+          <span class="badge-highlight">🔥 Best This Quarter</span>
+        </div>
+        <div class="hero-meta">
+          <span>MS-2026-4235-01</span>
+          <span class="hero-meta-sep">·</span>
+          <span class="meta-plain">Order #4235</span>
+          <span class="hero-meta-sep">·</span>
+          <span class="meta-plain">Flower</span>
+          <span class="hero-meta-sep">·</span>
+          <span class="meta-plain">Feb 12, 2026</span>
+        </div>
+        <div class="hero-actions">
+          <button class="btn btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download COA
+          </button>
+          <button class="btn btn-secondary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            Share
+          </button>
+        </div>
+      </div>
+
+      <div class="hero-body">
+        <div class="hero-metric">
+          <div class="hero-metric-label" style="color:var(--thc)">Total THC</div>
+          <div class="hero-metric-value mono anim-in" style="color:var(--thc)"><span class="counter" data-to="28.34" data-decimals="2">0.00</span><span class="pct">%</span></div>
+          <div class="hero-metric-sub">
+            <span class="hero-trend up">▲ 2.1%</span>
+            <span class="hero-trend-ctx">vs last batch</span>
+          </div>
+        </div>
+
+        <div class="hero-metric">
+          <div class="hero-metric-label" style="color:var(--terps)">Total Terpenes</div>
+          <div class="hero-metric-value mono anim-in" style="color:var(--terps);animation-delay:80ms"><span class="counter" data-to="3.75" data-decimals="2">0.00</span><span class="pct">%</span></div>
+          <div class="hero-metric-sub">
+            <span class="hero-trend-ctx">Dominant: Myrcene</span>
+          </div>
+        </div>
+
+        <div class="hero-safety">
+          <div class="hero-safety-label" style="color:var(--pass)">Safety</div>
+          <div class="hero-safety-value anim-in" style="color:var(--pass);animation-delay:160ms">✓ ALL PASS</div>
+          <div class="hero-safety-sub" style="color:var(--text-tertiary)">144/144 tests clear</div>
+        </div>
+
+        <div class="hero-divider"></div>
+
+        <div class="hero-terps">
+          <div class="hero-terps-title">Terpene Profile</div>
+          <div class="terp-row">
+            <span class="terp-name">Myrcene</span>
+            <div class="terp-bar-track"><div class="terp-bar-fill" style="width:85%;background:var(--terp-myrcene);animation-delay:0ms"></div></div>
+            <span class="terp-val">1.24%</span>
+          </div>
+          <div class="terp-row">
+            <span class="terp-name">Limonene</span>
+            <div class="terp-bar-track"><div class="terp-bar-fill" style="width:62%;background:var(--terp-limonene);animation-delay:50ms"></div></div>
+            <span class="terp-val">0.91%</span>
+          </div>
+          <div class="terp-row">
+            <span class="terp-name">Caryophyllene</span>
+            <div class="terp-bar-track"><div class="terp-bar-fill" style="width:46%;background:var(--terp-caryophyllene);animation-delay:100ms"></div></div>
+            <span class="terp-val">0.68%</span>
+          </div>
+          <div class="terp-row">
+            <span class="terp-name">α-Pinene</span>
+            <div class="terp-bar-track"><div class="terp-bar-fill" style="width:29%;background:var(--terp-pinene);animation-delay:150ms"></div></div>
+            <span class="terp-val">0.42%</span>
+          </div>
+          <div class="terp-row">
+            <span class="terp-name">Linalool</span>
+            <div class="terp-bar-track"><div class="terp-bar-fill" style="width:21%;background:var(--terp-linalool);animation-delay:200ms"></div></div>
+            <span class="terp-val">0.31%</span>
+          </div>
+          <div class="terp-row">
+            <span class="terp-name">Terpinolene</span>
+            <div class="terp-bar-track"><div class="terp-bar-fill" style="width:13%;background:var(--terp-terpinolene);animation-delay:250ms"></div></div>
+            <span class="terp-val">0.19%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ KPI STRIP ═══ -->
+    <div class="kpi-strip">
+      <div class="kpi">
+        <div class="kpi-label">Active Orders</div>
+        <div class="kpi-value anim-in" style="animation-delay:50ms"><span class="counter" data-to="12" data-decimals="0">0</span></div>
+        <div class="kpi-foot">
+          <span class="kpi-change up">↑ 3</span>
+          <span class="kpi-period">this week</span>
+        </div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Avg Total THC</div>
+        <div class="kpi-value mono anim-in" style="color:var(--thc);animation-delay:110ms"><span class="counter" data-to="24.8" data-decimals="1">0.0</span><span class="unit">%</span></div>
+        <div class="kpi-foot">
+          <span class="kpi-change up">↑ 1.2%</span>
+          <span class="kpi-period">vs last month</span>
+        </div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Pass Rate</div>
+        <div class="kpi-value mono anim-in" style="color:var(--pass);animation-delay:170ms"><span class="counter" data-to="96" data-decimals="0">0</span><span class="unit">%</span></div>
+        <div class="kpi-foot">
+          <span class="kpi-period">Last 30 days</span>
+        </div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Turnaround</div>
+        <div class="kpi-value mono anim-in" style="animation-delay:230ms"><span class="counter" data-to="3.2" data-decimals="1">0.0</span><span class="unit">d</span></div>
+        <div class="kpi-foot">
+          <span class="kpi-change down">↑ 0.4d</span>
+          <span class="kpi-period">avg</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SPLIT: TABLE + FEED ═══ -->
+    <div class="split">
+      <!-- Orders Table -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Recent Orders</span>
+          <span class="card-link">View all →</span>
+        </div>
+        <div class="table-scroll">
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>Strain</th>
+              <th class="r">THC</th>
+              <th class="r">Terps</th>
+              <th>Status</th>
+              <th class="c">COA</th>
+              <th class="r">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="strain-cell">
+                  <span class="strain-name">Gelato #41</span>
+                  <span class="strain-id">MS-2026-4235-01</span>
+                </div>
+              </td>
+              <td class="r"><span class="val-thc">28.34%</span></td>
+              <td class="r"><span class="val-terps">3.75%</span></td>
+              <td><span class="badge badge-new">● New</span></td>
+              <td class="c"><button class="coa-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></button></td>
+              <td class="r"><span class="date-cell">Feb 12</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="strain-cell">
+                  <span class="strain-name">Wedding Cake</span>
+                  <span class="strain-id">MS-2026-4234-03</span>
+                </div>
+              </td>
+              <td class="r"><span class="val-thc">26.71%</span></td>
+              <td class="r"><span class="val-terps">2.89%</span></td>
+              <td><span class="badge badge-fail">✗ Action Req.</span></td>
+              <td class="c"><button class="coa-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></button></td>
+              <td class="r"><span class="date-cell">Feb 11</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="strain-cell">
+                  <span class="strain-name">Blue Dream</span>
+                  <span class="strain-id">MS-2026-4233-02</span>
+                </div>
+              </td>
+              <td class="r"><span class="val-thc">22.15%</span></td>
+              <td class="r"><span class="val-terps">2.41%</span></td>
+              <td><span class="badge badge-pass">✓ Complete</span></td>
+              <td class="c"><button class="coa-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></button></td>
+              <td class="r"><span class="date-cell">Feb 10</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="strain-cell">
+                  <span class="strain-name">OG Kush</span>
+                  <span class="strain-id">MS-2026-4232-01</span>
+                </div>
+              </td>
+              <td class="r"><span class="val-na">—</span></td>
+              <td class="r"><span class="val-na">—</span></td>
+              <td><span class="badge badge-pending">◷ In Testing</span></td>
+              <td class="c"><button class="coa-btn disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></button></td>
+              <td class="r"><span class="date-cell">Feb 14</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="strain-cell">
+                  <span class="strain-name">Purple Punch</span>
+                  <span class="strain-id">MS-2026-4231-05</span>
+                </div>
+              </td>
+              <td class="r"><span class="val-thc">24.92%</span></td>
+              <td class="r"><span class="val-terps">3.12%</span></td>
+              <td><span class="badge badge-pass">✓ Complete</span></td>
+              <td class="c"><button class="coa-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></button></td>
+              <td class="r"><span class="date-cell">Feb 9</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="strain-cell">
+                  <span class="strain-name">Zkittlez</span>
+                  <span class="strain-id">MS-2026-4230-02</span>
+                </div>
+              </td>
+              <td class="r"><span class="val-thc">21.88%</span></td>
+              <td class="r"><span class="val-terps">2.67%</span></td>
+              <td><span class="badge badge-pass">✓ Complete</span></td>
+              <td class="c"><button class="coa-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></button></td>
+              <td class="r"><span class="date-cell">Feb 8</span></td>
+            </tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+
+      <!-- Activity Feed -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Activity</span>
+        </div>
+        <div class="feed">
+          <div class="feed-item">
+            <div class="feed-dot" style="background:var(--pass)"></div>
+            <div class="feed-body">
+              <div class="feed-text"><strong>Gelato #41</strong> — <span class="hl-pass">all 144 tests passed</span></div>
+              <div class="feed-time">2 hours ago</div>
+            </div>
+          </div>
+          <div class="feed-item">
+            <div class="feed-dot" style="background:var(--fail)"></div>
+            <div class="feed-body">
+              <div class="feed-text"><strong>Wedding Cake</strong> <span class="hl-fail">failed pesticide</span> — Myclobutanil 0.21 µg/g</div>
+              <div class="feed-time">5 hours ago</div>
+            </div>
+          </div>
+          <div class="feed-item">
+            <div class="feed-dot" style="background:var(--thc)"></div>
+            <div class="feed-body">
+              <div class="feed-text"><strong>Gelato #41</strong> hit <span class="hl-thc">28.34% THC</span> — highest this quarter 🔥</div>
+              <div class="feed-time">2 hours ago</div>
+            </div>
+          </div>
+          <!-- Hidden items -->
+          <div class="feed-item feed-hidden" id="feed4">
+            <div class="feed-dot" style="background:var(--info)"></div>
+            <div class="feed-body">
+              <div class="feed-text"><strong>Order #4232</strong> received — OG Kush testing begins</div>
+              <div class="feed-time">Yesterday</div>
+            </div>
+          </div>
+          <div class="feed-item feed-hidden" id="feed5">
+            <div class="feed-dot" style="background:var(--pass)"></div>
+            <div class="feed-body">
+              <div class="feed-text"><strong>Blue Dream</strong> COA ready — <span style="color:var(--accent)">download PDF</span></div>
+              <div class="feed-time">2 days ago</div>
+            </div>
+          </div>
+          <div class="feed-item feed-hidden" id="feed6">
+            <div class="feed-dot" style="background:var(--terps)"></div>
+            <div class="feed-body">
+              <div class="feed-text"><strong>Purple Punch</strong> terpenes at <span class="hl-terps">3.12%</span> — above your 90-day avg</div>
+              <div class="feed-time">3 days ago</div>
+            </div>
+          </div>
+        </div>
+        <button class="feed-expand" id="feedExpand" onclick="toggleFeed()">
+          <span id="feedExpandText">Show more</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+// Sidebar collapse toggle
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('collapsed');
+  document.getElementById('main').classList.toggle('shifted');
+}
+
+// Activity feed expand/collapse
+let feedOpen = false;
+function toggleFeed() {
+  feedOpen = !feedOpen;
+  const items = document.querySelectorAll('.feed-hidden');
+  const btn = document.getElementById('feedExpand');
+  const text = document.getElementById('feedExpandText');
+  items.forEach(el => el.classList.toggle('visible', feedOpen));
+  btn.classList.toggle('open', feedOpen);
+  text.textContent = feedOpen ? 'Show less' : 'Show more';
+  // Scroll the feed to show newly revealed items
+  if (feedOpen) {
+    const feed = document.querySelector('.feed');
+    setTimeout(() => feed.scrollTo({ top: feed.scrollHeight, behavior: 'smooth' }), 50);
+  }
+}
+
+// ── Count-up animation (cubic ease-out: fast start, crawls to stop) ──
+function countUp(el, target, duration, decimals, delay) {
+  setTimeout(() => {
+    let startTime = null;
+    // Cubic ease-out: shoots up fast, then decelerates to a crawl
+    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+    function step(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const eased = easeOutCubic(progress);
+      const current = target * eased;
+      el.textContent = current.toFixed(decimals);
+      if (progress < 1) requestAnimationFrame(step);
+      else el.textContent = target.toFixed(decimals); // exact final value
+    }
+    requestAnimationFrame(step);
+  }, delay);
+}
+
+// Initialize counters when they scroll into view
+document.querySelectorAll('.counter').forEach((el, i) => {
+  const target = parseFloat(el.dataset.to);
+  const decimals = parseInt(el.dataset.decimals) || 0;
+  const delay = i * 80; // stagger each counter slightly
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        countUp(el, target, 1200, decimals, delay);
+        observer.unobserve(el);
+      }
+    });
+  }, { threshold: 0.1 });
+  observer.observe(el);
+});
+
+// Re-trigger fade animations on visibility
+document.querySelectorAll('.anim-in').forEach(el => {
+  el.style.opacity = '0';
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '';
+        entry.target.style.animation = 'none';
+        entry.target.offsetHeight;
+        entry.target.style.animation = '';
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  observer.observe(el);
+});
+
+// ── Theme Toggle ──
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('ls_theme', next);
+}
+// Load saved theme (default: dark)
+(function() {
+  const saved = localStorage.getItem('ls_theme') || 'dark';
+  if (saved === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+  }
+})();
+</script>
+
+</body>
+</html>

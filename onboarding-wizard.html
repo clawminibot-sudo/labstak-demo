@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Labstak — Onboarding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════════════════════════
+   LABSTAK DESIGN SYSTEM TOKENS
+   ══════════════════════════════════════════════════════════════ */
+:root {
+  --bg-body: #0B0D12;
+  --bg-surface: #141720;
+  --bg-elevated: #1C2029;
+  --bg-overlay: #242933;
+  --bg-float: #2D333F;
+  --text-primary: #EAEDF2;
+  --text-secondary: #8B95A6;
+  --text-tertiary: #5C6578;
+  --text-disabled: #3D4555;
+  --border-subtle: rgba(255,255,255,0.06);
+  --border-default: rgba(255,255,255,0.10);
+  --border-strong: rgba(255,255,255,0.16);
+  --accent: #10B981;
+  --accent-hover: #34D399;
+  --accent-subtle: rgba(16,185,129,0.10);
+  --thc: #F59E0B;
+  --thc-subtle: rgba(245,158,11,0.10);
+  --cbd: #60A5FA;
+  --pass: #10B981;
+  --pass-bg: rgba(16,185,129,0.10);
+  --pass-border: rgba(16,185,129,0.25);
+  --fail: #F87171;
+  --fail-bg: rgba(248,113,113,0.10);
+  --fail-border: rgba(248,113,113,0.25);
+  --warn: #FBBF24;
+  --warn-bg: rgba(251,191,36,0.10);
+  --warn-border: rgba(251,191,36,0.25);
+  --info: #60A5FA;
+  --info-bg: rgba(96,165,250,0.10);
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --dur-instant: 80ms;
+  --dur-fast: 150ms;
+  --dur-base: 250ms;
+  --dur-slow: 350ms;
+  --dur-emphasis: 500ms;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+  --r-full: 9999px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LIGHT THEME
+   ══════════════════════════════════════════════════════════════ */
+[data-theme="light"] {
+  --bg-body: #F5F6F8;
+  --bg-surface: #FFFFFF;
+  --bg-elevated: #F0F1F4;
+  --bg-overlay: #E8E9ED;
+  --bg-float: #DDDEE3;
+  --text-primary: #1A1D26;
+  --text-secondary: #5C6478;
+  --text-tertiary: #8B92A5;
+  --text-disabled: #B8BDC9;
+  --border-subtle: rgba(0,0,0,0.06);
+  --border-default: rgba(0,0,0,0.10);
+  --border-strong: rgba(0,0,0,0.16);
+  --accent-subtle: rgba(16,185,129,0.08);
+  --thc-subtle: rgba(245,158,11,0.08);
+  --pass-bg: rgba(16,185,129,0.08);
+  --pass-border: rgba(16,185,129,0.20);
+  --fail-bg: rgba(248,113,113,0.08);
+  --fail-border: rgba(248,113,113,0.20);
+  --warn-bg: rgba(251,191,36,0.08);
+  --warn-border: rgba(251,191,36,0.20);
+  --info-bg: rgba(96,165,250,0.08);
+}
+[data-theme="light"] .wizard-card {
+  border: 1px solid rgba(0,0,0,0.12);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+[data-theme="light"] .form-input {
+  background: #fff;
+  border-color: rgba(0,0,0,0.15);
+  color: var(--text-primary);
+}
+[data-theme="light"] .form-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.12);
+}
+[data-theme="light"] .form-select {
+  background-color: #fff;
+  border-color: rgba(0,0,0,0.15);
+  color: var(--text-primary);
+}
+[data-theme="light"] .help-toggle {
+  background: var(--bg-elevated);
+  border-color: rgba(0,0,0,0.10);
+}
+[data-theme="light"] .help-content {
+  background: var(--bg-elevated);
+  border-color: rgba(0,0,0,0.10);
+}
+[data-theme="light"] .step-instruction {
+  background: var(--bg-elevated);
+  border-color: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .result-card {
+  background: var(--bg-elevated);
+  border-color: rgba(0,0,0,0.10);
+}
+[data-theme="light"] .sync-log {
+  background: var(--bg-elevated);
+  border-color: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .btn-primary { color: #fff; }
+[data-theme="light"] .progress-track { background: rgba(0,0,0,0.08); }
+
+/* ══════════════════════════════════════════════════════════════
+   BASE RESET
+   ══════════════════════════════════════════════════════════════ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+body {
+  font-family: var(--font-sans);
+  background: var(--bg-body);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  transition: background var(--dur-base) var(--ease), color var(--dur-base) var(--ease);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   THEME TOGGLE
+   ══════════════════════════════════════════════════════════════ */
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all var(--dur-fast) var(--ease);
+  z-index: 100;
+}
+.theme-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   WIZARD LAYOUT
+   ══════════════════════════════════════════════════════════════ */
+.wizard-wrapper {
+  width: 100%;
+  max-width: 560px;
+}
+
+/* Logo */
+.wizard-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 36px;
+}
+.logo-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--r-lg);
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  box-shadow: 0 4px 16px rgba(16,185,129,0.3);
+}
+.logo-text {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.logo-text span { color: var(--accent); }
+
+/* Step indicator */
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 32px;
+}
+.step-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all var(--dur-base) var(--ease);
+  border: 2px solid var(--border-default);
+  background: transparent;
+  color: var(--text-tertiary);
+  position: relative;
+  flex-shrink: 0;
+}
+.step-dot.active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 0 0 4px var(--accent-subtle);
+}
+.step-dot.completed {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+  color: var(--accent);
+}
+.step-connector {
+  width: 48px;
+  height: 2px;
+  background: var(--border-default);
+  transition: background var(--dur-base) var(--ease);
+  flex-shrink: 0;
+}
+.step-connector.completed {
+  background: var(--accent);
+}
+
+/* Wizard card */
+.wizard-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-xl);
+  padding: 40px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+  transition: all var(--dur-base) var(--ease);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   STEP CONTENT
+   ══════════════════════════════════════════════════════════════ */
+.step { display: none; }
+.step.active { display: block; animation: fadeIn var(--dur-base) var(--ease-out); }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.step-icon {
+  font-size: 48px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.step-title {
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 8px;
+  letter-spacing: -0.3px;
+}
+.step-desc {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: center;
+  margin-bottom: 28px;
+}
+.step-desc strong { color: var(--text-primary); font-weight: 600; }
+
+/* ══════════════════════════════════════════════════════════════
+   FORM ELEMENTS
+   ══════════════════════════════════════════════════════════════ */
+.form-group {
+  margin-bottom: 20px;
+}
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+.form-input {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-md);
+  color: var(--text-primary);
+  transition: all var(--dur-fast) var(--ease);
+  outline: none;
+}
+.form-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+.form-input::placeholder {
+  color: var(--text-tertiary);
+}
+.form-input.mono {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+.form-hint {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+.form-select {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-md);
+  color: var(--text-primary);
+  transition: all var(--dur-fast) var(--ease);
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%238B95A6' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+.form-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-subtle);
+}
+
+/* Error state */
+.form-input.error,
+.form-select.error {
+  border-color: var(--fail);
+  box-shadow: 0 0 0 3px var(--fail-bg);
+}
+.form-error {
+  font-size: 12px;
+  color: var(--fail);
+  margin-top: 6px;
+  display: none;
+  align-items: center;
+  gap: 4px;
+}
+.form-error.visible { display: flex; }
+
+/* Help expandable */
+.help-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--accent-subtle);
+  border: 1px solid var(--pass-border);
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease);
+  margin-bottom: 16px;
+}
+.help-toggle:hover {
+  background: rgba(16,185,129,0.15);
+}
+.help-toggle .arrow {
+  transition: transform var(--dur-fast) var(--ease);
+  font-size: 10px;
+}
+.help-toggle.open .arrow {
+  transform: rotate(180deg);
+}
+.help-content {
+  display: none;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+  padding: 16px;
+  margin-bottom: 20px;
+  animation: fadeIn var(--dur-fast) var(--ease);
+}
+.help-content.visible { display: block; }
+.step-instruction {
+  display: flex;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+.step-instruction:last-child { border-bottom: none; padding-bottom: 0; }
+.step-instruction:first-child { padding-top: 0; }
+.step-num {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--r-full);
+  background: var(--accent-subtle);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BUTTONS
+   ══════════════════════════════════════════════════════════════ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  border: none;
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease);
+  outline: none;
+  text-decoration: none;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #0B0D12;
+  width: 100%;
+}
+.btn-primary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(16,185,129,0.3);
+}
+.btn-primary:active {
+  transform: translateY(0);
+}
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+  width: 100%;
+}
+.btn-secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.btn-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+.btn-row .btn { flex: 1; }
+
+/* ══════════════════════════════════════════════════════════════
+   STEP 3 — SYNCING
+   ══════════════════════════════════════════════════════════════ */
+.sync-visual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+/* Animated spinner */
+.sync-spinner {
+  width: 80px;
+  height: 80px;
+  position: relative;
+}
+.sync-spinner-ring {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 3px solid var(--border-subtle);
+  border-top-color: var(--accent);
+  animation: spin 1s linear infinite;
+  position: absolute;
+}
+.sync-spinner-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Progress bar */
+.progress-wrap {
+  width: 100%;
+}
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+.progress-label-left { color: var(--text-secondary); font-weight: 500; }
+.progress-label-right { color: var(--accent); font-weight: 600; font-family: var(--font-mono); font-size: 12px; }
+.progress-track {
+  width: 100%;
+  height: 8px;
+  border-radius: var(--r-full);
+  background: var(--border-subtle);
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: var(--r-full);
+  background: linear-gradient(90deg, #10B981, #34D399);
+  transition: width 0.6s var(--ease-out);
+  position: relative;
+}
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Sync counters */
+.sync-counters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+}
+.sync-counter {
+  text-align: center;
+  padding: 12px;
+  background: var(--bg-elevated);
+  border-radius: var(--r-md);
+  border: 1px solid var(--border-subtle);
+}
+.sync-counter-num {
+  font-size: 24px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.sync-counter-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Sync log */
+.sync-log {
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+  padding: 12px 14px;
+  max-height: 120px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+}
+.sync-log-entry {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  line-height: 1.8;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sync-log-entry .check { color: var(--accent); }
+.sync-log-entry .spinner-sm {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--border-default);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.sync-time-note {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   STEP 4 — DONE
+   ══════════════════════════════════════════════════════════════ */
+.done-celebration {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.done-icon {
+  font-size: 64px;
+  margin-bottom: 8px;
+  animation: bounceIn 0.6s var(--ease-out);
+}
+@keyframes bounceIn {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.done-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.done-stat {
+  text-align: center;
+  padding: 16px 8px;
+  background: var(--bg-elevated);
+  border-radius: var(--r-md);
+  border: 1px solid var(--border-subtle);
+}
+.done-stat-num {
+  font-size: 28px;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.done-stat-num.green { color: var(--accent); }
+.done-stat-num.amber { color: var(--thc); }
+.done-stat-num.blue { color: var(--cbd); }
+.done-stat-label {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+/* Result preview cards */
+.result-previews {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+.result-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--r-md);
+  transition: border-color var(--dur-fast) var(--ease);
+}
+.result-card:hover { border-color: var(--border-strong); }
+.result-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.result-badge.pass {
+  background: var(--pass-bg);
+  color: var(--pass);
+  border: 1px solid var(--pass-border);
+}
+.result-badge.fail {
+  background: var(--fail-bg);
+  color: var(--fail);
+  border: 1px solid var(--fail-border);
+}
+.result-info { flex: 1; min-width: 0; }
+.result-name {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.result-meta {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+.result-thc {
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--thc);
+  flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CONFETTI
+   ══════════════════════════════════════════════════════════════ */
+.confetti-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 50;
+}
+.confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  top: -10px;
+  animation: confettiFall linear forwards;
+}
+@keyframes confettiFall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MOBILE
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  body { padding: 16px; }
+  .wizard-card { padding: 24px; }
+  .step-title { font-size: 19px; }
+  .done-stats { grid-template-columns: 1fr; gap: 8px; }
+  .sync-counters { grid-template-columns: 1fr; }
+  .btn-row { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+
+<!-- Theme toggle -->
+<button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+
+<div class="wizard-wrapper">
+  <!-- Logo -->
+  <div class="wizard-logo">
+    <div class="logo-mark">🧪</div>
+    <div class="logo-text">Lab<span>stak</span></div>
+  </div>
+
+  <!-- Step indicator -->
+  <div class="step-indicator">
+    <div class="step-dot active" data-step="1">1</div>
+    <div class="step-connector" data-connector="1"></div>
+    <div class="step-dot" data-step="2">2</div>
+    <div class="step-connector" data-connector="2"></div>
+    <div class="step-dot" data-step="3">3</div>
+    <div class="step-connector" data-connector="3"></div>
+    <div class="step-dot" data-step="4">4</div>
+  </div>
+
+  <!-- Wizard card -->
+  <div class="wizard-card">
+
+    <!-- ═══ STEP 1: WELCOME ═══ -->
+    <div class="step active" id="step-1">
+      <div class="step-icon">👋</div>
+      <div class="step-title">Welcome to Labstak!</div>
+      <div class="step-desc">
+        Let's get your lab data set up. We'll connect to your <strong>Metrc account</strong> 
+        and pull all your testing data — past and present — into one clean dashboard.
+      </div>
+      <div style="background: var(--accent-subtle); border: 1px solid var(--pass-border); border-radius: var(--r-md); padding: 14px 16px; margin-bottom: 24px;">
+        <div style="display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.6;">
+          <span style="font-size: 16px; flex-shrink: 0; margin-top: 1px;">⚡</span>
+          <div>
+            <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 2px;">What you'll need</div>
+            <div style="color: var(--text-secondary);">Your Metrc API key and license number. Takes about 2 minutes.</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="goToStep(2)">
+        Let's go →
+      </button>
+      <div style="text-align:center;margin-top:12px">
+        <a href="app.html#connections" style="font-size:13px;color:var(--text-tertiary);text-decoration:none;transition:color 0.15s;">Skip for now</a>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 2: CONNECT METRC ═══ -->
+    <div class="step" id="step-2">
+      <div class="step-icon">🔗</div>
+      <div class="step-title">Connect Metrc</div>
+      <div class="step-desc">
+        Enter your Metrc API credentials to link your account. Your data stays encrypted and private.
+      </div>
+
+      <!-- Help toggle -->
+      <div class="help-toggle" onclick="toggleHelp()" id="help-btn">
+        <span>📖</span> How to find your API key <span class="arrow">▼</span>
+      </div>
+      <div class="help-content" id="help-content">
+        <div class="step-instruction">
+          <div class="step-num">1</div>
+          <div>Log in to <strong style="color:var(--text-primary)">Metrc</strong> (metrc.com) with your admin account</div>
+        </div>
+        <div class="step-instruction">
+          <div class="step-num">2</div>
+          <div>Click your <strong style="color:var(--text-primary)">username</strong> in the top-right corner</div>
+        </div>
+        <div class="step-instruction">
+          <div class="step-num">3</div>
+          <div>Select <strong style="color:var(--text-primary)">"API Keys"</strong> from the dropdown menu</div>
+        </div>
+        <div class="step-instruction">
+          <div class="step-num">4</div>
+          <div>Click <strong style="color:var(--text-primary)">"Generate New Key"</strong> and copy the key</div>
+        </div>
+        <div class="step-instruction">
+          <div class="step-num">5</div>
+          <div>Paste it below. We'll verify it instantly.</div>
+        </div>
+      </div>
+
+      <form id="metrc-form" onsubmit="return false;">
+        <div class="form-group">
+          <label class="form-label">Metrc API Key</label>
+          <input type="text" class="form-input mono" id="api-key" 
+                 placeholder="e.g. qXkKv2M9HRpFX8cFNGwV..." 
+                 autocomplete="off" spellcheck="false">
+          <div class="form-error" id="api-key-error">
+            <span>⚠</span> <span>Please enter a valid API key</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">License Number</label>
+          <input type="text" class="form-input mono" id="license-num" 
+                 placeholder="e.g. C10-0000001-LIC" 
+                 autocomplete="off" spellcheck="false">
+          <div class="form-error" id="license-error">
+            <span>⚠</span> <span>Please enter your Metrc license number</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">State</label>
+          <select class="form-select" id="state-select">
+            <option value="MS">Mississippi</option>
+            <option value="" disabled>──────────────</option>
+            <option value="" disabled>Alabama — Coming soon</option>
+            <option value="" disabled>Arkansas — Coming soon</option>
+            <option value="" disabled>California — Coming soon</option>
+            <option value="" disabled>Colorado — Coming soon</option>
+            <option value="" disabled>Louisiana — Coming soon</option>
+            <option value="" disabled>Missouri — Coming soon</option>
+            <option value="" disabled>Oklahoma — Coming soon</option>
+          </select>
+          <div class="form-hint">More states coming soon! Mississippi is our launch market.</div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-secondary" onclick="goToStep(1)">← Back</button>
+          <button class="btn btn-primary" id="connect-btn" onclick="connectMetrc()">Connect</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ═══ STEP 3: SYNCING ═══ -->
+    <div class="step" id="step-3">
+      <div class="sync-visual">
+        <div class="sync-spinner">
+          <div class="sync-spinner-ring" id="sync-ring"></div>
+          <div class="sync-spinner-icon">📦</div>
+        </div>
+        <div>
+          <div class="step-title" style="margin-bottom: 4px;">Syncing your data...</div>
+          <div class="step-desc" style="margin-bottom: 0;" id="sync-status-text">Connecting to Metrc</div>
+        </div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span class="progress-label-left" id="progress-text">Fetching packages...</span>
+          <span class="progress-label-right" id="progress-pct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div class="sync-counters" style="margin-top: 20px;">
+        <div class="sync-counter">
+          <div class="sync-counter-num" id="pkg-count">0</div>
+          <div class="sync-counter-label">Packages</div>
+        </div>
+        <div class="sync-counter">
+          <div class="sync-counter-num" id="result-count">0</div>
+          <div class="sync-counter-label">Results</div>
+        </div>
+      </div>
+
+      <div class="sync-log" id="sync-log" style="margin-top: 16px;">
+        <div class="sync-log-entry"><span class="spinner-sm"></span> Connecting to Metrc API...</div>
+      </div>
+
+      <div class="sync-time-note">This usually takes 1–3 minutes for the initial sync</div>
+    </div>
+
+    <!-- ═══ STEP 4: DONE ═══ -->
+    <div class="step" id="step-4">
+      <div class="done-celebration">
+        <div class="done-icon">🎉</div>
+        <div class="step-title">You're all set!</div>
+        <div class="step-desc" style="margin-bottom: 0;">
+          Your Metrc data is synced and ready. Here's what we found:
+        </div>
+      </div>
+
+      <div class="done-stats">
+        <div class="done-stat">
+          <div class="done-stat-num green">47</div>
+          <div class="done-stat-label">Packages</div>
+        </div>
+        <div class="done-stat">
+          <div class="done-stat-num amber">38</div>
+          <div class="done-stat-label">Results</div>
+        </div>
+        <div class="done-stat">
+          <div class="done-stat-num blue">12</div>
+          <div class="done-stat-label">COAs</div>
+        </div>
+      </div>
+
+      <div style="font-size: 12px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;">
+        Preview — Your Recent Results
+      </div>
+      <div class="result-previews">
+        <div class="result-card">
+          <div class="result-badge pass">✓</div>
+          <div class="result-info">
+            <div class="result-name">Wedding Cake — Flower</div>
+            <div class="result-meta">Green Leaf Labs · Mar 8, 2026</div>
+          </div>
+          <div class="result-thc">24.7%</div>
+        </div>
+        <div class="result-card">
+          <div class="result-badge pass">✓</div>
+          <div class="result-info">
+            <div class="result-name">Gelato #41 — Flower</div>
+            <div class="result-meta">Delta Testing · Mar 5, 2026</div>
+          </div>
+          <div class="result-thc">21.3%</div>
+        </div>
+        <div class="result-card">
+          <div class="result-badge fail">✗</div>
+          <div class="result-info">
+            <div class="result-name">Blue Dream — Concentrate</div>
+            <div class="result-meta">Green Leaf Labs · Mar 1, 2026</div>
+          </div>
+          <div class="result-thc">78.2%</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="goToDashboard()">
+        Go to Dashboard →
+      </button>
+      <div style="text-align:center;margin-top:12px;">
+        <div style="font-size:12px;color:var(--text-tertiary);margin-bottom:8px;">
+          We'll keep syncing in the background. New results appear automatically.
+        </div>
+        <a href="app.html#connections" style="font-size:12px;color:var(--text-tertiary);text-decoration:none;transition:color 0.15s;">← Back to Connections</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Confetti container -->
+<div class="confetti-container" id="confetti"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   THEME
+   ══════════════════════════════════════════════════════════════ */
+const saved = localStorage.getItem('ls-theme');
+if (saved === 'light') { document.documentElement.setAttribute('data-theme', 'light'); }
+function toggleTheme() {
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  document.documentElement.setAttribute('data-theme', isLight ? '' : 'light');
+  localStorage.setItem('ls-theme', isLight ? 'dark' : 'light');
+  document.querySelector('.theme-toggle').textContent = isLight ? '🌙' : '☀️';
+}
+if (saved === 'light') document.querySelector('.theme-toggle').textContent = '☀️';
+
+/* ══════════════════════════════════════════════════════════════
+   STEP NAVIGATION
+   ══════════════════════════════════════════════════════════════ */
+let currentStep = 1;
+
+function goToStep(n) {
+  // Hide all steps
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step-' + n).classList.add('active');
+
+  // Update step dots
+  document.querySelectorAll('.step-dot').forEach(dot => {
+    const s = parseInt(dot.dataset.step);
+    dot.classList.remove('active', 'completed');
+    if (s === n) dot.classList.add('active');
+    else if (s < n) { dot.classList.add('completed'); dot.textContent = '✓'; }
+    else dot.textContent = s;
+  });
+
+  // Update connectors
+  document.querySelectorAll('.step-connector').forEach(con => {
+    const s = parseInt(con.dataset.connector);
+    con.classList.toggle('completed', s < n);
+  });
+
+  currentStep = n;
+
+  // Start sync animation on step 3
+  if (n === 3) startSync();
+  // Confetti on step 4
+  if (n === 4) launchConfetti();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   HELP TOGGLE
+   ══════════════════════════════════════════════════════════════ */
+function toggleHelp() {
+  const btn = document.getElementById('help-btn');
+  const content = document.getElementById('help-content');
+  btn.classList.toggle('open');
+  content.classList.toggle('visible');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CONNECT METRC (mock validation)
+   ══════════════════════════════════════════════════════════════ */
+function connectMetrc() {
+  const apiKey = document.getElementById('api-key').value.trim();
+  const license = document.getElementById('license-num').value.trim();
+  let valid = true;
+
+  // Reset errors
+  document.querySelectorAll('.form-error').forEach(e => e.classList.remove('visible'));
+  document.querySelectorAll('.form-input').forEach(i => i.classList.remove('error'));
+
+  if (!apiKey) {
+    document.getElementById('api-key').classList.add('error');
+    document.getElementById('api-key-error').classList.add('visible');
+    valid = false;
+  }
+  if (!license) {
+    document.getElementById('license-num').classList.add('error');
+    document.getElementById('license-error').classList.add('visible');
+    valid = false;
+  }
+
+  if (valid) {
+    const btn = document.getElementById('connect-btn');
+    btn.disabled = true;
+    btn.textContent = 'Connecting...';
+    // Simulate API validation
+    setTimeout(() => {
+      btn.disabled = false;
+      btn.textContent = 'Connect';
+      goToStep(3);
+    }, 1500);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SYNC ANIMATION
+   ══════════════════════════════════════════════════════════════ */
+function startSync() {
+  const fill = document.getElementById('progress-fill');
+  const pct = document.getElementById('progress-pct');
+  const text = document.getElementById('progress-text');
+  const status = document.getElementById('sync-status-text');
+  const pkgEl = document.getElementById('pkg-count');
+  const resEl = document.getElementById('result-count');
+  const log = document.getElementById('sync-log');
+
+  const phases = [
+    { at: 0, pct: 5, text: 'Authenticating...', status: 'Verifying credentials', log: '✓ Connected to Metrc API', pkg: 0, res: 0 },
+    { at: 800, pct: 10, text: 'Fetching facilities...', status: 'Loading facilities', log: '✓ Found facility: Jordan\'s Farm', pkg: 0, res: 0 },
+    { at: 1800, pct: 20, text: 'Scanning packages...', status: 'Discovering packages', log: '✓ Scanning active packages...', pkg: 12, res: 0 },
+    { at: 3000, pct: 35, text: 'Found 47 packages', status: 'Fetching package data', log: '✓ Found 47 total packages', pkg: 47, res: 0 },
+    { at: 4200, pct: 50, text: 'Fetching results...', status: 'Downloading test results', log: '↻ Fetching lab results...', pkg: 47, res: 8 },
+    { at: 5500, pct: 65, text: 'Fetching results... 18 of 47', status: 'Downloading test results', log: null, pkg: 47, res: 18 },
+    { at: 6800, pct: 80, text: 'Fetching results... 32 of 47', status: 'Processing results', log: '✓ 32 results downloaded', pkg: 47, res: 32 },
+    { at: 8200, pct: 90, text: 'Downloading COAs...', status: 'Fetching COA documents', log: '↻ Downloading COA PDFs...', pkg: 47, res: 38 },
+    { at: 9500, pct: 95, text: 'Finalizing...', status: 'Almost done', log: '✓ 12 COA documents saved', pkg: 47, res: 38 },
+    { at: 10500, pct: 100, text: 'Complete!', status: 'Sync complete', log: '✓ Initial sync complete — 47 packages, 38 results, 12 COAs', pkg: 47, res: 38 },
+  ];
+
+  // Reset
+  fill.style.width = '0%';
+  pct.textContent = '0%';
+  pkgEl.textContent = '0';
+  resEl.textContent = '0';
+  log.innerHTML = '<div class="sync-log-entry"><span class="spinner-sm"></span> Connecting to Metrc API...</div>';
+
+  phases.forEach(phase => {
+    setTimeout(() => {
+      fill.style.width = phase.pct + '%';
+      pct.textContent = phase.pct + '%';
+      text.textContent = phase.text;
+      status.textContent = phase.status;
+      animateCounter(pkgEl, parseInt(pkgEl.textContent), phase.pkg, 400);
+      animateCounter(resEl, parseInt(resEl.textContent), phase.res, 400);
+      if (phase.log) {
+        const isCheck = phase.log.startsWith('✓');
+        const entry = document.createElement('div');
+        entry.className = 'sync-log-entry';
+        entry.innerHTML = isCheck
+          ? `<span class="check">✓</span> ${phase.log.slice(2)}`
+          : `<span class="spinner-sm"></span> ${phase.log.slice(2)}`;
+        log.appendChild(entry);
+        log.scrollTop = log.scrollHeight;
+      }
+    }, phase.at);
+  });
+
+  // Auto-advance to step 4
+  setTimeout(() => {
+    document.getElementById('sync-ring').style.animation = 'none';
+    goToStep(4);
+  }, 12000);
+}
+
+function animateCounter(el, from, to, duration) {
+  if (from === to) return;
+  const start = performance.now();
+  function tick(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    el.textContent = Math.round(from + (to - from) * progress);
+    if (progress < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CONFETTI
+   ══════════════════════════════════════════════════════════════ */
+function launchConfetti() {
+  const container = document.getElementById('confetti');
+  container.innerHTML = '';
+  const colors = ['#10B981', '#34D399', '#F59E0B', '#60A5FA', '#A78BFA', '#F472B6', '#FBBF24'];
+  for (let i = 0; i < 60; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random() * 100 + '%';
+    piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+    piece.style.animationDelay = Math.random() * 0.8 + 's';
+    piece.style.width = (6 + Math.random() * 6) + 'px';
+    piece.style.height = (6 + Math.random() * 6) + 'px';
+    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    container.appendChild(piece);
+  }
+  setTimeout(() => container.innerHTML = '', 5000);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DASHBOARD REDIRECT (mock)
+   ══════════════════════════════════════════════════════════════ */
+function goToDashboard() {
+  window.location.href = 'app.html#dashboard';
+}
+</script>
+
+</body>
+</html>

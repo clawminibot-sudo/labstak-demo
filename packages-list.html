@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Labstak — Packages</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="shared.css">
+<style>
+[data-theme="light"] .card,
+[data-theme="light"] .packages-table-card {
+  border: 1px solid rgba(0,0,0,0.15);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+[data-theme="light"] .packages-table tr {
+  border-bottom: 1px solid rgba(0,0,0,0.10);
+}
+[data-theme="light"] .search-bar,
+
+.page { padding: 28px 40px 48px; }
+
+/* ══════════════════════════════════════════════════════════════
+   PACKAGES LIST
+   ══════════════════════════════════════════════════════════════ */
+
+/* Filter Bar */
+.filter-bar {
+  display: flex; flex-direction: column; gap: 16px;
+  margin-bottom: 20px;
+}
+.filter-row {
+  display: flex; align-items: center; gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Status Tabs */
+.status-tabs {
+  display: flex; gap: 8px;
+  flex-wrap: wrap;
+}
+.status-tab {
+  padding: 8px 16px; border-radius: var(--r-full);
+  border: 1px solid var(--border-default);
+  background: var(--bg-elevated); color: var(--text-secondary);
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  transition: all var(--dur-fast) var(--ease);
+  white-space: nowrap;
+}
+.status-tab:hover { border-color: var(--border-strong); color: var(--text-primary); }
+.status-tab.active {
+  background: var(--accent);
+  color: #022C22;
+  border-color: var(--accent);
+}
+.status-tab .count {
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--r-sm);
+  background: rgba(255,255,255,0.15);
+  font-size: 11px;
+}
+.status-tab.active .count {
+  background: rgba(255,255,255,0.25);
+}
+
+/* Search and filters row */
+.search-filters {
+  display: flex; align-items: center; gap: 12px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+.packages-search {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px; border-radius: var(--r-md);
+  background: var(--bg-elevated); border: 1px solid var(--border-default);
+  font-size: 13px; color: var(--text-primary);
+  min-width: 280px; max-width: 400px;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+.packages-search:focus-within { border-color: var(--accent); }
+.packages-search svg { width: 16px; height: 16px; opacity: 0.4; flex-shrink: 0; }
+.packages-search input {
+  flex: 1; border: none; background: transparent;
+  color: var(--text-primary); font-size: 13px;
+  outline: none; font-family: var(--font-sans);
+}
+.packages-search input::placeholder { color: var(--text-tertiary); }
+
+.dropdown {
+  position: relative;
+  font-family: var(--font-sans);
+  padding: 8px 14px; border-radius: var(--r-md);
+  border: 1px solid var(--border-default);
+  background: var(--bg-elevated); color: var(--text-primary);
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  transition: all var(--dur-fast) var(--ease);
+  white-space: nowrap;
+}
+.dropdown:hover { border-color: var(--border-strong); }
+.dropdown svg { width: 14px; height: 14px; opacity: 0.5; }
+
+/* Packages Table */
+.packages-table-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.packages-table {
+  width: 100%; border-collapse: collapse;
+}
+.packages-table th {
+  text-align: left; padding: 14px 20px;
+  font-size: 11px; font-weight: 600; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.07em;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-surface); position: sticky; top: 0;
+}
+.packages-table th.r { text-align: right; }
+.packages-table th.c { text-align: center; }
+.packages-table td {
+  padding: 16px 20px; font-size: 13px;
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+}
+.packages-table td.r { text-align: right; }
+.packages-table td.c { text-align: center; }
+.packages-table tr:last-child td { border-bottom: none; }
+.packages-table tbody tr {
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease);
+}
+.packages-table tbody tr:hover { background: rgba(255,255,255,0.025); }
+
+/* Package cell styling */
+.package-cell {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.package-name {
+  font-weight: 600; font-size: 14px; color: var(--text-primary);
+}
+.package-strain {
+  font-size: 12px; color: var(--text-secondary);
+}
+.package-metrc {
+  font-size: 10px; color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  background: rgba(255,255,255,0.03);
+  padding: 2px 6px; border-radius: 3px;
+  width: fit-content;
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease);
+}
+.package-metrc:hover {
+  background: rgba(255,255,255,0.06);
+}
+
+/* Badges */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 12px; border-radius: var(--r-full);
+  font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+  text-transform: uppercase; white-space: nowrap;
+}
+.badge-pass {
+  background: var(--pass-bg); color: var(--pass);
+  border: 1px solid var(--pass-border);
+}
+.badge-fail {
+  background: var(--fail-bg); color: var(--fail);
+  border: 1px solid var(--fail-border);
+}
+.badge-testing {
+  background: var(--warn-bg); color: var(--warn);
+  border: 1px solid var(--warn-border);
+}
+.badge-pending {
+  background: var(--pending-bg); color: var(--text-secondary);
+  border: 1px solid var(--border-default);
+}
+
+/* Value cells */
+.val-thc {
+  color: var(--thc); font-weight: 600;
+  font-family: var(--font-mono); font-size: 13px;
+}
+.val-cbd {
+  color: var(--cbd); font-weight: 600;
+  font-family: var(--font-mono); font-size: 13px;
+}
+.val-na {
+  color: var(--text-disabled);
+  font-family: var(--font-mono);
+}
+.enriched-indicator {
+  font-size: 12px; margin-left: 4px;
+}
+
+/* Lab cell */
+.lab-cell {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+/* Date cell */
+.date-cell {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-family: var(--font-mono);
+}
+
+/* Action buttons */
+.action-cell {
+  display: flex; align-items: center; gap: 6px;
+}
+.btn {
+  font-family: var(--font-sans);
+  padding: 6px 12px; border-radius: var(--r-md);
+  font-size: 11px; font-weight: 600; cursor: pointer;
+  border: none; display: inline-flex; align-items: center; gap: 4px;
+  transition: all var(--dur-fast) var(--ease);
+  text-decoration: none;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--accent); color: #022C22; }
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-secondary {
+  background: var(--bg-elevated); color: var(--text-primary);
+  border: 1px solid var(--border-default);
+}
+.btn-secondary:hover {
+  background: var(--bg-overlay);
+  border-color: var(--border-strong);
+}
+.btn-ghost {
+  background: transparent; color: var(--text-secondary);
+  padding: 6px;
+}
+.btn-ghost:hover {
+  background: rgba(255,255,255,0.04);
+  color: var(--text-primary);
+}
+.btn svg { width: 12px; height: 12px; }
+
+/* Mobile Cards */
+.packages-cards {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+}
+.packages-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease);
+}
+.packages-card:hover {
+  border-color: var(--border-strong);
+}
+.card-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 12px;
+}
+.card-title-section {
+  flex: 1;
+}
+.card-package-name {
+  font-weight: 600; font-size: 14px; color: var(--text-primary);
+  margin-bottom: 2px;
+}
+.card-strain {
+  font-size: 12px; color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+.card-metrc {
+  font-size: 10px; color: var(--text-tertiary);
+  font-family: var(--font-mono);
+}
+.card-status {
+  margin-left: 12px;
+}
+.card-metrics {
+  display: flex; gap: 16px;
+  margin-bottom: 12px;
+}
+.card-metric {
+  display: flex; flex-direction: column;
+}
+.card-metric-label {
+  font-size: 10px; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.06em;
+  margin-bottom: 2px;
+}
+.card-metric-value {
+  font-size: 13px; font-weight: 600;
+  font-family: var(--font-mono);
+}
+.card-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+}
+.card-lab-date {
+  display: flex; flex-direction: column;
+  gap: 2px;
+}
+.card-lab {
+  font-size: 12px; color: var(--text-secondary);
+}
+.card-date {
+  font-size: 11px; color: var(--text-tertiary);
+  font-family: var(--font-mono);
+}
+.card-actions {
+  display: flex; gap: 6px;
+}
+
+/* Pagination */
+.pagination {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
+}
+.pagination-info {
+  font-size: 13px; color: var(--text-secondary);
+}
+.pagination-controls {
+  display: flex; gap: 8px;
+  align-items: center;
+}
+.page-btn {
+  padding: 6px 10px; border-radius: var(--r-md);
+  border: 1px solid var(--border-default);
+  background: var(--bg-elevated); color: var(--text-secondary);
+  font-size: 12px; font-weight: 500; cursor: pointer;
+  transition: all var(--dur-fast) var(--ease);
+  min-width: 32px; text-align: center;
+}
+.page-btn:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+.page-btn.active {
+  background: var(--accent);
+  color: #022C22;
+  border-color: var(--accent);
+}
+.page-btn:disabled {
+  opacity: 0.4; cursor: not-allowed;
+}
+
+/* View Toggle */
+.view-toggle {
+  display: flex; border-radius: var(--r-md); overflow: hidden;
+  border: 1px solid var(--border-default);
+  background: var(--bg-elevated);
+}
+.view-toggle-btn {
+  padding: 7px 12px; border: none; background: transparent;
+  color: var(--text-tertiary); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--dur-fast) var(--ease);
+  font-family: var(--font-sans);
+}
+.view-toggle-btn:hover { color: var(--text-secondary); }
+.view-toggle-btn.active {
+  background: var(--accent); color: #022C22;
+}
+.view-toggle-btn svg { width: 16px; height: 16px; }
+.view-toggle-btn + .view-toggle-btn {
+  border-left: 1px solid var(--border-default);
+}
+
+/* Refresh button */
+.btn-refresh {
+  font-family: var(--font-sans);
+  padding: 7px 14px; border-radius: var(--r-md);
+  border: 1px solid var(--border-default);
+  background: var(--bg-elevated); color: var(--text-secondary);
+  font-size: 12px; font-weight: 500; cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  transition: all var(--dur-fast) var(--ease);
+  white-space: nowrap;
+}
+.btn-refresh:hover { border-color: var(--border-strong); color: var(--text-primary); }
+.btn-refresh svg { width: 14px; height: 14px; transition: transform 0.6s var(--ease); }
+.btn-refresh.syncing svg { animation: spin 0.8s linear infinite; }
+.btn-refresh.syncing { color: var(--accent); border-color: var(--accent); pointer-events: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Force card view on desktop via toggle */
+.packages-cards.force-show {
+  display: flex !important;
+}
+.packages-table-card.force-hide {
+  display: none !important;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DETAIL PANEL (slide-over)
+   ══════════════════════════════════════════════════════════════ */
+.detail-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  opacity: 0; pointer-events: none;
+  transition: opacity var(--dur-base) var(--ease);
+}
+.detail-overlay.open { opacity: 1; pointer-events: auto; }
+
+.detail-panel {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 201;
+  width: min(520px, 90vw);
+  background: var(--bg-surface);
+  border-left: 1px solid var(--border-default);
+  box-shadow: -8px 0 30px rgba(0,0,0,0.3);
+  transform: translateX(100%);
+  transition: transform var(--dur-slow) var(--ease-out);
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+}
+.detail-panel.open { transform: translateX(0); }
+
+.detail-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-subtle);
+  position: sticky; top: 0; z-index: 1;
+  background: var(--bg-surface);
+}
+.detail-header-left {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.detail-title {
+  font-size: 18px; font-weight: 700; color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+.detail-subtitle {
+  font-size: 13px; color: var(--text-secondary);
+}
+.detail-close {
+  width: 36px; height: 36px; border-radius: var(--r-md);
+  border: 1px solid var(--border-default);
+  background: var(--bg-elevated); color: var(--text-secondary);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all var(--dur-fast) var(--ease);
+  flex-shrink: 0;
+}
+.detail-close:hover { border-color: var(--border-strong); color: var(--text-primary); background: var(--bg-overlay); }
+.detail-close svg { width: 16px; height: 16px; }
+
+.detail-body { padding: 24px; flex: 1; }
+
+.detail-section {
+  margin-bottom: 24px;
+}
+.detail-section-title {
+  font-size: 11px; font-weight: 600; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  margin-bottom: 12px;
+}
+
+.detail-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+}
+.detail-field {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.detail-field.full { grid-column: 1 / -1; }
+.detail-label {
+  font-size: 11px; color: var(--text-tertiary); font-weight: 500;
+}
+.detail-value {
+  font-size: 14px; font-weight: 500; color: var(--text-primary);
+}
+.detail-value.mono {
+  font-family: var(--font-mono); font-size: 13px;
+}
+.detail-value .badge { font-size: 12px; }
+
+/* Potency block in detail panel */
+.potency-block {
+  display: flex; gap: 24px; padding: 16px;
+  background: var(--bg-elevated); border-radius: var(--r-md);
+  border: 1px solid var(--border-subtle);
+}
+.potency-item {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.potency-label {
+  font-size: 10px; font-weight: 600; color: var(--text-tertiary);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.potency-value {
+  font-size: 24px; font-weight: 700;
+  font-family: var(--font-mono);
+}
+.potency-value.thc { color: var(--thc); }
+.potency-value.cbd { color: var(--cbd); }
+.potency-value.na { color: var(--text-disabled); font-size: 18px; }
+
+/* Detail actions */
+.detail-actions {
+  display: flex; gap: 8px;
+  padding: 20px 24px;
+  border-top: 1px solid var(--border-subtle);
+  position: sticky; bottom: 0;
+  background: var(--bg-surface);
+}
+.detail-actions .btn { flex: 1; justify-content: center; padding: 10px; font-size: 13px; }
+
+/* Light mode overrides for detail panel */
+[data-theme="light"] .detail-panel {
+  box-shadow: -8px 0 30px rgba(0,0,0,0.12);
+}
+[data-theme="light"] .detail-overlay {
+  background: rgba(0,0,0,0.3);
+}
+[data-theme="light"] .potency-block {
+  background: var(--bg-elevated);
+  border-color: rgba(0,0,0,0.08);
+}
+[data-theme="light"] .detail-close {
+  background: #fff;
+  border-color: rgba(0,0,0,0.12);
+}
+[data-theme="light"] .view-toggle {
+  border-color: rgba(0,0,0,0.12);
+  background: #fff;
+}
+[data-theme="light"] .view-toggle-btn + .view-toggle-btn {
+  border-left-color: rgba(0,0,0,0.12);
+}
+[data-theme="light"] .view-toggle-btn.active {
+  background: var(--accent); color: #fff;
+}
+[data-theme="light"] .btn-refresh {
+  background: #fff;
+  border-color: rgba(0,0,0,0.12);
+}
+
+/* Empty State */
+.empty-state {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-lg);
+  padding: 48px 24px;
+  text-align: center;
+  display: none;
+}
+.empty-state.show { display: block; }
+.empty-icon {
+  width: 48px; height: 48px;
+  margin: 0 auto 16px;
+  opacity: 0.3;
+}
+.empty-title {
+  font-size: 16px; font-weight: 600; color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.empty-description {
+  font-size: 13px; color: var(--text-secondary);
+  max-width: 300px; margin: 0 auto;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .page { padding: 20px; }
+  .header { padding: 12px 20px; }
+  .search-bar { min-width: 140px; }
+
+  .filter-bar {
+    gap: 12px;
+  }
+  .filter-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .search-filters {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+  .packages-search {
+    min-width: auto;
+    max-width: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .packages-table-card { display: none; }
+  .packages-cards { display: flex; }
+
+  .status-tabs {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .status-tab {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+}
+
+</style>
+</head>
+<body>
+<!-- ═══ MAIN ═══ -->
+<main class="main" id="main">
+  <div class="header">
+    <div class="header-left">
+      <span class="header-title">Packages</span>
+      <div class="sync-indicator" id="syncIndicator">
+        <span class="sync-dot"></span>
+        <span id="syncText">Synced 1m ago</span>
+      </div>
+    </div>
+    <div class="header-filters">
+      <button class="btn-refresh" id="refreshBtn" onclick="triggerSync()" title="Sync with Metrc">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+        <span>Sync</span>
+      </button>
+      <div class="view-toggle" id="viewToggle">
+        <button class="view-toggle-btn active" data-view="table" onclick="setView('table')" title="Table view">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </button>
+        <button class="view-toggle-btn" data-view="cards" onclick="setView('cards')" title="Card view">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </button>
+      </div>
+      <button class="filter-btn">
+        All Labs
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <button class="filter-btn">
+        Last 30 Days
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+    </div>
+    <div id="header-actions"></div>
+  </div>
+
+  <div class="page">
+    <!-- ═══ FILTER BAR ═══ -->
+    <div class="filter-bar">
+      <!-- Status Tabs -->
+      <div class="filter-row">
+        <div class="status-tabs">
+          <button class="status-tab active" data-status="all">
+            All <span class="count">147</span>
+          </button>
+          <button class="status-tab" data-status="active">
+            Active <span class="count">23</span>
+          </button>
+          <button class="status-tab" data-status="testing">
+            Testing <span class="count">8</span>
+          </button>
+          <button class="status-tab" data-status="passed">
+            Passed <span class="count">94</span>
+          </button>
+          <button class="status-tab" data-status="failed">
+            Failed <span class="count">6</span>
+          </button>
+          <button class="status-tab" data-status="inactive">
+            Inactive <span class="count">16</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Search and Filters -->
+      <div class="filter-row">
+        <div class="search-filters">
+          <div class="packages-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Search by name, strain, tag..." id="packageSearch">
+          </div>
+          
+          <div class="dropdown">
+            <span>All Categories</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          
+          <div class="dropdown">
+            <span>All Time</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          
+          <div class="dropdown">
+            <span>Most Recent</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PACKAGES TABLE (Desktop) ═══ -->
+    <div class="packages-table-card" id="packagesTable">
+      <table class="packages-table">
+        <thead>
+          <tr>
+            <th>Package</th>
+            <th class="c">Status</th>
+            <th class="r">THC%</th>
+            <th class="r">CBD%</th>
+            <th>Lab</th>
+            <th class="r">Date</th>
+            <th class="c">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="packagesTableBody">
+          <!-- Table rows will be populated by JavaScript -->
+        </tbody>
+      </table>
+      
+      <!-- Pagination -->
+      <div class="pagination">
+        <div class="pagination-info">
+          Showing <span id="showingStart">1</span>-<span id="showingEnd">12</span> of <span id="totalCount">147</span> packages
+        </div>
+        <div class="pagination-controls">
+          <button class="page-btn" id="prevBtn" disabled>Previous</button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <span style="color: var(--text-tertiary); padding: 0 8px;">...</span>
+          <button class="page-btn">13</button>
+          <button class="page-btn" id="nextBtn">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PACKAGES CARDS (Mobile) ═══ -->
+    <div class="packages-cards" id="packagesCards">
+      <!-- Cards will be populated by JavaScript -->
+    </div>
+
+    <!-- ═══ EMPTY STATE ═══ -->
+    <div class="empty-state" id="emptyState">
+      <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <div class="empty-title">No packages found</div>
+      <div class="empty-description">
+        No packages match your current filters. Try adjusting your search or filter criteria.
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ═══ DETAIL PANEL ═══ -->
+<div class="detail-overlay" id="detailOverlay" onclick="closeDetail()"></div>
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-header">
+    <div class="detail-header-left">
+      <div class="detail-title" id="detailTitle">—</div>
+      <div class="detail-subtitle" id="detailSubtitle">—</div>
+    </div>
+    <button class="detail-close" onclick="closeDetail()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  
+  <div class="detail-body">
+    <!-- Status -->
+    <div class="detail-section">
+      <div class="detail-section-title">Status</div>
+      <div id="detailStatus"></div>
+    </div>
+    
+    <!-- Potency -->
+    <div class="detail-section">
+      <div class="detail-section-title">Potency</div>
+      <div class="potency-block" id="detailPotency">
+        <!-- filled by JS -->
+      </div>
+    </div>
+    
+    <!-- Package Info -->
+    <div class="detail-section">
+      <div class="detail-section-title">Package Info</div>
+      <div class="detail-grid" id="detailInfo">
+        <!-- filled by JS -->
+      </div>
+    </div>
+    
+    <!-- Lab Info -->
+    <div class="detail-section">
+      <div class="detail-section-title">Lab &amp; Testing</div>
+      <div class="detail-grid" id="detailLab">
+        <!-- filled by JS -->
+      </div>
+    </div>
+  </div>
+  
+  <div class="detail-actions">
+    <button class="btn btn-primary" onclick="alert('Would navigate to full Package Detail page')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      Full Details
+    </button>
+    <button class="btn btn-secondary" onclick="alert('Would generate a share link')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+      Share Results
+    </button>
+    <button class="btn btn-secondary" onclick="alert('Would download COA PDF')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      COA
+    </button>
+  </div>
+</div>
+
+<script>
+// Sample data
+const packagesData = [
+  {
+    id: 1,
+    name: "Purple Haze Live Rosin",
+    strain: "Purple Haze",
+    category: "Concentrate",
+    metrc: "1A42301000026847",
+    status: "TestPassed",
+    thc: 78.4,
+    cbd: 2.1,
+    lab: "Delta Testing Co",
+    date: "Mar 4, 2026",
+    enriched: true
+  },
+  {
+    id: 2,
+    name: "Blue Dream Flower",
+    strain: "Blue Dream — B2026-0301",
+    category: "Flower",
+    metrc: "1A42301000026848",
+    status: "TestPassed",
+    thc: 24.3,
+    cbd: 0.8,
+    lab: "Delta Testing Co",
+    date: "Mar 2, 2026",
+    enriched: true
+  },
+  {
+    id: 3,
+    name: "OG Kush Premium",
+    strain: "OG Kush",
+    category: "Flower",
+    metrc: "1A42301000026849",
+    status: "SubmittedForTesting",
+    thc: null,
+    cbd: null,
+    lab: "Southern Analytical",
+    date: "Mar 5, 2026",
+    enriched: false
+  },
+  {
+    id: 4,
+    name: "Gorilla Glue #4",
+    strain: "Gorilla Glue #4",
+    category: "Flower",
+    metrc: "1A42301000026850",
+    status: "TestPassed",
+    thc: 28.7,
+    cbd: 1.2,
+    lab: "Delta Testing Co",
+    date: "Feb 28, 2026",
+    enriched: true
+  },
+  {
+    id: 5,
+    name: "Wedding Cake Distillate",
+    strain: "Wedding Cake",
+    category: "Concentrate",
+    metrc: "1A42301000026851",
+    status: "TestFailed",
+    thc: 45.2,
+    cbd: 0.3,
+    lab: "Southern Analytical",
+    date: "Feb 27, 2026",
+    enriched: false
+  },
+  {
+    id: 6,
+    name: "Sour Diesel Pre-Roll 5pk",
+    strain: "Sour Diesel",
+    category: "Pre-Roll",
+    metrc: "1A42301000026852",
+    status: "TestPassed",
+    thc: 21.5,
+    cbd: 0.5,
+    lab: "Delta Testing Co",
+    date: "Feb 25, 2026",
+    enriched: true
+  },
+  {
+    id: 7,
+    name: "Girl Scout Cookies",
+    strain: "Girl Scout Cookies",
+    category: "Flower",
+    metrc: "1A42301000026853",
+    status: "NotSubmitted",
+    thc: null,
+    cbd: null,
+    lab: null,
+    date: "Feb 24, 2026",
+    enriched: false
+  },
+  {
+    id: 8,
+    name: "Gelato #41 Shatter",
+    strain: "Gelato #41",
+    category: "Concentrate",
+    metrc: "1A42301000026854",
+    status: "TestPassed",
+    thc: 82.1,
+    cbd: 0.9,
+    lab: "Delta Testing Co",
+    date: "Feb 22, 2026",
+    enriched: false
+  },
+  {
+    id: 9,
+    name: "Jack Herer Flower",
+    strain: "Jack Herer — B2026-0220",
+    category: "Flower",
+    metrc: "1A42301000026855",
+    status: "TestPassed",
+    thc: 22.8,
+    cbd: 1.4,
+    lab: "Southern Analytical",
+    date: "Feb 20, 2026",
+    enriched: true
+  },
+  {
+    id: 10,
+    name: "Northern Lights Gummies 100mg",
+    strain: "Northern Lights",
+    category: "Edible",
+    metrc: "1A42301000026856",
+    status: "TestPassed",
+    thc: 98.2,
+    cbd: 5.1,
+    lab: "Delta Testing Co",
+    date: "Feb 18, 2026",
+    enriched: false,
+    isEdible: true
+  },
+  {
+    id: 11,
+    name: "Pineapple Express",
+    strain: "Pineapple Express",
+    category: "Flower",
+    metrc: "1A42301000026857",
+    status: "TestPassed",
+    thc: 25.1,
+    cbd: 0.6,
+    lab: "Delta Testing Co",
+    date: "Feb 15, 2026",
+    enriched: true
+  },
+  {
+    id: 12,
+    name: "Zkittlez Live Resin",
+    strain: "Zkittlez",
+    category: "Concentrate",
+    metrc: "1A42301000026858",
+    status: "SubmittedForTesting",
+    thc: null,
+    cbd: null,
+    lab: "Delta Testing Co",
+    date: "Mar 6, 2026",
+    enriched: false
+  }
+];
+
+let currentFilter = 'all';
+let searchTerm = '';
+let filteredData = [...packagesData];
+
+// Status badge mapping
+const statusBadges = {
+  'TestPassed': { class: 'badge-pass', text: '✓ Passed' },
+  'TestFailed': { class: 'badge-fail', text: '✗ Failed' },
+  'SubmittedForTesting': { class: 'badge-testing', text: '◷ Testing' },
+  'NotSubmitted': { class: 'badge-pending', text: '— Not Submitted' }
+};
+
+// Render table row
+function renderTableRow(pkg) {
+  const badge = statusBadges[pkg.status];
+  const thcValue = pkg.thc ? 
+    `<span class="val-thc">${pkg.thc}${pkg.isEdible ? 'mg' : '%'}</span>` : 
+    '<span class="val-na">—</span>';
+  const cbdValue = pkg.cbd ? 
+    `<span class="val-cbd">${pkg.cbd}${pkg.isEdible ? 'mg' : '%'}</span>` : 
+    '<span class="val-na">—</span>';
+  
+  return `
+    <tr onclick="openDetail(${pkg.id})" data-pkg-id="${pkg.id}">
+      <td>
+        <div class="package-cell">
+          <span class="package-name">${pkg.name}</span>
+          <span class="package-strain">${pkg.strain}</span>
+          <span class="package-metrc" title="${pkg.metrc}">${pkg.metrc.substring(0, 12)}...</span>
+        </div>
+      </td>
+      <td class="c">
+        <span class="badge ${badge.class}">${badge.text}</span>
+      </td>
+      <td class="r">
+        ${thcValue}
+        ${pkg.enriched ? '<span class="enriched-indicator">🔬</span>' : ''}
+      </td>
+      <td class="r">${cbdValue}</td>
+      <td>
+        <span class="lab-cell">${pkg.lab || '—'}</span>
+      </td>
+      <td class="r">
+        <span class="date-cell">${pkg.date}</span>
+      </td>
+      <td class="c">
+        <div class="action-cell">
+          <a href="#" class="btn btn-primary" onclick="event.stopPropagation(); openDetail(${pkg.id})">View</a>
+          <button class="btn btn-ghost" title="Share" onclick="event.stopPropagation(); alert('Would generate share link for ${pkg.name}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+            </svg>
+          </button>
+        </div>
+      </td>
+    </tr>
+  `;
+}
+
+// Render mobile card
+function renderCard(pkg) {
+  const badge = statusBadges[pkg.status];
+  const thcValue = pkg.thc ? 
+    `${pkg.thc}${pkg.isEdible ? 'mg' : '%'}` : '—';
+  const cbdValue = pkg.cbd ? 
+    `${pkg.cbd}${pkg.isEdible ? 'mg' : '%'}` : '—';
+  
+  return `
+    <div class="packages-card" onclick="openDetail(${pkg.id})">
+      <div class="card-header">
+        <div class="card-title-section">
+          <div class="card-package-name">${pkg.name}</div>
+          <div class="card-strain">${pkg.strain}</div>
+          <div class="card-metrc">${pkg.metrc.substring(0, 12)}...</div>
+        </div>
+        <div class="card-status">
+          <span class="badge ${badge.class}">${badge.text}</span>
+        </div>
+      </div>
+      
+      <div class="card-metrics">
+        <div class="card-metric">
+          <div class="card-metric-label">THC</div>
+          <div class="card-metric-value val-thc">${thcValue}</div>
+        </div>
+        <div class="card-metric">
+          <div class="card-metric-label">CBD</div>
+          <div class="card-metric-value val-cbd">${cbdValue}</div>
+        </div>
+        ${pkg.enriched ? '<div class="enriched-indicator">🔬</div>' : ''}
+      </div>
+      
+      <div class="card-footer">
+        <div class="card-lab-date">
+          <div class="card-lab">${pkg.lab || '—'}</div>
+          <div class="card-date">${pkg.date}</div>
+        </div>
+        <div class="card-actions">
+          <a href="#" class="btn btn-primary" onclick="event.stopPropagation(); openDetail(${pkg.id})">View</a>
+          <button class="btn btn-ghost" title="Share" onclick="event.stopPropagation(); alert('Share link')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Filter data
+function filterData() {
+  filteredData = packagesData.filter(pkg => {
+    // Status filter
+    if (currentFilter !== 'all') {
+      const statusMap = {
+        'active': ['TestPassed', 'SubmittedForTesting'],
+        'testing': ['SubmittedForTesting'],
+        'passed': ['TestPassed'],
+        'failed': ['TestFailed'],
+        'inactive': ['NotSubmitted']
+      };
+      if (!statusMap[currentFilter]?.includes(pkg.status)) {
+        return false;
+      }
+    }
+    
+    // Search filter
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        pkg.name.toLowerCase().includes(searchLower) ||
+        pkg.strain.toLowerCase().includes(searchLower) ||
+        pkg.metrc.toLowerCase().includes(searchLower)
+      );
+    }
+    
+    return true;
+  });
+  
+  renderData();
+}
+
+// Render data
+function renderData() {
+  const tableBody = document.getElementById('packagesTableBody');
+  const cardsContainer = document.getElementById('packagesCards');
+  const emptyState = document.getElementById('emptyState');
+  const packagesTable = document.getElementById('packagesTable');
+  
+  if (filteredData.length === 0) {
+    // Show empty state
+    packagesTable.style.display = 'none';
+    cardsContainer.style.display = 'none';
+    emptyState.classList.add('show');
+  } else {
+    // Show data
+    emptyState.classList.remove('show');
+    packagesTable.style.display = 'block';
+    
+    // Render table
+    tableBody.innerHTML = filteredData.map(renderTableRow).join('');
+    
+    // Render cards
+    cardsContainer.innerHTML = filteredData.map(renderCard).join('');
+    
+    // Update pagination info
+    document.getElementById('showingStart').textContent = '1';
+    document.getElementById('showingEnd').textContent = Math.min(12, filteredData.length);
+    document.getElementById('totalCount').textContent = filteredData.length;
+  }
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+  // Status tab filtering
+  document.querySelectorAll('.status-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      // Update active tab
+      document.querySelectorAll('.status-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      
+      // Update filter
+      currentFilter = this.getAttribute('data-status');
+      filterData();
+    });
+  });
+  
+  // Search functionality
+  document.getElementById('packageSearch').addEventListener('input', function(e) {
+    searchTerm = e.target.value;
+    filterData();
+  });
+  
+  // METRC copy functionality
+  document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('package-metrc')) {
+      const fullMetrc = e.target.title || e.target.textContent;
+      navigator.clipboard.writeText(fullMetrc).then(() => {
+        // Simple feedback - could be enhanced with toast
+        e.target.style.background = 'rgba(16,185,129,0.2)';
+        setTimeout(() => {
+          e.target.style.background = '';
+        }, 300);
+      });
+    }
+  });
+  
+  // Initial render
+  filterData();
+});
+
+// Theme toggle function
+
+// Sidebar toggle function
+
+// ══════════════════════════════════════════════════════════════
+// DETAIL PANEL
+// ══════════════════════════════════════════════════════════════
+const statusLabels = {
+  'TestPassed': 'Test Passed',
+  'TestFailed': 'Test Failed',
+  'SubmittedForTesting': 'Submitted for Testing',
+  'NotSubmitted': 'Not Submitted'
+};
+
+function openDetail(id) {
+  const pkg = packagesData.find(p => p.id === id);
+  if (!pkg) return;
+  
+  const badge = statusBadges[pkg.status];
+  const unit = pkg.isEdible ? 'mg' : '%';
+  
+  // Title
+  document.getElementById('detailTitle').textContent = pkg.name;
+  document.getElementById('detailSubtitle').textContent = pkg.strain;
+  
+  // Status
+  document.getElementById('detailStatus').innerHTML = `
+    <span class="badge ${badge.class}" style="font-size:13px; padding:6px 16px;">${badge.text}</span>
+  `;
+  
+  // Potency
+  document.getElementById('detailPotency').innerHTML = `
+    <div class="potency-item">
+      <div class="potency-label">THC</div>
+      <div class="potency-value ${pkg.thc ? 'thc' : 'na'}">${pkg.thc ? pkg.thc + unit : '—'}</div>
+    </div>
+    <div class="potency-item">
+      <div class="potency-label">CBD</div>
+      <div class="potency-value ${pkg.cbd ? 'cbd' : 'na'}">${pkg.cbd ? pkg.cbd + unit : '—'}</div>
+    </div>
+    ${pkg.enriched ? `
+    <div class="potency-item">
+      <div class="potency-label">Data</div>
+      <div class="potency-value" style="font-size:14px; color:var(--accent);">🔬 Enriched</div>
+    </div>` : ''}
+  `;
+  
+  // Package Info
+  document.getElementById('detailInfo').innerHTML = `
+    <div class="detail-field">
+      <div class="detail-label">Metrc Tag</div>
+      <div class="detail-value mono">${pkg.metrc}</div>
+    </div>
+    <div class="detail-field">
+      <div class="detail-label">Category</div>
+      <div class="detail-value">${pkg.category}</div>
+    </div>
+    <div class="detail-field">
+      <div class="detail-label">Strain</div>
+      <div class="detail-value">${pkg.strain}</div>
+    </div>
+    <div class="detail-field">
+      <div class="detail-label">Created</div>
+      <div class="detail-value mono">${pkg.date}</div>
+    </div>
+  `;
+  
+  // Lab Info
+  document.getElementById('detailLab').innerHTML = `
+    <div class="detail-field">
+      <div class="detail-label">Testing Lab</div>
+      <div class="detail-value">${pkg.lab || 'Not assigned'}</div>
+    </div>
+    <div class="detail-field">
+      <div class="detail-label">Test Date</div>
+      <div class="detail-value mono">${pkg.status === 'NotSubmitted' ? '—' : pkg.date}</div>
+    </div>
+    <div class="detail-field">
+      <div class="detail-label">Testing State</div>
+      <div class="detail-value">${statusLabels[pkg.status] || pkg.status}</div>
+    </div>
+    <div class="detail-field">
+      <div class="detail-label">COA Document</div>
+      <div class="detail-value">${pkg.status === 'TestPassed' || pkg.status === 'TestFailed' ? '<span style="color:var(--accent);cursor:pointer;">📄 View PDF</span>' : '—'}</div>
+    </div>
+  `;
+  
+  // Open panel
+  document.getElementById('detailOverlay').classList.add('open');
+  document.getElementById('detailPanel').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDetail() {
+  document.getElementById('detailOverlay').classList.remove('open');
+  document.getElementById('detailPanel').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Close on Escape
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeDetail();
+});
+
+// ══════════════════════════════════════════════════════════════
+// SYNC / REFRESH
+// ══════════════════════════════════════════════════════════════
+function triggerSync() {
+  const btn = document.getElementById('refreshBtn');
+  const syncText = document.getElementById('syncText');
+  const syncDot = document.querySelector('.sync-dot');
+  
+  btn.classList.add('syncing');
+  syncText.textContent = 'Syncing...';
+  syncDot.style.background = 'var(--warn)';
+  syncDot.style.boxShadow = '0 0 4px var(--warn)';
+  
+  // Simulate sync delay
+  setTimeout(() => {
+    btn.classList.remove('syncing');
+    syncText.textContent = 'Synced just now';
+    syncDot.style.background = 'var(--pass)';
+    syncDot.style.boxShadow = '0 0 4px var(--pass)';
+    
+    // Brief flash on the table to indicate data refreshed
+    const tableCard = document.getElementById('packagesTable');
+    tableCard.style.borderColor = 'var(--accent)';
+    setTimeout(() => { tableCard.style.borderColor = ''; }, 600);
+  }, 1500);
+}
+
+// ══════════════════════════════════════════════════════════════
+// VIEW TOGGLE
+// ══════════════════════════════════════════════════════════════
+let currentView = 'table';
+
+function setView(view) {
+  currentView = view;
+  const tableCard = document.getElementById('packagesTable');
+  const cardsContainer = document.getElementById('packagesCards');
+  
+  // Update toggle buttons
+  document.querySelectorAll('.view-toggle-btn').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('data-view') === view);
+  });
+  
+  if (view === 'cards') {
+    tableCard.classList.add('force-hide');
+    cardsContainer.classList.add('force-show');
+  } else {
+    tableCard.classList.remove('force-hide');
+    cardsContainer.classList.remove('force-show');
+  }
+  
+  localStorage.setItem('ls-view', view);
+}
+
+// Load saved preferences
+document.addEventListener('DOMContentLoaded', function() {
+  // Load view preference
+  const savedView = localStorage.getItem('ls-view') || 'table';
+  if (savedView !== 'table') setView(savedView);
+});
+</script>
+
+
+<script src="shared.js"></script>
+<script>LabstakShared.init({ page: 'packages', title: 'Packages' });</script>
+</body>
+</html>
